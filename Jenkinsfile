@@ -1,0 +1,3 @@
+buildMvn {
+  mvnDeploy = 'yes'
+}
