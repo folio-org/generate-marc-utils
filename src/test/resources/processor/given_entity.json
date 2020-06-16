@@ -1,0 +1,31 @@
+{
+  "id": "4bbec474-ba4d-4404-990f-afe2fc86dd3d",
+  "personalNumber": "09448119",
+  "language": [
+    "english",
+    "french",
+    "italian"
+  ],
+  "fonts": [
+    "Times New Roman",
+    "Wingdings",
+    "Yu Gothic"
+  ],
+  "books": [
+    {
+      "title": "In Search of Lost Time",
+      "genre": "Modernist",
+      "author": "Marcel Proust"
+    },
+    {
+      "title": "Ulysses",
+      "genre": "Novel",
+      "author": "James Joyce"
+    },
+    {
+      "title": "The Great Gatsby",
+      "genre": "Tragedy",
+      "author": "F. Scott Fitzgerald"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "mtypes": [
+    {
+      "id":"1a54b431-2e4f-452d-9cae-9cee66c9a892",
+      "name":"book",
+      "source":"folio"
+    },
+    {
+      "id":"5ee11d91-f7e8-481d-b079-65d708582ccc",
+      "name":"dvd",
+      "source":"folio"
+    }
+  ],
+  "totalRecords": 2
+}

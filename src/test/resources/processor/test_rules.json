@@ -1,0 +1,67 @@
+[
+  {
+    "field": "001",
+    "description": "Test field 001, reading simple string value, writing control field",
+    "dataSources": [
+      {
+        "from": "$.id"
+      }
+    ]
+  },
+  {
+    "field": "002",
+    "description": "Test field 002, reading simple string value, writing data field",
+    "dataSources": [
+      {
+        "from": "$.personalNumber",
+        "subfield": "a"
+      }
+    ]
+  },
+  {
+    "field": "003",
+    "description": "Test field 003, reading simple array of string values, writing control field",
+    "dataSources": [
+      {
+        "from": "$.languages"
+      }
+    ]
+  },
+  {
+    "field": "004",
+    "description": "Test field 004, reading simple array of string values, writing data field",
+    "dataSources": [
+      {
+        "from": "$.fonts",
+        "subfield": "b"
+      }
+    ]
+  },
+  {
+    "field": "005",
+    "description": "Test field 005, reading composite value, writing data field",
+    "dataSources": [
+      {
+        "from": "$.books[*].title",
+        "subfield": "c"
+      },
+      {
+        "from": "$.books[*].genre",
+        "subfield": "d"
+      },
+      {
+        "from": "$.books[*].author",
+        "subfield": "e"
+      }
+    ]
+  },
+  {
+    "field": "00x",
+    "description": "Nonexistent field just for the testing purposes",
+    "dataSources": [
+      {
+        "from": "$.none"
+      }
+    ]
+  }
+]
