@@ -1,20 +1,26 @@
 [
   {
+    "field": "leader",
+    "description": "Leader",
+    "dataSources": [
+      {
+        "translation": {
+          "function": "set_17-19_positions",
+          "parameters": {
+            "position17": "3",
+            "position18": "c",
+            "position19": " "
+          }
+        }
+      }
+    ]
+  },
+  {
     "field": "001",
     "description": "Test field 001, reading simple string value, writing control field",
     "dataSources": [
       {
         "from": "$.id"
-      }
-    ]
-  },
-  {
-    "field": "002",
-    "description": "Test field 002, reading simple string value, writing data field",
-    "dataSources": [
-      {
-        "from": "$.personalNumber",
-        "subfield": "a"
       }
     ]
   },
@@ -28,8 +34,46 @@
     ]
   },
   {
-    "field": "004",
-    "description": "Test field 004, reading simple array of string values, writing data field",
+    "field": "005",
+    "description": "Test field 005, reading simple value of date and time of latest transaction, writing control field",
+    "dataSources": [
+      {
+        "from": "$.metadata.updatedDate",
+        "translation": {
+          "function": "set_transaction_datetime"
+        }
+      }
+    ]
+  },
+  {
+    "field": "008",
+    "description": "Test field 008, reading simple value of fixed-length data elements, writing control field",
+    "dataSources": [
+      {
+        "from": "$.metadata.createdDate",
+        "translation": {
+          "function": "set_fixed_length_data_elements"
+        }
+      }
+    ],
+    "metadata": {
+      "datesOfPublication": "$.publication[*].dateOfPublication",
+      "languages": "$.languages"
+    }
+  },
+  {
+    "field": "010",
+    "description": "Test field 010, reading simple string value, writing data field",
+    "dataSources": [
+      {
+        "from": "$.personalNumber",
+        "subfield": "a"
+      }
+    ]
+  },
+  {
+    "field": "011",
+    "description": "Test field 011, reading simple array of string values, writing data field",
     "dataSources": [
       {
         "from": "$.fonts",
@@ -38,8 +82,36 @@
     ]
   },
   {
-    "field": "005",
-    "description": "Test field 005, reading composite value, writing data field",
+    "field": "012",
+    "description": "Test field 012, reading simple string value, writing data field with not empty indicators",
+    "dataSources": [
+      {
+        "from": "$.title",
+        "subfield": "a"
+      },
+      {
+        "indicator": "1",
+        "translation": {
+          "function": "set_value",
+          "parameters": {
+            "value": "1"
+          }
+        }
+      },
+      {
+        "indicator": "2",
+        "translation": {
+          "function": "set_value",
+          "parameters": {
+            "value": "2"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "field": "012",
+    "description": "Test field 010, reading composite value, writing data field",
     "dataSources": [
       {
         "from": "$.books[*].title",

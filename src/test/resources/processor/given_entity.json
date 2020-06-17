@@ -1,10 +1,10 @@
 {
   "id": "4bbec474-ba4d-4404-990f-afe2fc86dd3d",
   "personalNumber": "09448119",
-  "language": [
-    "english",
-    "french",
-    "italian"
+  "title": "Test title",
+  "languages": [
+    "eng",
+    "lat"
   ],
   "fonts": [
     "Times New Roman",
@@ -27,5 +27,17 @@
       "genre": "Tragedy",
       "author": "F. Scott Fitzgerald"
     }
-  ]
+  ],
+  "publication": [
+    {
+      "dateOfPublication": "2016"
+    },
+    {
+      "dateOfPublication": "2015"
+    }
+  ],
+  "metadata": {
+    "createdDate": "2019-08-07T03:12:01.011+0000",
+    "updatedDate": "2020-06-17T01:46:42.915+0000"
+  }
 }
