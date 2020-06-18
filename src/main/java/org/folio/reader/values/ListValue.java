@@ -4,6 +4,9 @@ import org.folio.processor.rule.DataSource;
 
 import java.util.List;
 
+/**
+ * The implementation of {@link RuleValue} contains a list simple string values assigned to one {@link DataSource}
+ */
 public class ListValue extends SimpleValue<List<String>> {
   private List<String> value;
 

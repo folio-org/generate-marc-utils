@@ -4,6 +4,9 @@ package org.folio.processor.rule;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Rule defines how to read, translate and map a field value to marc record
+ */
 public class Rule {
   private String field;
   private String description;

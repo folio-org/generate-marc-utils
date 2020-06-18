@@ -30,10 +30,21 @@ import static org.folio.reader.values.SimpleValue.SubType.STRING;
  * @see EntityReader
  * @see TranslationFunction
  * @see RecordWriter
+ * @see Rule
  */
 public final class RuleProcessor {
   private static final String LEADER_FIELD = "leader";
 
+  /**
+   * Reads and translates data by given rules, writes a marc record in specific format defined by RecordWriter.
+   * Returns content of the generated marc record
+   *
+   * @param reader
+   * @param writer
+   * @param referenceData
+   * @param rules
+   * @return content of the generated marc record
+   */
   public String process(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules) {
     rules.forEach(rule -> {
       if (LEADER_FIELD.equals(rule.getField())) {

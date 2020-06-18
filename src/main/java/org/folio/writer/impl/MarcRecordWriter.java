@@ -1,6 +1,7 @@
 package org.folio.writer.impl;
 
 import org.folio.processor.translations.Translation;
+import org.folio.writer.RecordWriter;
 import org.folio.writer.fields.RecordControlField;
 import org.folio.writer.fields.RecordDataField;
 import org.marc4j.MarcStreamWriter;
@@ -16,6 +17,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * The implementation of {@link RecordWriter} writes content of marc record in MARC format
+ */
 public class MarcRecordWriter extends AbstractRecordWriter {
   protected String encoding = StandardCharsets.UTF_8.name();
   private MarcFactory factory = new SortedMarcFactoryImpl();

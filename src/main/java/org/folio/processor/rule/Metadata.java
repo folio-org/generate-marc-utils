@@ -3,6 +3,9 @@ package org.folio.processor.rule;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Additional data used for translation a field value
+ */
 public class Metadata {
   private Map<String, Entry> data = new HashMap<>();
 

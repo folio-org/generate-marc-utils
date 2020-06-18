@@ -1,8 +1,10 @@
 package org.folio.processor.translations;
 
-
 import java.util.Map;
 
+/**
+ * Data contains translation function name and additional parameters for translation
+ */
 public class Translation {
   private String function;
   private Map<String, String> parameters;

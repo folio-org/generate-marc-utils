@@ -1,11 +1,15 @@
 package org.folio.writer.impl;
 
+import org.folio.writer.RecordWriter;
 import org.marc4j.MarcWriter;
 import org.marc4j.MarcXmlWriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
+/**
+ * The implementation of {@link RecordWriter} writes content of marc record in XML format
+ */
 public class XmlRecordWriter extends MarcRecordWriter {
   @Override
   public String getResult() {

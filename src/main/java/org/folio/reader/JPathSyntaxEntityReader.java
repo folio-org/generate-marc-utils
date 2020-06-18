@@ -23,6 +23,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 
+/**
+ * The implementation of {@link EntityReader} reads from JSON entity using JSONPath queries
+ */
 public class JPathSyntaxEntityReader extends AbstractEntityReader {
   private final DocumentContext documentContext;
 

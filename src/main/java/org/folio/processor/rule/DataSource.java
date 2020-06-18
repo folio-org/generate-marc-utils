@@ -2,6 +2,9 @@ package org.folio.processor.rule;
 
 import org.folio.processor.translations.Translation;
 
+/**
+ * Data defines how to read and translate a field value, defines subfield and indicators for writing
+ */
 public class DataSource {
   private String from;
   private String subfield;
