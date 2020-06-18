@@ -2,6 +2,7 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.folio.TestUtil;
 import org.folio.processor.rule.Rule;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
@@ -12,24 +13,31 @@ import org.folio.writer.impl.XmlRecordWriter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.folio.TestUtil.readFileContentFromResources;
+import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 class RuleProcessorTest {
   private static JsonObject entity;
   private static List<Rule> rules;
-  private ReferenceData referenceData = null;
+  private static ReferenceData referenceData = Mockito.mock(ReferenceData.class);
 
   @BeforeAll
   static void setup() {
     entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
     rules = Arrays.asList(Json.decodeValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
+    when(referenceData.getByKey("natureOfContentTerms")).thenReturn(TestUtil.getNatureOfContentTerms());
+    when(referenceData.getByKey("identifierTypes")).thenReturn(TestUtil.getIdentifierTypes());
+    when(referenceData.getByKey("contributorNameTypes")).thenReturn(TestUtil.getContributorNameTypes());
+    when(referenceData.getByKey("locations")).thenReturn(TestUtil.getLocations());
+    when(referenceData.getByKey("mtypes")).thenReturn(TestUtil.getMaterialTypes());
   }
 
   @Test

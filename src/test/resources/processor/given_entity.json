@@ -36,6 +36,11 @@
       "dateOfPublication": "2015"
     }
   ],
+  "natureOfContentTermIds": [
+    "44cd89f3-2e76-469f-a955-cc57cb9e0395",
+    "ebbbdef1-00e1-428b-bc11-314dc0705074",
+    "none-existing-id"
+  ],
   "metadata": {
     "createdDate": "2019-08-07T03:12:01.011+0000",
     "updatedDate": "2020-06-17T01:46:42.915+0000"

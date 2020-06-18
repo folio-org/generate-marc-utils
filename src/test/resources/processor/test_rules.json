@@ -83,7 +83,20 @@
   },
   {
     "field": "012",
-    "description": "Test field 012, reading simple string value, writing data field with not empty indicators",
+    "description": "Test field 012, reading simple array of natureOfContentTermIds with translation, writing data field",
+    "dataSources": [
+      {
+        "from": "$.instance.natureOfContentTermIds",
+        "subfield": "a",
+        "translation": {
+          "function": "set_nature_of_content_term"
+        }
+      }
+    ]
+  },
+  {
+    "field": "013",
+    "description": "Test field 013, reading simple string value, writing data field with not empty indicators",
     "dataSources": [
       {
         "from": "$.title",
@@ -110,8 +123,8 @@
     ]
   },
   {
-    "field": "012",
-    "description": "Test field 010, reading composite value, writing data field",
+    "field": "014",
+    "description": "Test field 014, reading composite value, writing data field",
     "dataSources": [
       {
         "from": "$.books[*].title",

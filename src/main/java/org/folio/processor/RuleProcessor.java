@@ -50,10 +50,10 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        RuleValue ruleValue = reader.read(rule);
+        RuleValue<?> ruleValue = reader.read(rule);
         switch (ruleValue.getType()) {
           case SIMPLE:
-            SimpleValue simpleValue = (SimpleValue) ruleValue;
+            SimpleValue<?> simpleValue = (SimpleValue) ruleValue;
             translate(simpleValue, referenceData, rule.getMetadata());
             writer.writeField(rule.getField(), simpleValue);
             break;

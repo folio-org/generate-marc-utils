@@ -32,51 +32,11 @@ class TranslationFunctionUnitTest {
 
   @BeforeAll
   static void setUp() {
-    when(referenceData.getByKey("natureOfContentTerms")).thenReturn(getNatureOfContentTerms());
-    when(referenceData.getByKey("identifierTypes")).thenReturn(getIdentifierTypes());
-    when(referenceData.getByKey("contributorNameTypes")).thenReturn(getContributorNameTypes());
-    when(referenceData.getByKey("locations")).thenReturn(getLocations());
-    when(referenceData.getByKey("mtypes")).thenReturn(getMaterialTypes());
-  }
-
-  private static Map<String, JsonObject> getNatureOfContentTerms() {
-    JsonObject natureOfContentTerm =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json"))
-        .getJsonArray("natureOfContentTerms")
-        .getJsonObject(0);
-    return Collections.singletonMap(natureOfContentTerm.getString("id"), natureOfContentTerm);
-  }
-
-  private static Map<String, JsonObject> getIdentifierTypes() {
-    JsonObject identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_identifier_types_response.json"))
-        .getJsonArray("identifierTypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
-  }
-
-  private static Map<String, JsonObject> getContributorNameTypes() {
-    JsonObject contributorNameTypes =
-        new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_contributor_name_types_response.json"))
-          .getJsonArray("contributorNameTypes")
-          .getJsonObject(0);
-      return Collections.singletonMap(contributorNameTypes.getString("id"), contributorNameTypes);
-  }
-
-  private static Map<String, JsonObject> getLocations() {
-    JsonObject identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_locations_response.json"))
-        .getJsonArray("locations")
-        .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
-  }
-
-  private static Map<String, JsonObject> getMaterialTypes() {
-    JsonObject identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_material_types_response.json"))
-        .getJsonArray("mtypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    when(referenceData.getByKey("natureOfContentTerms")).thenReturn(TestUtil.getNatureOfContentTerms());
+    when(referenceData.getByKey("identifierTypes")).thenReturn(TestUtil.getIdentifierTypes());
+    when(referenceData.getByKey("contributorNameTypes")).thenReturn(TestUtil.getContributorNameTypes());
+    when(referenceData.getByKey("locations")).thenReturn(TestUtil.getLocations());
+    when(referenceData.getByKey("mtypes")).thenReturn(TestUtil.getMaterialTypes());
   }
 
   @Test
