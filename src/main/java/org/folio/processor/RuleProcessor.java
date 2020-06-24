@@ -4,7 +4,7 @@ import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
-import org.folio.processor.translations.TranslationsHolder;
+import org.folio.processor.translations.TranslationHolder;
 import org.folio.reader.EntityReader;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.ListValue;
@@ -34,6 +34,15 @@ import static org.folio.reader.values.SimpleValue.SubType.STRING;
  */
 public final class RuleProcessor {
   private static final String LEADER_FIELD = "leader";
+
+  private TranslationHolder translationHolder;
+
+  public RuleProcessor() {
+  }
+
+  public RuleProcessor(TranslationHolder translationHolder) {
+    this.translationHolder = translationHolder;
+  }
 
   /**
    * Reads and translates data by given rules, writes a marc record in specific format defined by RecordWriter.
@@ -70,38 +79,42 @@ public final class RuleProcessor {
   }
 
   private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) {
-    Translation translation = simpleValue.getDataSource().getTranslation();
-    if (translation != null) {
-      TranslationFunction translationFunction = TranslationsHolder.lookup(translation.getFunction());
-      if (STRING.equals(simpleValue.getSubType())) {
-        StringValue stringValue = (StringValue) simpleValue;
-        String readValue = stringValue.getValue();
-        String translatedValue = translationFunction.apply(readValue, 0, translation, referenceData, metadata);
-        stringValue.setValue(translatedValue);
-      } else if (LIST_OF_STRING.equals(simpleValue.getSubType())) {
-        ListValue listValue = (ListValue) simpleValue;
-        List<String> translatedValues = new ArrayList<>();
-        for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
-          String readValue = listValue.getValue().get(currentIndex);
-          String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
-          translatedValues.add(translatedValue);
+    if (translationHolder != null) {
+      Translation translation = simpleValue.getDataSource().getTranslation();
+      if (translation != null) {
+        TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
+        if (STRING.equals(simpleValue.getSubType())) {
+          StringValue stringValue = (StringValue) simpleValue;
+          String readValue = stringValue.getValue();
+          String translatedValue = translationFunction.apply(readValue, 0, translation, referenceData, metadata);
+          stringValue.setValue(translatedValue);
+        } else if (LIST_OF_STRING.equals(simpleValue.getSubType())) {
+          ListValue listValue = (ListValue) simpleValue;
+          List<String> translatedValues = new ArrayList<>();
+          for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
+            String readValue = listValue.getValue().get(currentIndex);
+            String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
+            translatedValues.add(translatedValue);
+          }
+          listValue.setValue(translatedValues);
         }
-        listValue.setValue(translatedValues);
       }
     }
   }
 
   private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) {
-    List<List<StringValue>> readValues = compositeValue.getValue();
-    for (int currentIndex = 0; currentIndex < readValues.size(); currentIndex++) {
-      List<StringValue> readEntry = readValues.get(currentIndex);
-      for (StringValue stringValue : readEntry) {
-        Translation translation = stringValue.getDataSource().getTranslation();
-        if (translation != null) {
-          TranslationFunction translationFunction = TranslationsHolder.lookup(translation.getFunction());
-          String readValue = stringValue.getValue();
-          String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
-          stringValue.setValue(translatedValue);
+    if (translationHolder != null) {
+      List<List<StringValue>> readValues = compositeValue.getValue();
+      for (int currentIndex = 0; currentIndex < readValues.size(); currentIndex++) {
+        List<StringValue> readEntry = readValues.get(currentIndex);
+        for (StringValue stringValue : readEntry) {
+          Translation translation = stringValue.getDataSource().getTranslation();
+          if (translation != null) {
+            TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
+            String readValue = stringValue.getValue();
+            String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
+            stringValue.setValue(translatedValue);
+          }
         }
       }
     }

@@ -1,21 +1,5 @@
 [
   {
-    "field": "leader",
-    "description": "Leader",
-    "dataSources": [
-      {
-        "translation": {
-          "function": "set_17-19_positions",
-          "parameters": {
-            "position17": "3",
-            "position18": "c",
-            "position19": " "
-          }
-        }
-      }
-    ]
-  },
-  {
     "field": "001",
     "description": "Test field 001, reading simple string value, writing control field",
     "dataSources": [
@@ -30,18 +14,6 @@
     "dataSources": [
       {
         "from": "$.languages"
-      }
-    ]
-  },
-  {
-    "field": "005",
-    "description": "Test field 005, reading simple value of date and time of latest transaction, writing control field",
-    "dataSources": [
-      {
-        "from": "$.metadata.updatedDate",
-        "translation": {
-          "function": "set_transaction_datetime"
-        }
       }
     ]
   },
@@ -116,7 +88,7 @@
         "translation": {
           "function": "set_value",
           "parameters": {
-            "value": "2"
+            "value": "1"
           }
         }
       }

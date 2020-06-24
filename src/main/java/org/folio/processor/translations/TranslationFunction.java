@@ -8,7 +8,6 @@ import org.folio.processor.ReferenceData;
  * This interface provides a contract to call data translations.
  *
  * @see RuleProcessor
- * @see TranslationsHolder
  */
 @FunctionalInterface
 public interface TranslationFunction {
