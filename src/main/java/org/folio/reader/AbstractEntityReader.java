@@ -4,6 +4,7 @@ import org.folio.processor.rule.Rule;
 import org.folio.reader.values.MissingValue;
 import org.folio.reader.values.RuleValue;
 
+@SuppressWarnings("java:S3740")
 public abstract class AbstractEntityReader implements EntityReader {
 
   @Override
