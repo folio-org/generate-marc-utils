@@ -1,0 +1,124 @@
+[
+  {
+    "field": "001",
+    "description": "Test field 001, reading simple string value, writing control field",
+    "dataSources": [
+      {
+        "from": "$.id"
+      }
+    ]
+  },
+  {
+    "field": "003",
+    "description": "Test field 003, reading simple array of string values, writing control field",
+    "dataSources": [
+      {
+        "from": "$.languages"
+      }
+    ]
+  },
+  {
+    "field": "008",
+    "description": "Test field 008, reading simple value of fixed-length data elements, writing control field",
+    "dataSources": [
+      {
+        "from": "$.metadata.createdDate",
+        "translation": {
+          "function": "set_fixed_length_data_elements"
+        }
+      }
+    ],
+    "metadata": {
+      "datesOfPublication": "$.publication[*].dateOfPublication",
+      "languages": "$.languages"
+    }
+  },
+  {
+    "field": "010",
+    "description": "Test field 010, reading simple string value, writing data field",
+    "dataSources": [
+      {
+        "from": "$.personalNumber",
+        "subfield": "a"
+      }
+    ]
+  },
+  {
+    "field": "011",
+    "description": "Test field 011, reading simple array of string values, writing data field",
+    "dataSources": [
+      {
+        "from": "$.fonts",
+        "subfield": "b"
+      }
+    ]
+  },
+  {
+    "field": "012",
+    "description": "Test field 012, reading simple array of natureOfContentTermIds with translation, writing data field",
+    "dataSources": [
+      {
+        "from": "$.instance.natureOfContentTermIds",
+        "subfield": "a",
+        "translation": {
+          "function": "set_nature_of_content_term"
+        }
+      }
+    ]
+  },
+  {
+    "field": "013",
+    "description": "Test field 013, reading simple string value, writing data field with not empty indicators",
+    "dataSources": [
+      {
+        "from": "$.title",
+        "subfield": "a"
+      },
+      {
+        "indicator": "1",
+        "translation": {
+          "function": "set_value",
+          "parameters": {
+            "value": "1"
+          }
+        }
+      },
+      {
+        "indicator": "2",
+        "translation": {
+          "function": "set_value",
+          "parameters": {
+            "value": "1"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "field": "014",
+    "description": "Test field 014, reading composite value, writing data field",
+    "dataSources": [
+      {
+        "from": "$.books[*].title",
+        "subfield": "c"
+      },
+      {
+        "from": "$.books[*].genre",
+        "subfield": "d"
+      },
+      {
+        "from": "$.books[*].author",
+        "subfield": "e"
+      }
+    ]
+  },
+  {
+    "field": "00x",
+    "description": "Nonexistent field just for the testing purposes",
+    "dataSources": [
+      {
+        "from": "$.none"
+      }
+    ]
+  }
+]
