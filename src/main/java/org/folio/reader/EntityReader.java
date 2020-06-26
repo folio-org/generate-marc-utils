@@ -19,5 +19,5 @@ public interface EntityReader {
    * @param rule mapping rule
    * @return rule value
    */
-  RuleValue read(Rule rule);
+  <T> RuleValue<T> read(Rule rule);
 }
