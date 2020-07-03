@@ -18,6 +18,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.VariableField;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -34,8 +36,8 @@ import static org.junit.Assert.assertEquals;
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
 class RuleProcessorTest {
-  private static JsonObject entity;
   private static List<Rule> rules;
+  private JsonObject entity;
 
   @Mock(lenient = true)
   private ReferenceData referenceData;
@@ -50,12 +52,12 @@ class RuleProcessorTest {
 
   @BeforeAll
   static void beforeAll() {
-    entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
     rules = Arrays.asList(Json.decodeValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
   }
 
   @BeforeEach
   public void beforeEach() {
+    entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
     doReturn(createdDateTranslationFunction).when(translationHolder).lookup("set_fixed_length_data_elements");
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");
     doReturn(setValueTranslationFunction).when(translationHolder).lookup("set_value");
@@ -101,5 +103,20 @@ class RuleProcessorTest {
     // then
     String expectedXmlRecord = readFileContentFromResources("processor/mapped_xml_record.xml");
     assertEquals(expectedXmlRecord, actualXmlRecord);
+  }
+
+  @Test
+  void shouldReturnVariableFieldsList_MarcRecord() {
+    // given
+    entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_one_field.json"));
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new XmlRecordWriter();
+    // when
+    List<VariableField> actualVariableFields = ruleProcessor.processFields(reader, writer, referenceData, rules);
+    // then
+    ControlField actualControlField = (ControlField)actualVariableFields.get(0);
+    assertEquals("001", actualControlField.getTag());
+    assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", actualControlField.getData());
   }
 }

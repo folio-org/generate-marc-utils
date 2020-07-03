@@ -4,6 +4,9 @@ import org.folio.processor.translations.Translation;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.RuleValue;
 import org.folio.reader.values.SimpleValue;
+import org.marc4j.marc.VariableField;
+
+import java.util.List;
 
 /**
  * The root interface for writers.
@@ -44,4 +47,11 @@ public interface RecordWriter {
    * @return underlying record in string representation
    */
   String getResult();
+
+  /**
+   * Returns the generated list of {@link VariableField}
+   *
+   * @return the generated list of {@link VariableField}
+   */
+  List<VariableField> getFields();
 }

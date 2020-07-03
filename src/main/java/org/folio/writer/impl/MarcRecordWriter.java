@@ -10,11 +10,13 @@ import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.MarcFactory;
 import org.marc4j.marc.Record;
+import org.marc4j.marc.VariableField;
 import org.marc4j.marc.impl.SortedMarcFactoryImpl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,5 +62,10 @@ public class MarcRecordWriter extends AbstractRecordWriter {
     writer.write(record);
     writer.close();
     return outputStream.toString();
+  }
+
+  @Override
+  public List<VariableField> getFields() {
+    return record.getVariableFields();
   }
 }
