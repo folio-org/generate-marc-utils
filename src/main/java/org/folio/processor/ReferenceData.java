@@ -11,8 +11,18 @@ public interface ReferenceData {
 
   /**
    * Returns {@link Map} with reference data by key
-   * @param referenceDataKey
+   *
+   * @param referenceDataKey key of a specific reference data
    * @return {@link Map} with reference data {@link Map} by key
    */
+
   Map<String, JsonObject> getByKey(String referenceDataKey);
+
+  /**
+   * Adds reference data by key
+   *
+   * @param referenceDataKey key of a specific reference data
+   * @param referenceData {@link Map} with reference data
+   */
+  void addByKey(String referenceDataKey,  Map<String, JsonObject> referenceData);
 }
