@@ -12,6 +12,7 @@ import org.folio.reader.values.RuleValue;
 import org.folio.reader.values.SimpleValue;
 import org.folio.reader.values.StringValue;
 import org.folio.writer.RecordWriter;
+import org.marc4j.marc.VariableField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,23 +60,48 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        RuleValue<?> ruleValue = reader.read(rule);
-        switch (ruleValue.getType()) {
-          case SIMPLE:
-            SimpleValue<?> simpleValue = (SimpleValue) ruleValue;
-            translate(simpleValue, referenceData, rule.getMetadata());
-            writer.writeField(rule.getField(), simpleValue);
-            break;
-          case COMPOSITE:
-            CompositeValue compositeValue = (CompositeValue) ruleValue;
-            translate(compositeValue, referenceData, rule.getMetadata());
-            writer.writeField(rule.getField(), compositeValue);
-            break;
-          case MISSING:
-        }
+        processRule(reader, writer, referenceData, rule);
       }
     });
     return writer.getResult();
+  }
+
+  /**
+   * Reads and translates data by given rules, writes a list of marc record fields in specific format defined by RecordWriter.
+   * Returns the list of the generated VariableField of marc record
+   *
+   * @param reader
+   * @param writer
+   * @param referenceData
+   * @param rules
+   * @return the list of the generated VariableField of marc record
+   */
+  public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules) {
+    rules.forEach(rule -> {
+      if (LEADER_FIELD.equals(rule.getField())) {
+        rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
+      } else {
+        processRule(reader, writer, referenceData, rule);
+      }
+    });
+    return writer.getFields();
+  }
+
+  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) {
+    RuleValue<?> ruleValue = reader.read(rule);
+    switch (ruleValue.getType()) {
+      case SIMPLE:
+        SimpleValue<?> simpleValue = (SimpleValue) ruleValue;
+        translate(simpleValue, referenceData, rule.getMetadata());
+        writer.writeField(rule.getField(), simpleValue);
+        break;
+      case COMPOSITE:
+        CompositeValue compositeValue = (CompositeValue) ruleValue;
+        translate(compositeValue, referenceData, rule.getMetadata());
+        writer.writeField(rule.getField(), compositeValue);
+        break;
+      case MISSING:
+    }
   }
 
   private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) {
