@@ -88,10 +88,10 @@ public final class RuleProcessor {
   }
 
   private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) {
-    RuleValue ruleValue = reader.read(rule);
+    RuleValue<?> ruleValue = reader.read(rule);
     switch (ruleValue.getType()) {
       case SIMPLE:
-        SimpleValue simpleValue = (SimpleValue) ruleValue;
+        SimpleValue<?> simpleValue = (SimpleValue) ruleValue;
         translate(simpleValue, referenceData, rule.getMetadata());
         writer.writeField(rule.getField(), simpleValue);
         break;
