@@ -12,17 +12,17 @@ public interface ReferenceData {
   /**
    * Returns {@link Map} with reference data by key
    *
-   * @param referenceDataKey key of a specific reference data
+   * @param key of a specific reference data
    * @return {@link Map} with reference data {@link Map} by key
    */
 
-  Map<String, JsonObject> getByKey(String referenceDataKey);
+  Map<String, JsonObject> get(String key);
 
   /**
    * Adds reference data by key
    *
-   * @param referenceDataKey key of a specific reference data
-   * @param referenceData {@link Map} with reference data
+   * @param key of a specific reference data
+   * @param value {@link Map} with reference data
    */
-  void addByKey(String referenceDataKey,  Map<String, JsonObject> referenceData);
+  void put(String key,  Map<String, JsonObject> value);
 }
