@@ -212,6 +212,28 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
+  void SetLocation_shouldReturnEmptyString() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    String value = "non-existing-id";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
+
+  @Test
+  void SetLocation_shouldReturnLocationValue() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals("Miller General Stacks", result);
+  }
+
+  @Test
   void SetMaterialType_shouldReturnEmptyString() {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_material_type");
@@ -352,7 +374,6 @@ class TranslationFunctionHolderUnitTest {
     // then
     Assert.assertEquals(StringUtils.EMPTY, result);
   }
-
 
   @Test
   void SetFixedLengthDataElements_noDatesOfPublication_noLanguages_specified() {
