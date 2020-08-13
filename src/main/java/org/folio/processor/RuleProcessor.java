@@ -5,6 +5,7 @@ import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
+import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.reader.EntityReader;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.ListValue;
@@ -39,6 +40,7 @@ public final class RuleProcessor {
   private TranslationHolder translationHolder;
 
   public RuleProcessor() {
+    this.translationHolder = TranslationsFunctionHolder.SET_VALUE;
   }
 
   public RuleProcessor(TranslationHolder translationHolder) {
