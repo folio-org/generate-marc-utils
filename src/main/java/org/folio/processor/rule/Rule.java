@@ -12,6 +12,7 @@ public class Rule {
   private String description;
   private List<DataSource> dataSources;
   private Metadata metadata;
+  private String id;
 
   public String getField() {
     return field;
@@ -36,6 +37,10 @@ public class Rule {
   public void setDataSources(List<DataSource> dataSources) {
     this.dataSources = dataSources;
   }
+
+  public String getId() { return id; }
+
+  public void setId(String id) { this.id = id; }
 
   public Metadata getMetadata() {
     return this.metadata;
