@@ -27,6 +27,7 @@ import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_F
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
@@ -255,6 +256,19 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         }
       }
       return StringUtils.SPACE;
+    }
+  },
+
+  SET_MODE_OF_ISSUANCE_ID() {
+    @Override
+    public String apply(String modeOfIssuanceId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      JsonObject entry = referenceData.get(MODE_OF_ISSUANCES).get(modeOfIssuanceId);
+      if (entry == null) {
+        LOGGER.error("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
+        return StringUtils.EMPTY;
+      } else {
+        return entry.getString(NAME);
+      }
     }
   };
 
