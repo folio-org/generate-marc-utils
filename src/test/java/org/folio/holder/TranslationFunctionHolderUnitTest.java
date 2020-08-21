@@ -34,6 +34,7 @@ import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_F
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
@@ -54,6 +55,7 @@ class TranslationFunctionHolderUnitTest {
     Mockito.when(referenceData.get(eq(INSTANCE_TYPES))).thenReturn(getInstanceTypes());
     Mockito.when(referenceData.get(eq(INSTANCE_FORMATS))).thenReturn(getInstanceFormats());
     Mockito.when(referenceData.get(eq(ELECTRONIC_ACCESS_RELATIONSHIPS))).thenReturn(getElectronicAccessRelationships());
+    Mockito.when(referenceData.get(eq(MODE_OF_ISSUANCES))).thenReturn(getModeOfIssuances());
   }
 
   private static Map<String, JsonObject> getNatureOfContentTerms() {
@@ -126,6 +128,14 @@ class TranslationFunctionHolderUnitTest {
       stringJsonObjectMap.put(jsonObject.getString("id"), jsonObject);
     });
     return stringJsonObjectMap;
+  }
+
+  private static Map<String, JsonObject> getModeOfIssuances() {
+    JsonObject identifierType =
+      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_mode_of_issuance_response.json"))
+        .getJsonArray("issuanceModes")
+        .getJsonObject(0);
+    return Collections.singletonMap(identifierType.getString("id"), identifierType);
   }
 
   @Test
@@ -634,4 +644,28 @@ class TranslationFunctionHolderUnitTest {
     // then
     Assert.assertEquals("0", result);
   }
+
+  @Test
+  void SetModeOfIssuanceId_shouldReturnModeOfIssuance_whenIdEqualsTranslationParameterKey() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_mode_of_issuance_id");
+    String value = "f5cc2ab6-bb92-4cab-b83f-5a3d09261a41";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals("multipart monograph", result);
+  }
+
+  @Test
+  void SetModeOfIssuanceId_shouldReturnEmptyValue_whenIdNotEqualsTranslationParameterKey() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_mode_of_issuance_id");
+    String value = "not-existing-id";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
+
+
 }
