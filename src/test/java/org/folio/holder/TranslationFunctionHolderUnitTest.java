@@ -655,4 +655,17 @@ class TranslationFunctionHolderUnitTest {
     // then
     Assert.assertEquals("multipart monograph", result);
   }
+
+  @Test
+  void SetModeOfIssuanceId_shouldReturnEmptyValue_whenIdNotEqualsTranslationParameterKey() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_mode_of_issuance_id");
+    String value = "not-existing-id";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
+
+
 }
