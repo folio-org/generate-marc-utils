@@ -26,6 +26,7 @@ import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_FORMATS;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
+import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
@@ -90,6 +91,18 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       JsonObject entry = referenceData.get(LOCATIONS).get(locationId);
       if (entry == null) {
         LOGGER.error("Location is not found by the given id: {}", locationId);
+        return StringUtils.EMPTY;
+      } else {
+        return entry.getString(NAME);
+      }
+    }
+  },
+  SET_LOAN_TYPE() {
+    @Override
+    public String apply(String id, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      JsonObject entry = referenceData.get(LOAN_TYPES).get(id);
+      if (entry == null) {
+        LOGGER.error("Loan Type is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
         return entry.getString(NAME);
@@ -276,6 +289,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   private static final String NAME = "name";
   private static final String VALUE = "value";
 
+  @Override
   public TranslationFunction lookup(String function) {
     return valueOf(function.toUpperCase());
   }
