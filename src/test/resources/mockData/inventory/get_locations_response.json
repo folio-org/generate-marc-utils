@@ -2,11 +2,19 @@
   "locations": [
     {
       "id": "d9cd0bed-1b49-4b5e-a7bd-064b8d177231",
-      "name": "Miller General Stacks"
+      "name": "Miller General Stacks",
+      "code": "KU/CC/DI/M",
+      "libraryId": "d9cd0bed-1b49-4b5e-a7bd-064b8d177231",
+      "campusId": "d9cd0bed-1b49-4b5e-a7bd-064b8d177231",
+      "institutionId": "d9cd0bed-1b49-4b5e-a7bd-064b8d177231"
     },
     {
       "id": "97ee6cd9-17ef-47f8-acbb-ec16fb2cb98d",
-      "name": "Special Reading Room"
+      "name": "Special Reading Room",
+      "code": "KU/CC/DI/2",
+      "libraryId": "0df935eb-f3f4-4741-9ac6-33c500174b96",
+      "campusId": "0df935eb-f3f4-4741-9ac6-33c500174b96",
+      "institutionId": "0df935eb-f3f4-4741-9ac6-33c500174b96"
     }
   ],
   "totalRecords": 2
