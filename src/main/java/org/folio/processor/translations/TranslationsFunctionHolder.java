@@ -283,6 +283,34 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         return entry.getString(NAME);
       }
     }
+  },
+
+  SET_LOCATION() {
+    @Override
+    public String apply(String locationId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      JsonObject entry = referenceData.get(LOCATIONS).get(locationId);
+      if (entry == null) {
+        LOGGER.error("Location is not found by the given id: {}", locationId);
+        return StringUtils.EMPTY;
+      } else {
+        String relatedReferenceData = translation.getParameter("referenceData");
+        String referenceDataIdField = translation.getParameter("referenceDataIdField");
+        String field = translation.getParameter("field");
+        if(relatedReferenceData != null && referenceDataIdField != null && field != null) {
+          String referenceDataIdValue = entry.getString(referenceDataIdField);
+          JsonObject relatedEntry = referenceData.get(relatedReferenceData).get(referenceDataIdValue);
+          if(relatedEntry == null) {
+            LOGGER.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
+            return StringUtils.EMPTY;
+          } else {
+            return relatedEntry.getString(field);
+          }
+        } else if (field != null) {
+          return entry.getString(field);
+        }
+        return StringUtils.EMPTY;
+      }
+    }
   };
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
