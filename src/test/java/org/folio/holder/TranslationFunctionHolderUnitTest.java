@@ -27,11 +27,14 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.folio.processor.translations.ReferenceDataConstants.CAMPUSES;
 import static org.folio.processor.translations.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
 import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_FORMATS;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.INSTITUTIONS;
+import static org.folio.processor.translations.ReferenceDataConstants.LIBRARIES;
 import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
@@ -51,6 +54,9 @@ class TranslationFunctionHolderUnitTest {
     Mockito.when(referenceData.get(eq(IDENTIFIER_TYPES))).thenReturn(getIdentifierTypes());
     Mockito.when(referenceData.get(eq(CONTRIBUTOR_NAME_TYPES))).thenReturn(getContributorNameTypes());
     Mockito.when(referenceData.get(eq(LOCATIONS))).thenReturn(getLocations());
+    Mockito.when(referenceData.get(eq(LIBRARIES))).thenReturn(getLibraries());
+    Mockito.when(referenceData.get(eq(CAMPUSES))).thenReturn(getCampuses());
+    Mockito.when(referenceData.get(eq(INSTITUTIONS))).thenReturn(getInstitutions());
     Mockito.when(referenceData.get(eq(MATERIAL_TYPES))).thenReturn(getMaterialTypes());
     Mockito.when(referenceData.get(eq(INSTANCE_TYPES))).thenReturn(getInstanceTypes());
     Mockito.when(referenceData.get(eq(INSTANCE_FORMATS))).thenReturn(getInstanceFormats());
@@ -86,6 +92,30 @@ class TranslationFunctionHolderUnitTest {
     JsonObject identifierType =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_locations_response.json"))
         .getJsonArray("locations")
+        .getJsonObject(0);
+    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+  }
+
+  private static Map<String, JsonObject> getLibraries() {
+    JsonObject identifierType =
+      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_libraries_response.json"))
+        .getJsonArray("loclibs")
+        .getJsonObject(0);
+    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+  }
+
+  private static Map<String, JsonObject> getCampuses() {
+    JsonObject identifierType =
+      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_campuses_response.json"))
+        .getJsonArray("loccamps")
+        .getJsonObject(0);
+    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+  }
+
+  private static Map<String, JsonObject> getInstitutions() {
+    JsonObject identifierType =
+      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_institutions_response.json"))
+        .getJsonArray("locinsts")
         .getJsonObject(0);
     return Collections.singletonMap(identifierType.getString("id"), identifierType);
   }
@@ -222,7 +252,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocation_shouldReturnEmptyString() {
+  void SetLocations_shouldReturnEmptyString() {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
     String value = "non-existing-id";
@@ -233,14 +263,166 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocation_shouldReturnLocationValue() {
+  void SetLocations_shouldReturnEmptyString_whenParametersEmpty() {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
     String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    Map<String, String> parameters = new HashMap<>();
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
     // when
-    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationName() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "name");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
     Assert.assertEquals("Miller General Stacks", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationCode() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "code");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("KU/CC/DI/M", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationLibraryName() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "name");
+    parameters.put("referenceData", LIBRARIES);
+    parameters.put("referenceDataIdField", "libraryId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("Main Library", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnEmptyString_whenReferenceDataValueMissing() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "name");
+    parameters.put("referenceData", LIBRARIES);
+    parameters.put("referenceDataIdField", "libraryId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "non-existing";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationLibraryCode() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "code");
+    parameters.put("referenceData", LIBRARIES);
+    parameters.put("referenceDataIdField", "libraryId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("ML", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationCampusName() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "name");
+    parameters.put("referenceData", CAMPUSES);
+    parameters.put("referenceDataIdField", "campusId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("Riverside Campus", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationCampusCode() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "name");
+    parameters.put("referenceData", CAMPUSES);
+    parameters.put("referenceDataIdField", "campusId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("Riverside Campus", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationInstitutionName() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "name");
+    parameters.put("referenceData", INSTITUTIONS);
+    parameters.put("referenceDataIdField", "institutionId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("Main Library", result);
+  }
+
+  @Test
+  void SetLocations_shouldReturnLocationInstitutionCode() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    Map<String, String> parameters = new HashMap<>();
+    parameters.put("field", "code");
+    parameters.put("referenceData", INSTITUTIONS);
+    parameters.put("referenceDataIdField", "institutionId");
+    Translation translation = new Translation();
+    translation.setParameters(parameters);
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, null);
+    // then
+    Assert.assertEquals("ML", result);
   }
 
   @Test
