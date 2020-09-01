@@ -85,21 +85,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       return StringUtils.EMPTY;
     }
   },
-<<<<<<< HEAD
-=======
-  SET_LOCATION() {
-    @Override
-    public String apply(String locationId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(LOCATIONS).get(locationId);
-      if (entry == null) {
-        LOGGER.error("Location is not found by the given id: {}", locationId);
-        return StringUtils.EMPTY;
-      } else {
-        return entry.getString(NAME);
-      }
-    }
-  },
->>>>>>> branch 'MDEXP-279' of https://github.com/folio-org/generate-marc-utils.git
+
   SET_LOAN_TYPE() {
     @Override
     public String apply(String id, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
