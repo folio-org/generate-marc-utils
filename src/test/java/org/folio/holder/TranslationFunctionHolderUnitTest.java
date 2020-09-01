@@ -28,6 +28,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.folio.processor.translations.ReferenceDataConstants.CAMPUSES;
+import static org.folio.processor.translations.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
 import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
@@ -62,6 +63,7 @@ class TranslationFunctionHolderUnitTest {
     Mockito.when(referenceData.get(eq(INSTANCE_FORMATS))).thenReturn(getInstanceFormats());
     Mockito.when(referenceData.get(eq(ELECTRONIC_ACCESS_RELATIONSHIPS))).thenReturn(getElectronicAccessRelationships());
     Mockito.when(referenceData.get(eq(MODE_OF_ISSUANCES))).thenReturn(getModeOfIssuances());
+    Mockito.when(referenceData.get(eq(CALL_NUMBER_TYPES))).thenReturn(getCallNumberTypes());
   }
 
   private static Map<String, JsonObject> getNatureOfContentTerms() {
@@ -89,43 +91,43 @@ class TranslationFunctionHolderUnitTest {
   }
 
   private static Map<String, JsonObject> getLocations() {
-    JsonObject identifierType =
+    JsonObject locations =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_locations_response.json"))
         .getJsonArray("locations")
         .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    return Collections.singletonMap(locations.getString("id"), locations);
   }
 
   private static Map<String, JsonObject> getLibraries() {
-    JsonObject identifierType =
+    JsonObject libraries =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_libraries_response.json"))
         .getJsonArray("loclibs")
         .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    return Collections.singletonMap(libraries.getString("id"), libraries);
   }
 
   private static Map<String, JsonObject> getCampuses() {
-    JsonObject identifierType =
+    JsonObject campuses =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_campuses_response.json"))
         .getJsonArray("loccamps")
         .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    return Collections.singletonMap(campuses.getString("id"), campuses);
   }
 
   private static Map<String, JsonObject> getInstitutions() {
-    JsonObject identifierType =
+    JsonObject institutions =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_institutions_response.json"))
         .getJsonArray("locinsts")
         .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    return Collections.singletonMap(institutions.getString("id"), institutions);
   }
 
   private static Map<String, JsonObject> getMaterialTypes() {
-    JsonObject identifierType =
+    JsonObject materialTypes =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_material_types_response.json"))
         .getJsonArray("mtypes")
         .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    return Collections.singletonMap(materialTypes.getString("id"), materialTypes);
   }
 
   private static Map<String, JsonObject> getInstanceTypes() {
@@ -161,11 +163,19 @@ class TranslationFunctionHolderUnitTest {
   }
 
   private static Map<String, JsonObject> getModeOfIssuances() {
-    JsonObject identifierType =
+    JsonObject issuanceModes =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_mode_of_issuance_response.json"))
         .getJsonArray("issuanceModes")
         .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+    return Collections.singletonMap(issuanceModes.getString("id"), issuanceModes);
+  }
+
+  private static Map<String, JsonObject> getCallNumberTypes() {
+    JsonObject callNumberTypes =
+      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_call_number_types_response.json"))
+        .getJsonArray("callNumberTypes")
+        .getJsonObject(0);
+    return Collections.singletonMap(callNumberTypes.getString("id"), callNumberTypes);
   }
 
   @Test
@@ -787,7 +797,7 @@ class TranslationFunctionHolderUnitTest {
   void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipIdNotExist() {
     // given
     Metadata metadata = new Metadata();
-    metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", Arrays.asList("non-existing-id")));
+    metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("non-existing-id")));
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_electronic_access_indicator");
     // when
     String result = translationFunction.apply(null, 0, null, referenceData, metadata);
@@ -799,7 +809,7 @@ class TranslationFunctionHolderUnitTest {
   void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipNotEqualTranslationParameterKey() {
     // given
     Metadata metadata = new Metadata();
-    metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", Arrays.asList("f50c90c9-bae0-4add-9cd0-db9092dbc9dd")));
+    metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("f50c90c9-bae0-4add-9cd0-db9092dbc9dd")));
     Map<String, String> parameters = new HashMap<>();
     parameters.put("Resource", "0");
     Translation translation = new Translation();
@@ -815,7 +825,7 @@ class TranslationFunctionHolderUnitTest {
   void SetElectronicAccessIndicator_shouldReturnParameterIndicator_whenRelationshipEqualsTranslationParameterKey() {
     // given
     Metadata metadata = new Metadata();
-    metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", Arrays.asList("f5d0068e-6272-458e-8a81-b85e7b9a14aa")));
+    metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("f5d0068e-6272-458e-8a81-b85e7b9a14aa")));
     Map<String, String> parameters = new HashMap<>();
     parameters.put("Resource", "0");
     Translation translation = new Translation();
@@ -849,5 +859,26 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals(StringUtils.EMPTY, result);
   }
 
+  @Test
+  void SetCallNumberType_shouldReturnCallNumberTypeId() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_call_number_type_id");
+    String value = "054d460d-d6b9-4469-9e37-7a78a2266655";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals("National Library of Medicine classification", result);
+  }
+
+  @Test
+  void SetCallNumberType_shouldReturnEmptyString() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_call_number_type_id");
+    String value = "not-existing-id";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
 
 }

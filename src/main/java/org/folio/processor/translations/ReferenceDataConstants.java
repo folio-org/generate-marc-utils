@@ -13,6 +13,7 @@ public class ReferenceDataConstants {
   public static final String INSTANCE_TYPES = "instanceTypes";
   public static final String INSTANCE_FORMATS = "instanceFormats";
   public static final String ELECTRONIC_ACCESS_RELATIONSHIPS = "electronicAccessRelationships";
+  public static final String CALL_NUMBER_TYPES = "callNumberTypes";
 
   private ReferenceDataConstants() {
   }
