@@ -181,7 +181,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetValue_shouldSetGivenValue() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_value");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE;
     String value = "field value";
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("value", value));
@@ -194,7 +194,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetNatureOfContentTerm_shouldReturnTermName() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_nature_of_content_term");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_NATURE_OF_CONTENT_TERM;
     String value = "44cd89f3-2e76-469f-a955-cc57cb9e0395";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -205,7 +205,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetNatureOfContentTerm_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_nature_of_content_term");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_NATURE_OF_CONTENT_TERM;
     String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -217,7 +217,7 @@ class TranslationFunctionHolderUnitTest {
   void SetIdentifier_shouldReturnIdentifierValue() {
     // given
     String value = "value";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_identifier");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "LCCN"));
@@ -236,7 +236,7 @@ class TranslationFunctionHolderUnitTest {
   void SetIdentifier_shouldReturnEmptyString_whenMetadataIsEmpty() {
     // given
     String value = "value";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_identifier");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "LCCN"));
@@ -253,7 +253,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetMaterialType_shouldReturnMaterialTypeValue() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_material_type");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MATERIAL_TYPE;
     String value = "1a54b431-2e4f-452d-9cae-9cee66c9a892";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -264,7 +264,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -275,7 +275,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnEmptyString_whenParametersEmpty() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
     Map<String, String> parameters = new HashMap<>();
     Translation translation = new Translation();
@@ -289,7 +289,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationName() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "name");
     Translation translation = new Translation();
@@ -304,7 +304,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationCode() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "code");
     Translation translation = new Translation();
@@ -319,7 +319,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationLibraryName() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "name");
     parameters.put("referenceData", LIBRARIES);
@@ -336,7 +336,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnEmptyString_whenReferenceDataValueMissing() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "name");
     parameters.put("referenceData", LIBRARIES);
@@ -353,7 +353,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationLibraryCode() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "code");
     parameters.put("referenceData", LIBRARIES);
@@ -370,7 +370,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationCampusName() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "name");
     parameters.put("referenceData", CAMPUSES);
@@ -387,7 +387,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationCampusCode() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "name");
     parameters.put("referenceData", CAMPUSES);
@@ -404,7 +404,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationInstitutionName() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "name");
     parameters.put("referenceData", INSTITUTIONS);
@@ -421,7 +421,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLocations_shouldReturnLocationInstitutionCode() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_location");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
     parameters.put("field", "code");
     parameters.put("referenceData", INSTITUTIONS);
@@ -438,7 +438,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetMaterialType_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_material_type");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MATERIAL_TYPE;
     String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -449,7 +449,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetInstanceTypeId_shouldReturnInstanceTypeIdValue() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_instance_type_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_TYPE_ID;
     String value = "6312d172-f0cf-40f6-b27d-9fa8feaf332f";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -460,7 +460,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetInstanceTypeId_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_instance_type_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_TYPE_ID;
     String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -471,7 +471,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetInstanceFormatId_shouldReturnInstanceFormatIdValue() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_instance_format_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("value", "0"));
     String value = "7fde4e21-00b5-4de4-a90a-08a84a601aeb";
@@ -484,7 +484,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetInstanceFormatId_shouldReturnInstanceFormatIdValue_IfNoRegexFromInventory() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_instance_format_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("value", "0"));
     String value = "485e3e1d-9f46-42b6-8c65-6bb7bd4b37f8";
@@ -497,7 +497,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetInstanceFormatId_shouldReturnEmptyString_IfNoRegexFromInventory() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_instance_format_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("value", "1"));
     String value = "485e3e1d-9f46-42b6-8c65-6bb7bd4b37f8";
@@ -510,7 +510,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetInstanceFormatId_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_instance_format_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -522,7 +522,7 @@ class TranslationFunctionHolderUnitTest {
   void SetTransactionDatetime_shouldReturnFormattedDate() {
     // given
     String updatedDate = "2020-05-22T01:46:42.915+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_transaction_datetime");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_TRANSACTION_DATETIME;
     // when
     String result = translationFunction.apply(updatedDate, 0, null, null, null);
     // then
@@ -534,7 +534,7 @@ class TranslationFunctionHolderUnitTest {
   void SetTransactionDatetime_shouldThrowException() {
     // given
     String updatedDate = "date in wrong format";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_transaction_datetime");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_TRANSACTION_DATETIME;
     // when
     assertThrows(DateTimeParseException.class, () ->
       translationFunction.apply(updatedDate, 0, null, null, null)
@@ -545,7 +545,7 @@ class TranslationFunctionHolderUnitTest {
   void SetContributor_shouldReturnContributorNameValue() {
     // given
     String value = "value";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_contributor");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CONTRIBUTOR;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "Personal name"));
@@ -564,7 +564,7 @@ class TranslationFunctionHolderUnitTest {
   void setContributor_shouldReturnEmptyString_whenMetadataIsEmpty() {
     // given
     String value = "value";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_contributor");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CONTRIBUTOR;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "Personal name"));
@@ -581,7 +581,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_noDatesOfPublication_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
@@ -594,7 +594,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_noDatesOfPublication_language_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("languages", new Metadata.Entry("$.languages", singletonList("lat")));
     // when
@@ -608,7 +608,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_noDatesOfPublication_multipleLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("languages", new Metadata.Entry("$.languages", asList("lat", "ita")));
     // when
@@ -622,7 +622,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_1dateOfPublication_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", singletonList("2015")));
     // when
@@ -636,7 +636,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_2datesOfPublication_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("2015", "2016")));
     // when
@@ -650,7 +650,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_2datesOfPublication_multipleLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("2015", "2016")));
     metadata.addData("languages", new Metadata.Entry("$.languages", asList("lat", "ita")));
@@ -665,7 +665,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_2incorrectDatesOfPublication_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("123", "456")));
     // when
@@ -679,7 +679,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_datesOfPublication_isNull_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
     // when
@@ -693,7 +693,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_datesOfPublication_isNull_languagesIsNull() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
     metadata.addData("languages", null);
@@ -708,7 +708,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_datesOfPublication_isNull_languagesIsEmpty() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
     metadata.addData("languages", new Metadata.Entry("$.languages", singletonList(StringUtils.EMPTY)));
@@ -723,7 +723,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_datesOfPublicationFirstParam_isNull_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList(null, "2016")));
     // when
@@ -737,7 +737,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_datesOfPublicationSecondParam_isNull_noLanguages_specified() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("2016", null)));
     // when
@@ -751,7 +751,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_metadataIsNull() {
     // given
     String createdDate = "2019-08-07T03:12:01.011+0000";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
     // then
@@ -763,7 +763,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_metadataIsNull_createdDateIsNull() {
     // given
     String createdDate = null;
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
     // then
@@ -774,7 +774,7 @@ class TranslationFunctionHolderUnitTest {
   void SetFixedLengthDataElements_metadataIsNull_createdDateIsIncorrect() {
     // given
     String createdDate = "date in wrong format";
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_fixed_length_data_elements");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
     // then
@@ -786,7 +786,7 @@ class TranslationFunctionHolderUnitTest {
     // given
     Metadata metadata = new Metadata();
     metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", Lists.emptyList()));
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_electronic_access_indicator");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_ELECTRONIC_ACCESS_INDICATOR;
     // when
     String result = translationFunction.apply(null, 0, null, null, metadata);
     // then
@@ -798,7 +798,7 @@ class TranslationFunctionHolderUnitTest {
     // given
     Metadata metadata = new Metadata();
     metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("non-existing-id")));
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_electronic_access_indicator");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_ELECTRONIC_ACCESS_INDICATOR;
     // when
     String result = translationFunction.apply(null, 0, null, referenceData, metadata);
     // then
@@ -814,7 +814,7 @@ class TranslationFunctionHolderUnitTest {
     parameters.put("Resource", "0");
     Translation translation = new Translation();
     translation.setParameters(parameters);
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_electronic_access_indicator");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_ELECTRONIC_ACCESS_INDICATOR;
     // when
     String result = translationFunction.apply(null, 0, translation, referenceData, metadata);
     // then
@@ -830,7 +830,7 @@ class TranslationFunctionHolderUnitTest {
     parameters.put("Resource", "0");
     Translation translation = new Translation();
     translation.setParameters(parameters);
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_electronic_access_indicator");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_ELECTRONIC_ACCESS_INDICATOR;
     // when
     String result = translationFunction.apply(null, 0, translation, referenceData, metadata);
     // then
@@ -840,7 +840,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetModeOfIssuanceId_shouldReturnModeOfIssuance_whenIdEqualsTranslationParameterKey() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_mode_of_issuance_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MODE_OF_ISSUANCE_ID;
     String value = "f5cc2ab6-bb92-4cab-b83f-5a3d09261a41";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -851,7 +851,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetModeOfIssuanceId_shouldReturnEmptyValue_whenIdNotEqualsTranslationParameterKey() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_mode_of_issuance_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MODE_OF_ISSUANCE_ID;
     String value = "not-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -862,7 +862,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetCallNumberType_shouldReturnCallNumberTypeId() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_call_number_type_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CALL_NUMBER_TYPE_ID;
     String value = "054d460d-d6b9-4469-9e37-7a78a2266655";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -873,7 +873,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetCallNumberType_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_call_number_type_id");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CALL_NUMBER_TYPE_ID;
     String value = "not-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
