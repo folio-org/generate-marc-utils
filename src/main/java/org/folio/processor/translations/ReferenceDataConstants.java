@@ -5,6 +5,7 @@ public class ReferenceDataConstants {
   public static final String IDENTIFIER_TYPES = "identifierTypes";
   public static final String CONTRIBUTOR_NAME_TYPES = "contributorNameTypes";
   public static final String LOCATIONS = "locations";
+  public static final String LOAN_TYPES = "loantypes";
   public static final String LIBRARIES = "loclibs";
   public static final String CAMPUSES = "loccamps";
   public static final String INSTITUTIONS = "locinsts";

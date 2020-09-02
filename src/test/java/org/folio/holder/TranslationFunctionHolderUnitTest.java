@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -37,6 +38,7 @@ import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_T
 import static org.folio.processor.translations.ReferenceDataConstants.INSTITUTIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.LIBRARIES;
 import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
+import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
@@ -55,6 +57,7 @@ class TranslationFunctionHolderUnitTest {
     Mockito.when(referenceData.get(eq(IDENTIFIER_TYPES))).thenReturn(getIdentifierTypes());
     Mockito.when(referenceData.get(eq(CONTRIBUTOR_NAME_TYPES))).thenReturn(getContributorNameTypes());
     Mockito.when(referenceData.get(eq(LOCATIONS))).thenReturn(getLocations());
+    Mockito.when(referenceData.get(eq(LOAN_TYPES))).thenReturn(getLoanTypes());
     Mockito.when(referenceData.get(eq(LIBRARIES))).thenReturn(getLibraries());
     Mockito.when(referenceData.get(eq(CAMPUSES))).thenReturn(getCampuses());
     Mockito.when(referenceData.get(eq(INSTITUTIONS))).thenReturn(getInstitutions());
@@ -67,75 +70,91 @@ class TranslationFunctionHolderUnitTest {
   }
 
   private static Map<String, JsonObject> getNatureOfContentTerms() {
-    JsonObject natureOfContentTerm =
+    JsonArray natureOfContentTerm =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json"))
-        .getJsonArray("natureOfContentTerms")
-        .getJsonObject(0);
-    return Collections.singletonMap(natureOfContentTerm.getString("id"), natureOfContentTerm);
+        .getJsonArray("natureOfContentTerms");
+
+    return natureOfContentTerm.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getIdentifierTypes() {
-    JsonObject identifierType =
+    JsonArray identifierType =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_identifier_types_response.json"))
-        .getJsonArray("identifierTypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(identifierType.getString("id"), identifierType);
+        .getJsonArray("identifierTypes");
+
+    return identifierType.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getContributorNameTypes() {
-    JsonObject contributorNameTypes =
+    JsonArray contributorNameTypes =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_contributor_name_types_response.json"))
-        .getJsonArray("contributorNameTypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(contributorNameTypes.getString("id"), contributorNameTypes);
+        .getJsonArray("contributorNameTypes");
+
+    return contributorNameTypes.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getLocations() {
-    JsonObject locations =
+    JsonArray locations =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_locations_response.json"))
-        .getJsonArray("locations")
-        .getJsonObject(0);
-    return Collections.singletonMap(locations.getString("id"), locations);
+        .getJsonArray("locations");
+    return locations.stream()
+        .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+  }
+
+
+  private static Map<String, JsonObject> getLoanTypes() {
+    JsonArray loanType = new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_loan_types_response.json"))
+      .getJsonArray("loantypes");
+    return loanType.stream()
+      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getLibraries() {
-    JsonObject libraries =
+    JsonArray libraries =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_libraries_response.json"))
-        .getJsonArray("loclibs")
-        .getJsonObject(0);
-    return Collections.singletonMap(libraries.getString("id"), libraries);
+        .getJsonArray("loclibs");
+
+    return libraries.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getCampuses() {
-    JsonObject campuses =
+    JsonArray campus =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_campuses_response.json"))
-        .getJsonArray("loccamps")
-        .getJsonObject(0);
-    return Collections.singletonMap(campuses.getString("id"), campuses);
+        .getJsonArray("loccamps");
+
+    return campus.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getInstitutions() {
-    JsonObject institutions =
+    JsonArray institutions =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_institutions_response.json"))
-        .getJsonArray("locinsts")
-        .getJsonObject(0);
-    return Collections.singletonMap(institutions.getString("id"), institutions);
+        .getJsonArray("locinsts");
+
+   return institutions.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getMaterialTypes() {
-    JsonObject materialTypes =
+    JsonArray identifierType =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_material_types_response.json"))
-        .getJsonArray("mtypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(materialTypes.getString("id"), materialTypes);
+        .getJsonArray("mtypes");
+
+    return identifierType.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getInstanceTypes() {
-    JsonObject instanceTypes =
+    JsonArray instanceTypes =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_instance_types_response.json"))
-        .getJsonArray("instanceTypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(instanceTypes.getString("id"), instanceTypes);
+        .getJsonArray("instanceTypes");
+
+    return instanceTypes.stream()
+            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getInstanceFormats() {
@@ -163,11 +182,12 @@ class TranslationFunctionHolderUnitTest {
   }
 
   private static Map<String, JsonObject> getModeOfIssuances() {
-    JsonObject issuanceModes =
+    JsonArray issuanceModes =
       new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_mode_of_issuance_response.json"))
-        .getJsonArray("issuanceModes")
-        .getJsonObject(0);
-    return Collections.singletonMap(issuanceModes.getString("id"), issuanceModes);
+        .getJsonArray("issuanceModes");
+
+    return issuanceModes.stream()
+        .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
   }
 
   private static Map<String, JsonObject> getCallNumberTypes() {
@@ -875,6 +895,28 @@ class TranslationFunctionHolderUnitTest {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CALL_NUMBER_TYPE_ID;
     String value = "not-existing-id";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals(StringUtils.EMPTY, result);
+  }
+
+  @Test
+  void SetLoanType_shouldReturnLoanValue() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_loan_type");
+    String value = "2e48e713-17f3-4c13-a9f8-23845bb210a4";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals("Reading room", result);
+  }
+
+  @Test
+  void SetLoanType_shouldReturnEmptyString() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_loan_type");
+    String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
