@@ -1,15 +1,13 @@
 package org.folio.holder;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
-import org.folio.TestUtil;
 import org.folio.processor.ReferenceData;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationsFunctionHolder;
+import org.folio.util.ReferenceDataResponseUtil;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,12 +22,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.folio.processor.translations.ReferenceDataConstants.CAMPUSES;
 import static org.folio.processor.translations.ReferenceDataConstants.CALL_NUMBER_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.CAMPUSES;
 import static org.folio.processor.translations.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
 import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
@@ -37,8 +34,8 @@ import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_F
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTITUTIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.LIBRARIES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
@@ -53,149 +50,20 @@ class TranslationFunctionHolderUnitTest {
 
   @BeforeAll
   static void setUp() {
-    Mockito.when(referenceData.get(eq(NATURE_OF_CONTENT_TERMS))).thenReturn(getNatureOfContentTerms());
-    Mockito.when(referenceData.get(eq(IDENTIFIER_TYPES))).thenReturn(getIdentifierTypes());
-    Mockito.when(referenceData.get(eq(CONTRIBUTOR_NAME_TYPES))).thenReturn(getContributorNameTypes());
-    Mockito.when(referenceData.get(eq(LOCATIONS))).thenReturn(getLocations());
-    Mockito.when(referenceData.get(eq(LOAN_TYPES))).thenReturn(getLoanTypes());
-    Mockito.when(referenceData.get(eq(LIBRARIES))).thenReturn(getLibraries());
-    Mockito.when(referenceData.get(eq(CAMPUSES))).thenReturn(getCampuses());
-    Mockito.when(referenceData.get(eq(INSTITUTIONS))).thenReturn(getInstitutions());
-    Mockito.when(referenceData.get(eq(MATERIAL_TYPES))).thenReturn(getMaterialTypes());
-    Mockito.when(referenceData.get(eq(INSTANCE_TYPES))).thenReturn(getInstanceTypes());
-    Mockito.when(referenceData.get(eq(INSTANCE_FORMATS))).thenReturn(getInstanceFormats());
-    Mockito.when(referenceData.get(eq(ELECTRONIC_ACCESS_RELATIONSHIPS))).thenReturn(getElectronicAccessRelationships());
-    Mockito.when(referenceData.get(eq(MODE_OF_ISSUANCES))).thenReturn(getModeOfIssuances());
-    Mockito.when(referenceData.get(eq(CALL_NUMBER_TYPES))).thenReturn(getCallNumberTypes());
-  }
-
-  private static Map<String, JsonObject> getNatureOfContentTerms() {
-    JsonArray natureOfContentTerm =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json"))
-        .getJsonArray("natureOfContentTerms");
-
-    return natureOfContentTerm.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getIdentifierTypes() {
-    JsonArray identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_identifier_types_response.json"))
-        .getJsonArray("identifierTypes");
-
-    return identifierType.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getContributorNameTypes() {
-    JsonArray contributorNameTypes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_contributor_name_types_response.json"))
-        .getJsonArray("contributorNameTypes");
-
-    return contributorNameTypes.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getLocations() {
-    JsonArray locations =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_locations_response.json"))
-        .getJsonArray("locations");
-    return locations.stream()
-        .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-
-  private static Map<String, JsonObject> getLoanTypes() {
-    JsonArray loanType = new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_loan_types_response.json"))
-      .getJsonArray("loantypes");
-    return loanType.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getLibraries() {
-    JsonArray libraries =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_libraries_response.json"))
-        .getJsonArray("loclibs");
-
-    return libraries.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getCampuses() {
-    JsonArray campus =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_campuses_response.json"))
-        .getJsonArray("loccamps");
-
-    return campus.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getInstitutions() {
-    JsonArray institutions =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_institutions_response.json"))
-        .getJsonArray("locinsts");
-
-   return institutions.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getMaterialTypes() {
-    JsonArray identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_material_types_response.json"))
-        .getJsonArray("mtypes");
-
-    return identifierType.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getInstanceTypes() {
-    JsonArray instanceTypes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_instance_types_response.json"))
-        .getJsonArray("instanceTypes");
-
-    return instanceTypes.stream()
-            .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getInstanceFormats() {
-    Map<String, JsonObject> stringJsonObjectMap = new HashMap<>();
-    JsonArray instanceFormats =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_instance_formats_response.json"))
-        .getJsonArray("instanceFormats");
-    instanceFormats.stream().forEach(instanceFormat -> {
-      JsonObject jsonObject = new JsonObject(instanceFormat.toString());
-      stringJsonObjectMap.put(jsonObject.getString("id"), jsonObject);
-    });
-    return stringJsonObjectMap;
-  }
-
-  private static Map<String, JsonObject> getElectronicAccessRelationships() {
-    Map<String, JsonObject> stringJsonObjectMap = new HashMap<>();
-    JsonArray electronicAccessRelationships =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_electronic_access_relationships_response.json"))
-        .getJsonArray("electronicAccessRelationships");
-    electronicAccessRelationships.stream().forEach(electronicAccessRelationship -> {
-      JsonObject jsonObject = new JsonObject(electronicAccessRelationship.toString());
-      stringJsonObjectMap.put(jsonObject.getString("id"), jsonObject);
-    });
-    return stringJsonObjectMap;
-  }
-
-  private static Map<String, JsonObject> getModeOfIssuances() {
-    JsonArray issuanceModes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_mode_of_issuance_response.json"))
-        .getJsonArray("issuanceModes");
-
-    return issuanceModes.stream()
-        .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
-  }
-
-  private static Map<String, JsonObject> getCallNumberTypes() {
-    JsonObject callNumberTypes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_call_number_types_response.json"))
-        .getJsonArray("callNumberTypes")
-        .getJsonObject(0);
-    return Collections.singletonMap(callNumberTypes.getString("id"), callNumberTypes);
+    Mockito.when(referenceData.get(eq(NATURE_OF_CONTENT_TERMS))).thenReturn(ReferenceDataResponseUtil.getNatureOfContentTerms());
+    Mockito.when(referenceData.get(eq(IDENTIFIER_TYPES))).thenReturn(ReferenceDataResponseUtil.getIdentifierTypes());
+    Mockito.when(referenceData.get(eq(CONTRIBUTOR_NAME_TYPES))).thenReturn(ReferenceDataResponseUtil.getContributorNameTypes());
+    Mockito.when(referenceData.get(eq(LOCATIONS))).thenReturn(ReferenceDataResponseUtil.getLocations());
+    Mockito.when(referenceData.get(eq(LOAN_TYPES))).thenReturn(ReferenceDataResponseUtil.getLoanTypes());
+    Mockito.when(referenceData.get(eq(LIBRARIES))).thenReturn(ReferenceDataResponseUtil.getLibraries());
+    Mockito.when(referenceData.get(eq(CAMPUSES))).thenReturn(ReferenceDataResponseUtil.getCampuses());
+    Mockito.when(referenceData.get(eq(INSTITUTIONS))).thenReturn(ReferenceDataResponseUtil.getInstitutions());
+    Mockito.when(referenceData.get(eq(MATERIAL_TYPES))).thenReturn(ReferenceDataResponseUtil.getMaterialTypes());
+    Mockito.when(referenceData.get(eq(INSTANCE_TYPES))).thenReturn(ReferenceDataResponseUtil.getInstanceTypes());
+    Mockito.when(referenceData.get(eq(INSTANCE_FORMATS))).thenReturn(ReferenceDataResponseUtil.getInstanceFormats());
+    Mockito.when(referenceData.get(eq(ELECTRONIC_ACCESS_RELATIONSHIPS))).thenReturn(ReferenceDataResponseUtil.getElectronicAccessRelationships());
+    Mockito.when(referenceData.get(eq(MODE_OF_ISSUANCES))).thenReturn(ReferenceDataResponseUtil.getModeOfIssuances());
+    Mockito.when(referenceData.get(eq(CALL_NUMBER_TYPES))).thenReturn(ReferenceDataResponseUtil.getCallNumberTypes());
   }
 
   @Test
@@ -904,7 +772,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLoanType_shouldReturnLoanValue() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_loan_type");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOAN_TYPE;
     String value = "2e48e713-17f3-4c13-a9f8-23845bb210a4";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
@@ -915,7 +783,7 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetLoanType_shouldReturnEmptyString() {
     // given
-    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE.lookup("set_loan_type");
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOAN_TYPE;
     String value = "non-existing-id";
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
