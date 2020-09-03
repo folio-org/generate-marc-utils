@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.folio.TestUtil.readFileContentFromResources;
+import static org.folio.util.TestUtil.readFileContentFromResources;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;

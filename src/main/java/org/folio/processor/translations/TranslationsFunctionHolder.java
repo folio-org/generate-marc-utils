@@ -20,6 +20,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.folio.processor.translations.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
 import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
@@ -60,7 +61,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         if (!identifierTypeIds.isEmpty()) {
           String identifierTypeId = identifierTypeIds.get(currentIndex);
           JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
-          if (identifierType != null && identifierType.getString("name").equals(translation.getParameter("type"))) {
+          if (identifierType != null && identifierType.getString(NAME).equals(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -77,7 +78,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         if (!contributorNameTypeIds.isEmpty()) {
           String contributorNameTypeId = contributorNameTypeIds.get(currentIndex);
           JsonObject contributorNameType = referenceData.get(CONTRIBUTOR_NAME_TYPES).get(contributorNameTypeId);
-          if (contributorNameType != null && contributorNameType.getString("name").equals(translation.getParameter("type"))) {
+          if (contributorNameType != null && contributorNameType.getString(NAME).equals(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -228,7 +229,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         LOGGER.error("Instance format is not found by the given id: {}", instanceFormatId);
         return StringUtils.EMPTY;
       } else {
-        String instanceFormatIdValue = entry.getString("name");
+        String instanceFormatIdValue = entry.getString(NAME);
         String[] instanceFormatsResult = instanceFormatIdValue.split(REGEX);
         if (translation.getParameter(VALUE).equals("0") && isNotBlank(instanceFormatsResult[0])) {
           return instanceFormatsResult[0].trim();
@@ -249,7 +250,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         String relationshipId = relationshipIds.get(currentIndex);
         JsonObject relationship = referenceData.get(ELECTRONIC_ACCESS_RELATIONSHIPS).get(relationshipId);
         if (relationship != null) {
-          String relationshipName = relationship.getString("name");
+          String relationshipName = relationship.getString(NAME);
           for (Map.Entry<String, String> parameter : translation.getParameters().entrySet()) {
             if (relationshipName.equals(parameter.getKey())) {
               return parameter.getValue();
@@ -267,6 +268,18 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       JsonObject entry = referenceData.get(MODE_OF_ISSUANCES).get(modeOfIssuanceId);
       if (entry == null) {
         LOGGER.error("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
+        return StringUtils.EMPTY;
+      } else {
+        return entry.getString(NAME);
+      }
+    }
+  },
+  SET_CALL_NUMBER_TYPE_ID() {
+    @Override
+    public String apply(String typeId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      JsonObject entry = referenceData.get(CALL_NUMBER_TYPES).get(typeId);
+      if (entry == null) {
+        LOGGER.error("Call number type is not found by the given id: {}", typeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getString(NAME);

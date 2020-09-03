@@ -1,4 +1,4 @@
-package org.folio;
+package org.folio.util;
 
 import org.apache.commons.io.IOUtils;
 
