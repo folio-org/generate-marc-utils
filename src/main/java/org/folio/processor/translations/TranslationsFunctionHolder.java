@@ -26,8 +26,8 @@ import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC
 import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_FORMATS;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
@@ -274,6 +274,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       }
     }
   },
+
   SET_CALL_NUMBER_TYPE_ID() {
     @Override
     public String apply(String typeId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
@@ -298,10 +299,10 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         String relatedReferenceData = translation.getParameter("referenceData");
         String referenceDataIdField = translation.getParameter("referenceDataIdField");
         String field = translation.getParameter("field");
-        if(relatedReferenceData != null && referenceDataIdField != null && field != null) {
+        if (relatedReferenceData != null && referenceDataIdField != null && field != null) {
           String referenceDataIdValue = entry.getString(referenceDataIdField);
           JsonObject relatedEntry = referenceData.get(relatedReferenceData).get(referenceDataIdValue);
-          if(relatedEntry == null) {
+          if (relatedEntry == null) {
             LOGGER.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
             return StringUtils.EMPTY;
           } else {
@@ -312,6 +313,20 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         }
         return StringUtils.EMPTY;
       }
+    }
+  },
+
+  SET_METADATA_DATE_TIME() {
+    private transient DateTimeFormatter originFormatter = new DateTimeFormatterBuilder()
+      .appendPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+      .toFormatter();
+    private transient DateTimeFormatter targetFormatter = new DateTimeFormatterBuilder()
+      .appendPattern("yyyy-MM-dd:hh-mm-ss")
+      .toFormatter();
+    @Override
+    public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originFormatter);
+      return targetFormatter.format(originDateTime);
     }
   };
 

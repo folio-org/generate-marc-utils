@@ -791,4 +791,16 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals(StringUtils.EMPTY, result);
   }
 
+  @Test
+  void SetDateTime_shouldReturnCorrectDate() {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_METADATA_DATE_TIME;
+    String value = "2020-09-19T11:02:16.525+0000";
+    String expectedResult = "2020-09-19:11-02-16";
+    // when
+    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    // then
+    Assert.assertEquals(expectedResult, result);
+  }
+
 }
