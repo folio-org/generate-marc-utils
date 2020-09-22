@@ -120,9 +120,6 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
    * The time requires 8 numeric characters in the pattern hhmmss.f, expressed in terms of the 24-hour (00-23) clock.
    */
   SET_TRANSACTION_DATETIME() {
-    private transient DateTimeFormatter originFormatter = new DateTimeFormatterBuilder()
-      .appendPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-      .toFormatter();
     private transient DateTimeFormatter targetFormatter = new DateTimeFormatterBuilder()
       .appendPattern("yyyyMMddhhmmss")
       .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 1, true)
@@ -130,7 +127,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
     @Override
     public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originFormatter);
+      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originDateDateFormatter);
       return targetFormatter.format(originDateTime);
     }
   },
@@ -153,7 +150,6 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
    * 38-39 - each field set to |
    */
   SET_FIXED_LENGTH_DATA_ELEMENTS() {
-    private transient DateTimeFormatter originCreatedDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     private transient DateTimeFormatter targetCreatedDateFormatter = DateTimeFormatter.ofPattern("yyMMdd");
     private static final String DATES_OF_PUBLICATION = "datesOfPublication";
     private static final String LANGUAGES = "languages";
@@ -164,7 +160,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       String createdDateParam;
       if (isNotEmpty(originCreatedDate)) {
         try {
-          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originCreatedDateFormatter));
+          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originDateDateFormatter));
         } catch (DateTimeParseException e) {
           LOGGER.error("Failed to parse createdDate field, the current time value will be used");
           createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.now());
@@ -317,15 +313,10 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   },
 
   SET_METADATA_DATE_TIME() {
-    private transient DateTimeFormatter originFormatter = new DateTimeFormatterBuilder()
-      .appendPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-      .toFormatter();
-    private transient DateTimeFormatter targetFormatter = new DateTimeFormatterBuilder()
-      .appendPattern("yyyy-MM-dd:hh-mm-ss")
-      .toFormatter();
+    private transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
     @Override
     public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originFormatter);
+      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originDateDateFormatter);
       return targetFormatter.format(originDateTime);
     }
   };
@@ -333,6 +324,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
   private static final String VALUE = "value";
+  private static final transient DateTimeFormatter originDateDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   @Override
   public TranslationFunction lookup(String function) {
