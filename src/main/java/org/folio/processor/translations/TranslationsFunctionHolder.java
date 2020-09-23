@@ -127,7 +127,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
     @Override
     public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originDateDateFormatter);
+      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originDateFormatter);
       return targetFormatter.format(originDateTime);
     }
   },
@@ -160,7 +160,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       String createdDateParam;
       if (isNotEmpty(originCreatedDate)) {
         try {
-          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originDateDateFormatter));
+          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originDateFormatter));
         } catch (DateTimeParseException e) {
           LOGGER.error("Failed to parse createdDate field, the current time value will be used");
           createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.now());
@@ -316,7 +316,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     private transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
     @Override
     public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originDateDateFormatter);
+      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originDateFormatter);
       return targetFormatter.format(originDateTime);
     }
   };
@@ -324,7 +324,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
   private static final String VALUE = "value";
-  private static final transient DateTimeFormatter originDateDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+  private static final transient DateTimeFormatter originDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   @Override
   public TranslationFunction lookup(String function) {
