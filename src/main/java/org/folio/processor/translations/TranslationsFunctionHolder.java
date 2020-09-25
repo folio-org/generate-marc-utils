@@ -26,8 +26,8 @@ import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC
 import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_FORMATS;
 import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
 import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
@@ -120,18 +120,15 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
    * The time requires 8 numeric characters in the pattern hhmmss.f, expressed in terms of the 24-hour (00-23) clock.
    */
   SET_TRANSACTION_DATETIME() {
-    private transient DateTimeFormatter originFormatter = new DateTimeFormatterBuilder()
-      .appendPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-      .toFormatter();
-    private transient DateTimeFormatter targetFormatter = new DateTimeFormatterBuilder()
+    private transient DateTimeFormatter targetDateFormatter = new DateTimeFormatterBuilder()
       .appendPattern("yyyyMMddhhmmss")
       .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 1, true)
       .toFormatter();
 
     @Override
     public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originFormatter);
-      return targetFormatter.format(originDateTime);
+      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originDateFormatter);
+      return targetDateFormatter.format(originDateTime);
     }
   },
 
@@ -153,7 +150,6 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
    * 38-39 - each field set to |
    */
   SET_FIXED_LENGTH_DATA_ELEMENTS() {
-    private transient DateTimeFormatter originCreatedDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     private transient DateTimeFormatter targetCreatedDateFormatter = DateTimeFormatter.ofPattern("yyMMdd");
     private static final String DATES_OF_PUBLICATION = "datesOfPublication";
     private static final String LANGUAGES = "languages";
@@ -164,7 +160,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       String createdDateParam;
       if (isNotEmpty(originCreatedDate)) {
         try {
-          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originCreatedDateFormatter));
+          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originDateFormatter));
         } catch (DateTimeParseException e) {
           LOGGER.error("Failed to parse createdDate field, the current time value will be used");
           createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.now());
@@ -274,6 +270,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       }
     }
   },
+
   SET_CALL_NUMBER_TYPE_ID() {
     @Override
     public String apply(String typeId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
@@ -298,10 +295,10 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         String relatedReferenceData = translation.getParameter("referenceData");
         String referenceDataIdField = translation.getParameter("referenceDataIdField");
         String field = translation.getParameter("field");
-        if(relatedReferenceData != null && referenceDataIdField != null && field != null) {
+        if (relatedReferenceData != null && referenceDataIdField != null && field != null) {
           String referenceDataIdValue = entry.getString(referenceDataIdField);
           JsonObject relatedEntry = referenceData.get(relatedReferenceData).get(referenceDataIdValue);
-          if(relatedEntry == null) {
+          if (relatedEntry == null) {
             LOGGER.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
             return StringUtils.EMPTY;
           } else {
@@ -313,11 +310,21 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         return StringUtils.EMPTY;
       }
     }
+  },
+
+  SET_METADATA_DATE_TIME() {
+    private transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
+    @Override
+    public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originDateFormatter);
+      return targetFormatter.format(originDateTime);
+    }
   };
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
   private static final String VALUE = "value";
+  private static final transient DateTimeFormatter originDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   @Override
   public TranslationFunction lookup(String function) {
