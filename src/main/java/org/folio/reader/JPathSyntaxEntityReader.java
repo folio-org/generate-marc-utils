@@ -70,7 +70,11 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           if (jsonArray.isEmpty()) {
             entry.add(SimpleValue.ofNullable(field.getKey()));
           } else {
-            entry.add(SimpleValue.of((String) jsonArray.get(widthIndex), field.getKey()));
+            if (jsonArray.size() > widthIndex) {
+              entry.add(SimpleValue.of((String) jsonArray.get(widthIndex), field.getKey()));
+            } else {
+              entry.add(SimpleValue.of((String) jsonArray.get(0), field.getKey()));
+            }
           }
         }
         compositeValue.addEntry(entry);

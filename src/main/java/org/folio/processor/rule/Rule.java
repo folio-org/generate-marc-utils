@@ -1,6 +1,7 @@
 package org.folio.processor.rule;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -49,4 +50,21 @@ public class Rule {
   public void setMetadata(Map<String, String> metadata) {
     this.metadata = new Metadata(metadata);
   }
+
+  private void setMetadataObject(Metadata metadata) {
+    this.metadata = metadata;
+  }
+
+  public Rule clone() {
+    Rule rule = new Rule();
+    rule.setId(id);
+    rule.setField(field);
+    rule.setDescription(description);
+    rule.setMetadataObject(metadata);
+    List<DataSource> clonedDataSources = new ArrayList<>();
+    this.dataSources.forEach(originDataSource -> clonedDataSources.add(originDataSource.clone()));
+    rule.setDataSources(clonedDataSources);
+    return rule;
+  }
+
 }
