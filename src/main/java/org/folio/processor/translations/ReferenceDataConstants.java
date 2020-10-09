@@ -9,7 +9,7 @@ public class ReferenceDataConstants {
   public static final String LIBRARIES = "loclibs";
   public static final String CAMPUSES = "loccamps";
   public static final String INSTITUTIONS = "locinsts";
-  public static final String MATERIAL_TYPES = "materialTypes";
+  public static final String MATERIAL_TYPES = "mtypes";
   public static final String MODE_OF_ISSUANCES = "issuanceModes";
   public static final String INSTANCE_TYPES = "instanceTypes";
   public static final String INSTANCE_FORMATS = "instanceFormats";
