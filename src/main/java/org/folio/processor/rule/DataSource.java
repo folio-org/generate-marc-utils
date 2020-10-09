@@ -52,7 +52,7 @@ public class DataSource {
     this.hasSameFieldInHoldings = hasSameFieldInHoldings;
   }
 
-  public DataSource clone() {
+  public DataSource copy() {
     DataSource dataSource = new DataSource();
     dataSource.setFrom(this.from);
     dataSource.setSubfield(this.subfield);

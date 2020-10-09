@@ -55,14 +55,14 @@ public class Rule {
     this.metadata = metadata;
   }
 
-  public Rule clone() {
+  public Rule copy() {
     Rule rule = new Rule();
     rule.setId(id);
     rule.setField(field);
     rule.setDescription(description);
     rule.setMetadataObject(metadata);
     List<DataSource> clonedDataSources = new ArrayList<>();
-    this.dataSources.forEach(originDataSource -> clonedDataSources.add(originDataSource.clone()));
+    this.dataSources.forEach(originDataSource -> clonedDataSources.add(originDataSource.copy()));
     rule.setDataSources(clonedDataSources);
     return rule;
   }
