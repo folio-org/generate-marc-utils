@@ -10,6 +10,7 @@ public class DataSource {
   private String subfield;
   private String indicator;
   private Translation translation;
+  private boolean hasSameFieldInHoldings;
 
   public String getFrom() {
     return from;
@@ -41,5 +42,23 @@ public class DataSource {
 
   public void setTranslation(Translation translation) {
     this.translation = translation;
+  }
+
+  public boolean isHasSameFieldInHoldings() {
+    return hasSameFieldInHoldings;
+  }
+
+  public void setHasSameFieldInHoldings(boolean hasSameFieldInHoldings) {
+    this.hasSameFieldInHoldings = hasSameFieldInHoldings;
+  }
+
+  public DataSource copy() {
+    DataSource dataSource = new DataSource();
+    dataSource.setFrom(this.from);
+    dataSource.setSubfield(this.subfield);
+    dataSource.setIndicator(this.indicator);
+    dataSource.setTranslation(this.translation);
+    dataSource.setHasSameFieldInHoldings(this.hasSameFieldInHoldings);
+    return dataSource;
   }
 }

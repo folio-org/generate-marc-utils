@@ -2,6 +2,8 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.collections4.map.SingletonMap;
+import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
@@ -25,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.folio.util.TestUtil.readFileContentFromResources;
@@ -118,5 +121,32 @@ class RuleProcessorTest {
     ControlField actualControlField = (ControlField)actualVariableFields.get(0);
     assertEquals("001", actualControlField.getTag());
     assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", actualControlField.getData());
+  }
+
+  @Test
+  void shouldCopyRule() {
+    // given
+    Rule givenRule = new Rule();
+    givenRule.setId("test id");
+    givenRule.setDescription("test description");
+    givenRule.setField("test field");
+    givenRule.setMetadata(Collections.singletonMap("test key", "test value"));
+    DataSource givenDataSource = new DataSource();
+    givenDataSource.setTranslation(new Translation());
+    givenDataSource.setIndicator("1");
+    givenDataSource.setSubfield("a");
+    givenRule.setDataSources(Collections.singletonList(givenDataSource));
+    // when
+    Rule copiedRule = givenRule.copy();
+    // then
+    assertEquals(givenRule.getId(), copiedRule.getId());
+    assertEquals(givenRule.getDescription(), copiedRule.getDescription());
+    assertEquals(givenRule.getField(), copiedRule.getField());
+    assertEquals(givenRule.getMetadata(), copiedRule.getMetadata());
+    DataSource copiedDataSource = copiedRule.getDataSources().get(0);
+    assertEquals(givenDataSource.getFrom(), copiedDataSource.getFrom());
+    assertEquals(givenDataSource.getIndicator(), copiedDataSource.getIndicator());
+    assertEquals(givenDataSource.getSubfield(), copiedDataSource.getSubfield());
+    assertEquals(givenDataSource.getTranslation(), copiedDataSource.getTranslation());
   }
 }
