@@ -46,17 +46,24 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       if (dataSource.getFrom() == null) {
         matrix.add(new SimpleEntry<>(dataSource, new JSONArray()));
       } else {
-        Object objectValue = this.documentContext.read(dataSource.getFrom());
-        if (objectValue instanceof String) {
-          String stringValue = (String) objectValue;
-          matrix.add(new SimpleEntry<>(dataSource, new JSONArray().appendElement(stringValue)));
-        } else if (objectValue instanceof JSONArray) {
-          JSONArray value = (JSONArray) objectValue;
-          matrix.add(new SimpleEntry<>(dataSource, value));
+        if (dataSource.getReadDependingOnDataSource() != null) {
+          if (matrix.size() > dataSource.getReadDependingOnDataSource()) {
+            JSONArray value = matrix.get(dataSource.getReadDependingOnDataSource()).getValue();
+            if (value.isEmpty()) {
+              continue;
+            }
+          } else {
+            continue;
+          }
+        } else {
+          readObject(matrix, dataSource);
         }
       }
     }
     int matrixLength = matrix.size();
+    if (matrixLength == 0) {
+      return MissingValue.getInstance();
+    }
     int matrixWidth = matrix.get(0).getValue().size();
     if (matrixWidth == 0) {
       return MissingValue.getInstance();
@@ -80,6 +87,17 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         compositeValue.addEntry(entry);
       }
       return compositeValue;
+    }
+  }
+
+  private void readObject(List<SimpleEntry<DataSource, JSONArray>> matrix, DataSource dataSource) {
+    Object objectValue = this.documentContext.read(dataSource.getFrom());
+    if (objectValue instanceof String) {
+      String stringValue = (String) objectValue;
+      matrix.add(new SimpleEntry<>(dataSource, new JSONArray().appendElement(stringValue)));
+    } else if (objectValue instanceof JSONArray) {
+      JSONArray value = (JSONArray) objectValue;
+      matrix.add(new SimpleEntry<>(dataSource, value));
     }
   }
 

@@ -113,6 +113,21 @@
     ]
   },
   {
+    "field": "015",
+    "description": "Testing readDependingOnDataSource flag",
+    "dataSources": [
+      {
+        "from": "$.someNonExistingField",
+        "subfield": "f"
+      },
+      {
+        "from": "$.id",
+        "subfield": "3",
+        "readDependingOnDataSource": 0
+      }
+    ]
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [

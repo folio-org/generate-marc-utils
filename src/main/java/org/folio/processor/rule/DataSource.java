@@ -11,6 +11,7 @@ public class DataSource {
   private String indicator;
   private Translation translation;
   private boolean hasSameFieldInHoldings;
+  private Integer readDependingOnDataSource;
 
   public String getFrom() {
     return from;
@@ -50,6 +51,14 @@ public class DataSource {
 
   public void setHasSameFieldInHoldings(boolean hasSameFieldInHoldings) {
     this.hasSameFieldInHoldings = hasSameFieldInHoldings;
+  }
+
+  public Integer getReadDependingOnDataSource() {
+    return readDependingOnDataSource;
+  }
+
+  public void setReadDependingOnDataSource(Integer readDependingOnDataSource) {
+    this.readDependingOnDataSource = readDependingOnDataSource;
   }
 
   public DataSource copy() {
