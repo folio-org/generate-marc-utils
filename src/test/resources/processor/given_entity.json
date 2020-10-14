@@ -42,5 +42,20 @@
   "metadata": {
     "createdDate": "2019-08-07T03:12:01.011+0000",
     "updatedDate": "2020-06-17T01:46:42.915+0000"
-  }
+  },
+  "holdings": [
+    {
+      "title": "holding1Title",
+      "hrid": "holding1Hrid",
+      "items": [
+        {
+          "id": "item11Id"
+        },
+        {
+          "id": "item12Id",
+          "barcode": "barcode11"
+        }
+      ]
+    }
+  ]
 }
