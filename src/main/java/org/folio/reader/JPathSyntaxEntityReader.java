@@ -57,9 +57,6 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       }
     }
     int matrixLength = matrix.size();
-    if (matrixLength == 0) {
-      return MissingValue.getInstance();
-    }
     int matrixWidth = matrix.get(0).getValue().size();
     if (matrixWidth == 0) {
       return MissingValue.getInstance();
