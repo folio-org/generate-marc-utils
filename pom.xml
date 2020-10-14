@@ -29,7 +29,7 @@
   </repositories>
 
   <properties>
-    <raml-module-builder.version>30.0.2</raml-module-builder.version>
+    <raml-module-builder.version>31.1.2</raml-module-builder.version>
     <marc4j.version>2.9.1</marc4j.version>
     <junit.version>5.4.2</junit.version>
   </properties>
