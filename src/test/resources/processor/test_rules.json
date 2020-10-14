@@ -113,6 +113,21 @@
     ]
   },
   {
+    "field": "015",
+    "description": "Testing readDependingOnDataSource flag",
+    "dataSources": [
+      {
+        "from": "$.holdings[0].items[*].barcode",
+        "subfield": "f"
+      },
+      {
+        "from": "$.holdings[0].hrid",
+        "subfield": "3",
+        "readDependingOnDataSource": 0
+      }
+    ]
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [

@@ -2,7 +2,6 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.collections4.map.SingletonMap;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;

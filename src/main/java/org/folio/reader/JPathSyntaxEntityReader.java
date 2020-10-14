@@ -79,8 +79,21 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         }
         compositeValue.addEntry(entry);
       }
+      applyReadDependingOnDataSourceFlag(compositeValue);
       return compositeValue;
     }
+  }
+
+  private void applyReadDependingOnDataSourceFlag(CompositeValue compositeValue) {
+    compositeValue.getValue().removeIf(stringValues -> {
+      for (StringValue stringValue : stringValues) {
+        Integer dataSourceIndex = stringValue.getDataSource().getReadDependingOnDataSource();
+        if (dataSourceIndex != null) {
+          return stringValues.get(dataSourceIndex).getValue() == null;
+        }
+      }
+      return false;
+    });
   }
 
   private void populateMetadata(Rule rule) {
