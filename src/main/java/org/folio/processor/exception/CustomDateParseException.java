@@ -1,4 +1,4 @@
-package org.folio.processor.translations;
+package org.folio.processor.exception;
 
 public class CustomDateParseException extends RuntimeException {
 

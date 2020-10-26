@@ -1,8 +1,9 @@
 package org.folio.processor;
 
+import org.folio.processor.exception.ErrorCode;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
-import org.folio.processor.translations.CustomDateParseException;
+import org.folio.processor.exception.CustomDateParseException;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
@@ -67,7 +68,7 @@ public final class RuleProcessor {
         try {
           processRule(reader, writer, referenceData, rule);
         } catch (ParseException e) {
-          throw new CustomDateParseException("Exception while parsing the date", e);
+          throw new CustomDateParseException(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), e);
         }
       }
     });
@@ -92,7 +93,7 @@ public final class RuleProcessor {
         try {
           processRule(reader, writer, referenceData, rule);
         } catch (ParseException e) {
-          throw new CustomDateParseException("Exception while parsing the date", e);
+          throw new CustomDateParseException(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), e);
         }
       }
     });
