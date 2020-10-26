@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +59,7 @@ class RuleProcessorTest {
   }
 
   @BeforeEach
-  public void beforeEach() {
+  public void beforeEach() throws ParseException {
     entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
     doReturn(createdDateTranslationFunction).when(translationHolder).lookup("set_fixed_length_data_elements");
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");

@@ -2,6 +2,7 @@ package org.folio.processor;
 
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
+import org.folio.processor.translations.CustomDateParseException;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
@@ -15,6 +16,7 @@ import org.folio.reader.values.StringValue;
 import org.folio.writer.RecordWriter;
 import org.marc4j.marc.VariableField;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +64,11 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        processRule(reader, writer, referenceData, rule);
+        try {
+          processRule(reader, writer, referenceData, rule);
+        } catch (ParseException e) {
+          throw new CustomDateParseException("Exception while parsing the date", e);
+        }
       }
     });
     return writer.getResult();
@@ -83,13 +89,17 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        processRule(reader, writer, referenceData, rule);
+        try {
+          processRule(reader, writer, referenceData, rule);
+        } catch (ParseException e) {
+          throw new CustomDateParseException("Exception while parsing the date", e);
+        }
       }
     });
     return writer.getFields();
   }
 
-  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) {
+  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) throws ParseException {
     RuleValue<?> ruleValue = reader.read(rule);
     switch (ruleValue.getType()) {
       case SIMPLE:
@@ -106,7 +116,7 @@ public final class RuleProcessor {
     }
   }
 
-  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) {
+  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) throws ParseException {
     if (translationHolder != null) {
       Translation translation = simpleValue.getDataSource().getTranslation();
       if (translation != null) {
@@ -130,7 +140,7 @@ public final class RuleProcessor {
     }
   }
 
-  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) {
+  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) throws ParseException {
     if (translationHolder != null) {
       List<List<StringValue>> readValues = compositeValue.getValue();
       for (int currentIndex = 0; currentIndex < readValues.size(); currentIndex++) {

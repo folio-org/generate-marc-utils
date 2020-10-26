@@ -4,6 +4,8 @@ import org.folio.processor.RuleProcessor;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.ReferenceData;
 
+import java.text.ParseException;
+
 /**
  * This interface provides a contract to call data translations.
  *
@@ -20,5 +22,5 @@ public interface TranslationFunction {
    * @param referenceData reference data from inventory-storage
    * @return translated result
    */
-  String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata);
+  String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException;
 }
