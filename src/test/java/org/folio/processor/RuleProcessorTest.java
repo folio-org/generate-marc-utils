@@ -22,6 +22,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.VariableField;
@@ -131,8 +133,9 @@ class RuleProcessorTest {
     assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", actualControlField.getData());
   }
 
-  @Test
-  void shouldThrowParseException_whenDateIsInWrongFormat() {
+  @ParameterizedTest
+  @ValueSource(ints = {0, 1})
+  void shouldThrowParseException_whenDateIsInWrongFormat(int value) {
     // given
     Rule rule = new Rule();
     DataSource dataSource = new DataSource();
@@ -148,10 +151,16 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    CustomDateParseException customDateParseException = assertThrows(CustomDateParseException.class, () ->
-      ruleProcessor.process(reader, writer, referenceData, singletonList(rule))
-    );
-
+    CustomDateParseException customDateParseException;
+    if (value == 0) {
+      customDateParseException = assertThrows(CustomDateParseException.class, () ->
+        ruleProcessor.process(reader, writer, referenceData, singletonList(rule))
+      );
+    } else {
+      customDateParseException = assertThrows(CustomDateParseException.class, () ->
+        ruleProcessor.processFields(reader, writer, referenceData, singletonList(rule))
+      );
+    }
     assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), customDateParseException.getMessage());
   }
 
