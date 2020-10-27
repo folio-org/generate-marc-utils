@@ -2,6 +2,7 @@ package org.folio.processor.translations;
 
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.ReferenceData;
 import org.folio.processor.rule.Metadata;
@@ -9,11 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.text.ParseException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -126,8 +129,8 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       .toFormatter();
 
     @Override
-    public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(updatedDate, originDateFormatter);
+    public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException {
+      ZonedDateTime originDateTime = getParsedDate(updatedDate);
       return targetDateFormatter.format(originDateTime);
     }
   },
@@ -160,8 +163,8 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       String createdDateParam;
       if (isNotEmpty(originCreatedDate)) {
         try {
-          createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.parse(originCreatedDate, originDateFormatter));
-        } catch (DateTimeParseException e) {
+          createdDateParam = targetCreatedDateFormatter.format(TranslationsFunctionHolder.getParsedDate(originCreatedDate));
+        } catch (ParseException e) {
           LOGGER.error("Failed to parse createdDate field, the current time value will be used");
           createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.now());
         }
@@ -315,8 +318,8 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_METADATA_DATE_TIME() {
     private transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
     @Override
-    public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      ZonedDateTime originDateTime = ZonedDateTime.parse(date, originDateFormatter);
+    public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException {
+      ZonedDateTime originDateTime = getParsedDate(date);
       return targetFormatter.format(originDateTime);
     }
   };
@@ -324,11 +327,16 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
   private static final String VALUE = "value";
-  private static final transient DateTimeFormatter originDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
   @Override
   public TranslationFunction lookup(String function) {
     return valueOf(function.toUpperCase());
+  }
+
+  private static ZonedDateTime getParsedDate(String incomingDate) throws ParseException {
+    String[] patterns = {"yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"};
+    Date date = DateUtils.parseDateStrictly(incomingDate, patterns);
+    return date.toInstant().atZone(ZoneId.of("Z"));
   }
 
 }
