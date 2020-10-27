@@ -2,12 +2,16 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
+import org.folio.processor.exception.CustomDateParseException;
+import org.folio.processor.exception.ErrorCode;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
+import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
 import org.folio.writer.RecordWriter;
@@ -30,11 +34,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -124,6 +132,30 @@ class RuleProcessorTest {
   }
 
   @Test
+  void shouldThrowParseException_whenDateIsInWrongFormat() {
+    // given
+    Rule rule = new Rule();
+    DataSource dataSource = new DataSource();
+    Translation translation = new Translation();
+    translation.setFunction("set_transaction_datetime");
+    dataSource.setTranslation(translation);
+    dataSource.setFrom("$.metadata.updatedDate");
+    rule.setDataSources(singletonList(dataSource));
+    entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_wrong_data.json"));
+    when(translationHolder.lookup("set_transaction_datetime")).thenReturn(TranslationsFunctionHolder.SET_TRANSACTION_DATETIME);
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when & then
+    CustomDateParseException customDateParseException = assertThrows(CustomDateParseException.class, () ->
+      ruleProcessor.process(reader, writer, referenceData, singletonList(rule))
+    );
+
+    assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), customDateParseException.getMessage());
+  }
+
+  @Test
   void shouldCopyRule() {
     // given
     Rule givenRule = new Rule();
@@ -135,7 +167,7 @@ class RuleProcessorTest {
     givenDataSource.setTranslation(new Translation());
     givenDataSource.setIndicator("1");
     givenDataSource.setSubfield("a");
-    givenRule.setDataSources(Collections.singletonList(givenDataSource));
+    givenRule.setDataSources(singletonList(givenDataSource));
     // when
     Rule copiedRule = givenRule.copy();
     // then
