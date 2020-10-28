@@ -41,6 +41,52 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   @Override
   protected RuleValue readCompositeValue(Rule rule) {
     populateMetadata(rule);
+    List<SimpleEntry<DataSource, JSONArray>> matrix = readMatrix(rule);
+    if (matrix.get(0).getValue().size() == 0) {
+      return MissingValue.getInstance();
+    } else {
+      CompositeValue compositeValue = buildCompositeValue(matrix);
+      applyReadDependingOnDataSourceFlag(compositeValue);
+      return compositeValue;
+    }
+  }
+
+  private CompositeValue buildCompositeValue(List<SimpleEntry<DataSource, JSONArray>> matrix) {
+    CompositeValue compositeValue = new CompositeValue();
+    int matrixLength = matrix.size();
+    int matrixWidth = matrix.get(0).getValue().size();
+    for (int widthIndex = 0; widthIndex < matrixWidth; widthIndex++) {
+      List<StringValue> entry = new ArrayList<>();
+      for (int lengthIndex = 0; lengthIndex < matrixLength; lengthIndex++) {
+        SimpleEntry<DataSource, JSONArray> field = matrix.get(lengthIndex);
+        JSONArray jsonArray = field.getValue();
+        if (jsonArray.isEmpty()) {
+          entry.add(SimpleValue.ofNullable(field.getKey()));
+        } else {
+          if (jsonArray.size() > widthIndex) {
+            Object object = jsonArray.get(widthIndex);
+            if (object instanceof String) {
+              String stringValue = (String) object;
+              entry.add(SimpleValue.of(stringValue, field.getKey()));
+            } else if (object instanceof JSONArray) {
+              JSONArray arrayValue = ((JSONArray) object);
+              String[] stringValues = Arrays.stream(arrayValue.toArray()).toArray(String[]::new);
+              List<String> list = Arrays.asList(stringValues);
+              for (String string : list) {
+                entry.add(SimpleValue.of(string, field.getKey()));
+              }
+            }
+          } else {
+            entry.add(SimpleValue.of((String) jsonArray.get(0), field.getKey()));
+          }
+        }
+      }
+      compositeValue.addEntry(entry);
+    }
+    return compositeValue;
+  }
+
+  private List<SimpleEntry<DataSource, JSONArray>> readMatrix(Rule rule) {
     List<SimpleEntry<DataSource, JSONArray>> matrix = new ArrayList<>();
     for (DataSource dataSource : rule.getDataSources()) {
       if (dataSource.getFrom() == null) {
@@ -56,32 +102,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         }
       }
     }
-    int matrixLength = matrix.size();
-    int matrixWidth = matrix.get(0).getValue().size();
-    if (matrixWidth == 0) {
-      return MissingValue.getInstance();
-    } else {
-      CompositeValue compositeValue = new CompositeValue();
-      for (int widthIndex = 0; widthIndex < matrixWidth; widthIndex++) {
-        List<StringValue> entry = new ArrayList<>();
-        for (int lengthIndex = 0; lengthIndex < matrixLength; lengthIndex++) {
-          SimpleEntry<DataSource, JSONArray> field = matrix.get(lengthIndex);
-          JSONArray jsonArray = field.getValue();
-          if (jsonArray.isEmpty()) {
-            entry.add(SimpleValue.ofNullable(field.getKey()));
-          } else {
-            if (jsonArray.size() > widthIndex) {
-              entry.add(SimpleValue.of((String) jsonArray.get(widthIndex), field.getKey()));
-            } else {
-              entry.add(SimpleValue.of((String) jsonArray.get(0), field.getKey()));
-            }
-          }
-        }
-        compositeValue.addEntry(entry);
-      }
-      applyReadDependingOnDataSourceFlag(compositeValue);
-      return compositeValue;
-    }
+    return matrix;
   }
 
   private void applyReadDependingOnDataSourceFlag(CompositeValue compositeValue) {
