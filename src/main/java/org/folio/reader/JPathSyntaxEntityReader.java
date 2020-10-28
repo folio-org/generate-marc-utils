@@ -96,16 +96,19 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         } else {
           if (jsonArray.size() > widthIndex) {
             Object object = jsonArray.get(widthIndex);
+            DataSource dataSource = field.getKey();
             if (object instanceof String) {
               String stringValue = (String) object;
-              entry.add(SimpleValue.of(stringValue, field.getKey()));
+              entry.add(SimpleValue.of(stringValue, dataSource));
             } else if (object instanceof JSONArray) {
               JSONArray arrayValue = ((JSONArray) object);
               String[] stringValues = Arrays.stream(arrayValue.toArray()).toArray(String[]::new);
               List<String> list = Arrays.asList(stringValues);
               for (String string : list) {
-                entry.add(SimpleValue.of(string, field.getKey()));
+                entry.add(SimpleValue.of(string, dataSource));
               }
+            } else {
+              entry.add(SimpleValue.of((String) object, dataSource));
             }
           } else {
             entry.add(SimpleValue.of((String) jsonArray.get(0), field.getKey()));
