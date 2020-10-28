@@ -51,6 +51,37 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     }
   }
 
+  /**
+   * Reads a matrix (two-dimensional array) of values by the given rule
+   *
+   * @param rule mapping rule
+   * @return matrix
+   */
+  private List<SimpleEntry<DataSource, JSONArray>> readMatrix(Rule rule) {
+    List<SimpleEntry<DataSource, JSONArray>> matrix = new ArrayList<>();
+    for (DataSource dataSource : rule.getDataSources()) {
+      if (dataSource.getFrom() == null) {
+        matrix.add(new SimpleEntry<>(dataSource, new JSONArray()));
+      } else {
+        Object objectValue = this.documentContext.read(dataSource.getFrom());
+        if (objectValue instanceof String) {
+          String stringValue = (String) objectValue;
+          matrix.add(new SimpleEntry<>(dataSource, new JSONArray().appendElement(stringValue)));
+        } else if (objectValue instanceof JSONArray) {
+          JSONArray value = (JSONArray) objectValue;
+          matrix.add(new SimpleEntry<>(dataSource, value));
+        }
+      }
+    }
+    return matrix;
+  }
+
+  /**
+   * Creates a composite value by the given matrix
+   *
+   * @param matrix two-dimensional array of values
+   * @return composite value
+   */
   private CompositeValue buildCompositeValue(List<SimpleEntry<DataSource, JSONArray>> matrix) {
     CompositeValue compositeValue = new CompositeValue();
     int matrixLength = matrix.size();
@@ -84,25 +115,6 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       compositeValue.addEntry(entry);
     }
     return compositeValue;
-  }
-
-  private List<SimpleEntry<DataSource, JSONArray>> readMatrix(Rule rule) {
-    List<SimpleEntry<DataSource, JSONArray>> matrix = new ArrayList<>();
-    for (DataSource dataSource : rule.getDataSources()) {
-      if (dataSource.getFrom() == null) {
-        matrix.add(new SimpleEntry<>(dataSource, new JSONArray()));
-      } else {
-        Object objectValue = this.documentContext.read(dataSource.getFrom());
-        if (objectValue instanceof String) {
-          String stringValue = (String) objectValue;
-          matrix.add(new SimpleEntry<>(dataSource, new JSONArray().appendElement(stringValue)));
-        } else if (objectValue instanceof JSONArray) {
-          JSONArray value = (JSONArray) objectValue;
-          matrix.add(new SimpleEntry<>(dataSource, value));
-        }
-      }
-    }
-    return matrix;
   }
 
   private void applyReadDependingOnDataSourceFlag(CompositeValue compositeValue) {
