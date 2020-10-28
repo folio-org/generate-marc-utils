@@ -2,12 +2,16 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
+import org.folio.processor.exception.CustomDateParseException;
+import org.folio.processor.exception.ErrorCode;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
+import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
 import org.folio.writer.RecordWriter;
@@ -18,6 +22,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.VariableField;
@@ -25,15 +31,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -58,7 +69,7 @@ class RuleProcessorTest {
   }
 
   @BeforeEach
-  public void beforeEach() {
+  public void beforeEach() throws ParseException {
     entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
     doReturn(createdDateTranslationFunction).when(translationHolder).lookup("set_fixed_length_data_elements");
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");
@@ -122,6 +133,37 @@ class RuleProcessorTest {
     assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", actualControlField.getData());
   }
 
+  @ParameterizedTest
+  @ValueSource(ints = {0, 1})
+  void shouldThrowParseException_whenDateIsInWrongFormat(int value) {
+    // given
+    Rule rule = new Rule();
+    DataSource dataSource = new DataSource();
+    Translation translation = new Translation();
+    translation.setFunction("set_transaction_datetime");
+    dataSource.setTranslation(translation);
+    dataSource.setFrom("$.metadata.updatedDate");
+    rule.setDataSources(singletonList(dataSource));
+    entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_wrong_data.json"));
+    when(translationHolder.lookup("set_transaction_datetime")).thenReturn(TranslationsFunctionHolder.SET_TRANSACTION_DATETIME);
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when & then
+    CustomDateParseException customDateParseException;
+    if (value == 0) {
+      customDateParseException = assertThrows(CustomDateParseException.class, () ->
+        ruleProcessor.process(reader, writer, referenceData, singletonList(rule))
+      );
+    } else {
+      customDateParseException = assertThrows(CustomDateParseException.class, () ->
+        ruleProcessor.processFields(reader, writer, referenceData, singletonList(rule))
+      );
+    }
+    assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), customDateParseException.getMessage());
+  }
+
   @Test
   void shouldCopyRule() {
     // given
@@ -134,7 +176,7 @@ class RuleProcessorTest {
     givenDataSource.setTranslation(new Translation());
     givenDataSource.setIndicator("1");
     givenDataSource.setSubfield("a");
-    givenRule.setDataSources(Collections.singletonList(givenDataSource));
+    givenRule.setDataSources(singletonList(givenDataSource));
     // when
     Rule copiedRule = givenRule.copy();
     // then

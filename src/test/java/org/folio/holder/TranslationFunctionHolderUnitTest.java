@@ -12,12 +12,14 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.format.DateTimeParseException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetValue_shouldSetGivenValue() {
+  void SetValue_shouldSetGivenValue() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_VALUE;
     String value = "field value";
@@ -80,7 +82,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetNatureOfContentTerm_shouldReturnTermName() {
+  void SetNatureOfContentTerm_shouldReturnTermName() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_NATURE_OF_CONTENT_TERM;
     String value = "44cd89f3-2e76-469f-a955-cc57cb9e0395";
@@ -91,7 +93,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetNatureOfContentTerm_shouldReturnEmptyString() {
+  void SetNatureOfContentTerm_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_NATURE_OF_CONTENT_TERM;
     String value = "non-existing-id";
@@ -102,7 +104,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetIdentifier_shouldReturnIdentifierValue() {
+  void SetIdentifier_shouldReturnIdentifierValue() throws ParseException {
     // given
     String value = "value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
@@ -121,7 +123,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetIdentifier_shouldReturnEmptyString_whenMetadataIsEmpty() {
+  void SetIdentifier_shouldReturnEmptyString_whenMetadataIsEmpty() throws ParseException {
     // given
     String value = "value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
@@ -139,7 +141,7 @@ class TranslationFunctionHolderUnitTest {
 
 
   @Test
-  void SetMaterialType_shouldReturnMaterialTypeValue() {
+  void SetMaterialType_shouldReturnMaterialTypeValue() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MATERIAL_TYPE;
     String value = "1a54b431-2e4f-452d-9cae-9cee66c9a892";
@@ -150,7 +152,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnEmptyString() {
+  void SetLocations_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     String value = "non-existing-id";
@@ -161,7 +163,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnEmptyString_whenParametersEmpty() {
+  void SetLocations_shouldReturnEmptyString_whenParametersEmpty() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
@@ -175,7 +177,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationName() {
+  void SetLocations_shouldReturnLocationName() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -190,7 +192,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationCode() {
+  void SetLocations_shouldReturnLocationCode() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -205,7 +207,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationLibraryName() {
+  void SetLocations_shouldReturnLocationLibraryName() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -222,7 +224,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnEmptyString_whenReferenceDataValueMissing() {
+  void SetLocations_shouldReturnEmptyString_whenReferenceDataValueMissing() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -239,7 +241,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationLibraryCode() {
+  void SetLocations_shouldReturnLocationLibraryCode() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -256,7 +258,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationCampusName() {
+  void SetLocations_shouldReturnLocationCampusName() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -273,7 +275,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationCampusCode() {
+  void SetLocations_shouldReturnLocationCampusCode() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -290,7 +292,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationInstitutionName() {
+  void SetLocations_shouldReturnLocationInstitutionName() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -307,7 +309,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLocations_shouldReturnLocationInstitutionCode() {
+  void SetLocations_shouldReturnLocationInstitutionCode() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOCATION;
     Map<String, String> parameters = new HashMap<>();
@@ -324,7 +326,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetMaterialType_shouldReturnEmptyString() {
+  void SetMaterialType_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MATERIAL_TYPE;
     String value = "non-existing-id";
@@ -335,7 +337,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetInstanceTypeId_shouldReturnInstanceTypeIdValue() {
+  void SetInstanceTypeId_shouldReturnInstanceTypeIdValue() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_TYPE_ID;
     String value = "6312d172-f0cf-40f6-b27d-9fa8feaf332f";
@@ -346,7 +348,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetInstanceTypeId_shouldReturnEmptyString() {
+  void SetInstanceTypeId_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_TYPE_ID;
     String value = "non-existing-id";
@@ -357,7 +359,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetInstanceFormatId_shouldReturnInstanceFormatIdValue() {
+  void SetInstanceFormatId_shouldReturnInstanceFormatIdValue() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     Translation translation = new Translation();
@@ -370,7 +372,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetInstanceFormatId_shouldReturnInstanceFormatIdValue_IfNoRegexFromInventory() {
+  void SetInstanceFormatId_shouldReturnInstanceFormatIdValue_IfNoRegexFromInventory() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     Translation translation = new Translation();
@@ -383,7 +385,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetInstanceFormatId_shouldReturnEmptyString_IfNoRegexFromInventory() {
+  void SetInstanceFormatId_shouldReturnEmptyString_IfNoRegexFromInventory() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     Translation translation = new Translation();
@@ -396,7 +398,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetInstanceFormatId_shouldReturnEmptyString() {
+  void SetInstanceFormatId_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_INSTANCE_FORMAT_ID;
     String value = "non-existing-id";
@@ -406,10 +408,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals(StringUtils.EMPTY, result);
   }
 
-  @Test
-  void SetTransactionDatetime_shouldReturnFormattedDate() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2020-05-22T01:46:42.915+0000", "2020-05-22T01:46:42.915+00:00"})
+  void SetTransactionDatetime_shouldReturnFormattedDate(String updatedDate) throws ParseException {
     // given
-    String updatedDate = "2020-05-22T01:46:42.915+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_TRANSACTION_DATETIME;
     // when
     String result = translationFunction.apply(updatedDate, 0, null, null, null);
@@ -424,13 +426,13 @@ class TranslationFunctionHolderUnitTest {
     String updatedDate = "date in wrong format";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_TRANSACTION_DATETIME;
     // when
-    assertThrows(DateTimeParseException.class, () ->
+    assertThrows(ParseException.class, () ->
       translationFunction.apply(updatedDate, 0, null, null, null)
     );
   }
 
   @Test
-  void SetContributor_shouldReturnContributorNameValue() {
+  void SetContributor_shouldReturnContributorNameValue() throws ParseException {
     // given
     String value = "value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CONTRIBUTOR;
@@ -449,7 +451,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void setContributor_shouldReturnEmptyString_whenMetadataIsEmpty() {
+  void setContributor_shouldReturnEmptyString_whenMetadataIsEmpty() throws ParseException {
     // given
     String value = "value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CONTRIBUTOR;
@@ -465,10 +467,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals(StringUtils.EMPTY, result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_noDatesOfPublication_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_noDatesOfPublication_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     // when
@@ -478,10 +480,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_noDatesOfPublication_language_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_noDatesOfPublication_language_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("languages", new Metadata.Entry("$.languages", singletonList("lat")));
@@ -492,10 +494,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||lat||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_noDatesOfPublication_multipleLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_noDatesOfPublication_multipleLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("languages", new Metadata.Entry("$.languages", asList("lat", "ita")));
@@ -506,10 +508,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||mul||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_1dateOfPublication_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_1dateOfPublication_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", singletonList("2015")));
@@ -520,10 +522,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|2015||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_2datesOfPublication_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_2datesOfPublication_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("2015", "2016")));
@@ -534,10 +536,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|20152016||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_2datesOfPublication_multipleLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_2datesOfPublication_multipleLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("2015", "2016")));
@@ -549,10 +551,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|20152016||||||||       |||||mul||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_2incorrectDatesOfPublication_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_2incorrectDatesOfPublication_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("123", "456")));
@@ -563,10 +565,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_datesOfPublication_isNull_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_datesOfPublication_isNull_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
@@ -577,10 +579,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_datesOfPublication_isNull_languagesIsNull() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_datesOfPublication_isNull_languagesIsNull(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
@@ -592,10 +594,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_datesOfPublication_isNull_languagesIsEmpty() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_datesOfPublication_isNull_languagesIsEmpty(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
@@ -607,10 +609,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_datesOfPublicationFirstParam_isNull_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_datesOfPublicationFirstParam_isNull_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList(null, "2016")));
@@ -621,10 +623,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|||||2016||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_datesOfPublicationSecondParam_isNull_noLanguages_specified() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_datesOfPublicationSecondParam_isNull_noLanguages_specified(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", new Metadata.Entry("$.publication[*].dateOfPublication", asList("2016", null)));
@@ -635,10 +637,10 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals("190807|2016||||||||||||       |||||und||", result);
   }
 
-  @Test
-  void SetFixedLengthDataElements_metadataIsNull() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2019-08-07T03:12:01.011+0000", "2019-08-07T03:12:01.011+00:00"})
+  void SetFixedLengthDataElements_metadataIsNull(String createdDate) throws ParseException {
     // given
-    String createdDate = "2019-08-07T03:12:01.011+0000";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
@@ -648,7 +650,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetFixedLengthDataElements_metadataIsNull_createdDateIsNull() {
+  void SetFixedLengthDataElements_metadataIsNull_createdDateIsNull() throws ParseException {
     // given
     String createdDate = null;
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
@@ -659,7 +661,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetFixedLengthDataElements_metadataIsNull_createdDateIsIncorrect() {
+  void SetFixedLengthDataElements_metadataIsNull_createdDateIsIncorrect() throws ParseException {
     // given
     String createdDate = "date in wrong format";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
@@ -670,7 +672,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipIdsEmpty() {
+  void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipIdsEmpty() throws ParseException {
     // given
     Metadata metadata = new Metadata();
     metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", Lists.emptyList()));
@@ -682,7 +684,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipIdNotExist() {
+  void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipIdNotExist() throws ParseException {
     // given
     Metadata metadata = new Metadata();
     metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("non-existing-id")));
@@ -694,7 +696,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipNotEqualTranslationParameterKey() {
+  void SetElectronicAccessIndicator_shouldReturnEmptyIndicator_whenRelationshipNotEqualTranslationParameterKey() throws ParseException {
     // given
     Metadata metadata = new Metadata();
     metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("f50c90c9-bae0-4add-9cd0-db9092dbc9dd")));
@@ -710,7 +712,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetElectronicAccessIndicator_shouldReturnParameterIndicator_whenRelationshipEqualsTranslationParameterKey() {
+  void SetElectronicAccessIndicator_shouldReturnParameterIndicator_whenRelationshipEqualsTranslationParameterKey() throws ParseException {
     // given
     Metadata metadata = new Metadata();
     metadata.addData("relationshipId", new Metadata.Entry("$.instance.electronicAccess[*].relationshipId", singletonList("f5d0068e-6272-458e-8a81-b85e7b9a14aa")));
@@ -726,7 +728,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetModeOfIssuanceId_shouldReturnModeOfIssuance_whenIdEqualsTranslationParameterKey() {
+  void SetModeOfIssuanceId_shouldReturnModeOfIssuance_whenIdEqualsTranslationParameterKey() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MODE_OF_ISSUANCE_ID;
     String value = "f5cc2ab6-bb92-4cab-b83f-5a3d09261a41";
@@ -737,7 +739,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetModeOfIssuanceId_shouldReturnEmptyValue_whenIdNotEqualsTranslationParameterKey() {
+  void SetModeOfIssuanceId_shouldReturnEmptyValue_whenIdNotEqualsTranslationParameterKey() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_MODE_OF_ISSUANCE_ID;
     String value = "not-existing-id";
@@ -748,7 +750,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetCallNumberType_shouldReturnCallNumberTypeId() {
+  void SetCallNumberType_shouldReturnCallNumberTypeId() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CALL_NUMBER_TYPE_ID;
     String value = "054d460d-d6b9-4469-9e37-7a78a2266655";
@@ -759,7 +761,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetCallNumberType_shouldReturnEmptyString() {
+  void SetCallNumberType_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CALL_NUMBER_TYPE_ID;
     String value = "not-existing-id";
@@ -770,7 +772,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLoanType_shouldReturnLoanValue() {
+  void SetLoanType_shouldReturnLoanValue() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOAN_TYPE;
     String value = "2e48e713-17f3-4c13-a9f8-23845bb210a4";
@@ -781,7 +783,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetLoanType_shouldReturnEmptyString() {
+  void SetLoanType_shouldReturnEmptyString() throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_LOAN_TYPE;
     String value = "non-existing-id";
@@ -791,14 +793,14 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals(StringUtils.EMPTY, result);
   }
 
-  @Test
-  void SetDateTime_shouldReturnCorrectDate() {
+  @ParameterizedTest
+  @ValueSource(strings = {"2020-09-19T11:02:16.525+0000", "2020-09-19T11:02:16.525+00:00"})
+  void SetDateTime_shouldReturnCorrectDate(String date) throws ParseException {
     // given
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_METADATA_DATE_TIME;
-    String value = "2020-09-19T11:02:16.525+0000";
     String expectedResult = "2020-09-19:11-02-16";
     // when
-    String result = translationFunction.apply(value, 0, null, referenceData, null);
+    String result = translationFunction.apply(date, 0, null, referenceData, null);
     // then
     Assert.assertEquals(expectedResult, result);
   }
