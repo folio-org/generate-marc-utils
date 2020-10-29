@@ -128,6 +128,20 @@
     ]
   },
   {
+    "field": "016",
+    "description": "Testing selection for array of strings field & simple field",
+    "dataSources": [
+      {
+        "from": "$.id",
+        "subfield": "g"
+      },
+      {
+        "from": "$.holdings[0].items[*].yearCaption",
+        "subfield": "h"
+      }
+    ]
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [
