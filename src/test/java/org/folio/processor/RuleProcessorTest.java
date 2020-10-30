@@ -38,6 +38,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

@@ -49,17 +49,11 @@
       "hrid": "holding1Hrid",
       "items": [
         {
-          "id": "item11Id",
-          "yearCaption": [
-            "1930", "1931"
-          ]
+          "id": "item11Id"
         },
         {
           "id": "item12Id",
-          "barcode": "barcode11",
-          "yearCaption": [
-            "1940", "1941", "1942"
-          ]
+          "barcode": "barcode11"
         }
       ]
     }
