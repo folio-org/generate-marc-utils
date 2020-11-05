@@ -123,6 +123,25 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
+  void SetIdentifier_shouldReturnIdentifierValue_forSystemControlNumber() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(Collections.singletonMap("type", "System control number"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierTypeId",
+      new Metadata.Entry("$.identifiers[*].identifierTypeId",
+        singletonList("7e591197-f335-4afb-bc6d-a6d76ca3bace")));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(value, result);
+  }
+
+  @Test
   void SetIdentifier_shouldReturnEmptyString_whenMetadataIsEmpty() throws ParseException {
     // given
     String value = "value";

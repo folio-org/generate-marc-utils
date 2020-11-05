@@ -64,7 +64,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         if (!identifierTypeIds.isEmpty()) {
           String identifierTypeId = identifierTypeIds.get(currentIndex);
           JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
-          if (identifierType != null && identifierType.getString(NAME).equals(translation.getParameter("type"))) {
+          if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -81,7 +81,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         if (!contributorNameTypeIds.isEmpty()) {
           String contributorNameTypeId = contributorNameTypeIds.get(currentIndex);
           JsonObject contributorNameType = referenceData.get(CONTRIBUTOR_NAME_TYPES).get(contributorNameTypeId);
-          if (contributorNameType != null && contributorNameType.getString(NAME).equals(translation.getParameter("type"))) {
+          if (contributorNameType != null && contributorNameType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -251,7 +251,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         if (relationship != null) {
           String relationshipName = relationship.getString(NAME);
           for (Map.Entry<String, String> parameter : translation.getParameters().entrySet()) {
-            if (relationshipName.equals(parameter.getKey())) {
+            if (relationshipName.equalsIgnoreCase(parameter.getKey())) {
               return parameter.getValue();
             }
           }
