@@ -1,4 +1,4 @@
- ## 06/11/2020 v1.0.1 - Released
+ ## 11/06/2020 v1.0.1 - Released
  This bugfix release includes fixes for the mapping process to fail due to a change in date formats in the metadata,
  it also includes  changes to support subfield 3 that contain holding hrid for record with item type in MARC file.
  A part from that, it contains a fix of missing standard number and GPO item identified if identifier type in inventory-storage
