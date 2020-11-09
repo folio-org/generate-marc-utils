@@ -7,6 +7,7 @@ import java.util.List;
 
 public abstract class SimpleValue<T> implements RuleValue<T> {
   protected DataSource dataSource;
+  private String recordId;
 
   public static StringValue of(String string, DataSource dataSource) {
     return new StringValue(string, dataSource);
@@ -22,6 +23,14 @@ public abstract class SimpleValue<T> implements RuleValue<T> {
 
   public DataSource getDataSource() {
     return this.dataSource;
+  }
+
+  public void setRecordId(String recordId) {
+    this.recordId = recordId;
+  }
+
+  public String getRecordId() {
+    return this.recordId;
   }
 
   @Override

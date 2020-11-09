@@ -1,6 +1,8 @@
 package org.folio.processor;
 
 import org.folio.processor.exception.ErrorCode;
+import org.folio.processor.exception.MappingException;
+import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.exception.CustomDateParseException;
@@ -65,11 +67,7 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        try {
           processRule(reader, writer, referenceData, rule);
-        } catch (ParseException e) {
-          throw new CustomDateParseException(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), e);
-        }
       }
     });
     return writer.getResult();
@@ -90,17 +88,13 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        try {
-          processRule(reader, writer, referenceData, rule);
-        } catch (ParseException e) {
-          throw new CustomDateParseException(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), e);
-        }
+        processRule(reader, writer, referenceData, rule);
       }
     });
     return writer.getFields();
   }
 
-  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) throws ParseException {
+  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) {
     RuleValue<?> ruleValue = reader.read(rule);
     switch (ruleValue.getType()) {
       case SIMPLE:
@@ -117,22 +111,22 @@ public final class RuleProcessor {
     }
   }
 
-  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) throws ParseException {
+  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) {
     if (translationHolder != null) {
       Translation translation = simpleValue.getDataSource().getTranslation();
       if (translation != null) {
-        TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
+        String recordId = simpleValue.getRecordId();
         if (STRING.equals(simpleValue.getSubType())) {
           StringValue stringValue = (StringValue) simpleValue;
           String readValue = stringValue.getValue();
-          String translatedValue = translationFunction.apply(readValue, 0, translation, referenceData, metadata);
+          String translatedValue = applyTranslationFunction(readValue, 0, translation, referenceData, metadata, recordId);
           stringValue.setValue(translatedValue);
         } else if (LIST_OF_STRING.equals(simpleValue.getSubType())) {
           ListValue listValue = (ListValue) simpleValue;
           List<String> translatedValues = new ArrayList<>();
           for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
             String readValue = listValue.getValue().get(currentIndex);
-            String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
+            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordId);
             translatedValues.add(translatedValue);
           }
           listValue.setValue(translatedValues);
@@ -141,21 +135,30 @@ public final class RuleProcessor {
     }
   }
 
-  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) throws ParseException {
+  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) {
     if (translationHolder != null) {
       List<List<StringValue>> readValues = compositeValue.getValue();
       for (int currentIndex = 0; currentIndex < readValues.size(); currentIndex++) {
         List<StringValue> readEntry = readValues.get(currentIndex);
         for (StringValue stringValue : readEntry) {
           Translation translation = stringValue.getDataSource().getTranslation();
+          String recordId = stringValue.getRecordId();
           if (translation != null) {
-            TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
             String readValue = stringValue.getValue();
-            String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
+            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordId);
             stringValue.setValue(translatedValue);
           }
         }
       }
+    }
+  }
+
+  private String applyTranslationFunction(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata, String recordId) {
+    try {
+      TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
+      return translationFunction.apply(value, currentIndex, translation, referenceData, metadata);
+    } catch (Exception e) {
+      throw new MappingException();
     }
   }
 }
