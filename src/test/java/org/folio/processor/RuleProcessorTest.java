@@ -2,11 +2,8 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
-import org.folio.processor.exception.CustomDateParseException;
 import org.folio.processor.exception.ErrorCode;
+import org.folio.processor.exception.MappingException;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
@@ -152,17 +149,17 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    CustomDateParseException customDateParseException;
+    MappingException mappingException;
     if (value == 0) {
-      customDateParseException = assertThrows(CustomDateParseException.class, () ->
+      mappingException = assertThrows(MappingException.class, () ->
         ruleProcessor.process(reader, writer, referenceData, singletonList(rule))
       );
     } else {
-      customDateParseException = assertThrows(CustomDateParseException.class, () ->
+      mappingException  = assertThrows(MappingException.class, () ->
         ruleProcessor.processFields(reader, writer, referenceData, singletonList(rule))
       );
     }
-    assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), customDateParseException.getMessage());
+    assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), mappingException.getErrorCode().getCode());
   }
 
   @Test

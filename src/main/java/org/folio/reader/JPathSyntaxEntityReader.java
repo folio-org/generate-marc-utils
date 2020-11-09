@@ -6,7 +6,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import io.vertx.core.json.JsonObject;
 import net.minidev.json.JSONArray;
-import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
@@ -49,7 +48,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     } else {
       CompositeValue compositeValue = buildCompositeValue(matrix);
       applyReadDependingOnDataSourceFlag(compositeValue);
-      populateRecordId(compositeValue);
+      setRecordIdToCompositeValue(compositeValue);
       return compositeValue;
     }
   }
@@ -159,6 +158,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     if (readValue instanceof String) {
       String string = (String) readValue;
       ruleValue = SimpleValue.of(string, dataSource);
+      setRecordIdToSimpleValue((SimpleValue) ruleValue);
     } else if (readValue instanceof JSONArray) {
       JSONArray array = (JSONArray) readValue;
       if (!array.isEmpty()) {
@@ -173,45 +173,57 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     } else if (readValue instanceof Map) {
       throw new IllegalArgumentException(format("Reading a complex field is not supported, data source: %s", dataSource));
     }
-    populateRecordId(ruleValue, dataSource);
     return ruleValue;
   }
 
-  private void populateRecordId(RuleValue ruleValue, DataSource dataSource) {
-    if (RuleValue.Type.SIMPLE == ruleValue.getType() && dataSource.getFrom() != null) {
-      SimpleValue simpleValue = (SimpleValue) ruleValue;
-      String idPath = getIdPath(dataSource.getFrom());
+  /**
+   * Populates recordId to the given simple value
+   *
+   * @param simpleValue simple value
+   */
+  private void setRecordIdToSimpleValue(SimpleValue simpleValue) {
+    if (simpleValue.getDataSource().getFrom() != null) {
+      String idPath = buildIdPath(simpleValue.getDataSource().getFrom());
       String recordId = documentContext.read(idPath);
       simpleValue.setRecordId(recordId);
     }
   }
 
-  private void populateRecordId(CompositeValue compositeValue) {
-   for (List<StringValue> stringValues: compositeValue.getValue()) {
-     String idPath = getIdPath(stringValues.get(0).getDataSource().getFrom());
-     Object idObject = documentContext.read(idPath);
-     if (idObject instanceof String) {
-       String id = (String) idObject;
-       for (StringValue stringValue: stringValues) {
-         stringValue.setRecordId(id);
-       }
-     } else if (idObject instanceof JSONArray) {
-       JSONArray ids = (JSONArray) idObject;
-       for (int i = 0; i < stringValues.size(); i++) {
-         stringValues.get(i).setRecordId((String)ids.get(i));
-       }
-     }
-   }
+  /**
+   * Populates recordId to the given composite value
+   *
+   * @param compositeValue composite value
+   */
+  private void setRecordIdToCompositeValue(CompositeValue compositeValue) {
+    for (List<StringValue> stringValues : compositeValue.getValue()) {
+      String idPath = buildIdPath(stringValues.get(0).getDataSource().getFrom());
+      Object idObject = documentContext.read(idPath);
+      if (idObject instanceof String) {
+        String id = (String) idObject;
+        for (StringValue stringValue : stringValues) {
+          stringValue.setRecordId(id);
+        }
+      } else if (idObject instanceof JSONArray) {
+        JSONArray ids = (JSONArray) idObject;
+        for (int i = 0; i < stringValues.size(); i++) {
+          stringValues.get(i).setRecordId((String) ids.get(i));
+        }
+      }
+    }
   }
 
-  private String getIdPath(String path) {
-    String idPath = null;
-    if (path.contains("items")) {
-      idPath = path.substring(0, ordinalIndexOf(path, "]", 2) + 1).concat(".id");
-    } else if (path.contains("holdings")) {
-      idPath = path.substring(0, ordinalIndexOf(path, "]", 1) + 1).concat(".id");
-    } else {
-      idPath = "$.id";
+  /**
+   * Builds path to the record id
+   *
+   * @param valuePath path for the record value
+   * @return  id path
+   */
+  private String buildIdPath(String valuePath) {
+    String idPath = "$.id";
+    if (valuePath.contains("items")) {
+      idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 2) + 1).concat(".id");
+    } else if (valuePath.contains("holdings")) {
+      idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 1) + 1).concat(".id");
     }
     return idPath;
   }

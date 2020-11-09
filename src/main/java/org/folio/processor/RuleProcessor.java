@@ -1,11 +1,8 @@
 package org.folio.processor;
 
-import org.folio.processor.exception.ErrorCode;
 import org.folio.processor.exception.MappingException;
-import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
-import org.folio.processor.exception.CustomDateParseException;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
@@ -19,7 +16,6 @@ import org.folio.reader.values.StringValue;
 import org.folio.writer.RecordWriter;
 import org.marc4j.marc.VariableField;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,10 +52,6 @@ public final class RuleProcessor {
    * Reads and translates data by given rules, writes a marc record in specific format defined by RecordWriter.
    * Returns content of the generated marc record
    *
-   * @param reader
-   * @param writer
-   * @param referenceData
-   * @param rules
    * @return content of the generated marc record
    */
   public String process(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules) {
@@ -67,7 +59,7 @@ public final class RuleProcessor {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-          processRule(reader, writer, referenceData, rule);
+        processRule(reader, writer, referenceData, rule);
       }
     });
     return writer.getResult();
@@ -77,10 +69,6 @@ public final class RuleProcessor {
    * Reads and translates data by given rules, writes a list of marc record fields in specific format defined by RecordWriter.
    * Returns the list of the generated VariableField of marc record
    *
-   * @param reader
-   * @param writer
-   * @param referenceData
-   * @param rules
    * @return the list of the generated VariableField of marc record
    */
   public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules) {
@@ -94,6 +82,9 @@ public final class RuleProcessor {
     return writer.getFields();
   }
 
+  /**
+   * Processes the given mapping rule using reader and writer
+   */
   private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) {
     RuleValue<?> ruleValue = reader.read(rule);
     switch (ruleValue.getType()) {
@@ -111,6 +102,10 @@ public final class RuleProcessor {
     }
   }
 
+
+  /**
+   * Translates (modifies) the given simple value
+   */
   private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) {
     if (translationHolder != null) {
       Translation translation = simpleValue.getDataSource().getTranslation();
@@ -135,6 +130,9 @@ public final class RuleProcessor {
     }
   }
 
+  /**
+   * Translates (modifies) the given composite value
+   */
   private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) {
     if (translationHolder != null) {
       List<List<StringValue>> readValues = compositeValue.getValue();
@@ -153,12 +151,16 @@ public final class RuleProcessor {
     }
   }
 
+  /**
+   * Calls translation function for the given value
+   * Throws MappingException if RuntimeException occurred
+   */
   private String applyTranslationFunction(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata, String recordId) {
     try {
       TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
       return translationFunction.apply(value, currentIndex, translation, referenceData, metadata);
     } catch (Exception e) {
-      throw new MappingException();
+      throw new MappingException(recordId, e);
     }
   }
 }
