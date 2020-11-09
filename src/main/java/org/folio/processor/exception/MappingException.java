@@ -11,9 +11,14 @@ public class MappingException extends RuntimeException {
 
   public MappingException(String recordId, Exception cause) {
     super(cause);
+    this.recordId = recordId;
     if (cause instanceof ParseException) {
       this.errorCode = ErrorCode.DATE_PARSE_ERROR_CODE;
     }
+  }
+
+  public String getRecordId() {
+    return this.recordId;
   }
 
   public ErrorCode getErrorCode() {

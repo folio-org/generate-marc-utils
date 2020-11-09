@@ -160,6 +160,7 @@ class RuleProcessorTest {
       );
     }
     assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), mappingException.getErrorCode().getCode());
+    assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", mappingException.getRecordId());
   }
 
   @Test
