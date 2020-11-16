@@ -1,17 +1,19 @@
 package org.folio.processor.exception;
 
+import org.folio.reader.record.RecordInfo;
+
 import java.text.ParseException;
 
 /**
  * The exception with error code and record metadata needed to identify the exact record caused the error
  */
 public class MappingException extends RuntimeException {
-  private final String recordId;
+  private final RecordInfo recordInfo;
   private final ErrorCode errorCode;
 
-  public MappingException(String recordId, Exception cause) {
+  public MappingException(RecordInfo recordInfo, Exception cause) {
     super(cause);
-    this.recordId = recordId;
+    this.recordInfo = recordInfo;
     if (cause instanceof ParseException) {
       this.errorCode = ErrorCode.DATE_PARSE_ERROR_CODE;
     } else {
@@ -19,8 +21,8 @@ public class MappingException extends RuntimeException {
     }
   }
 
-  public String getRecordId() {
-    return this.recordId;
+  public RecordInfo getRecordInfo() {
+    return this.recordInfo;
   }
 
   public ErrorCode getErrorCode() {

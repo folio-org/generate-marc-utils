@@ -2,12 +2,13 @@ package org.folio.reader.values;
 
 
 import org.folio.processor.rule.DataSource;
+import org.folio.reader.record.RecordInfo;
 
 import java.util.List;
 
 public abstract class SimpleValue<T> implements RuleValue<T> {
   protected DataSource dataSource;
-  private String recordId;
+  private RecordInfo recordInfo;
 
   public static StringValue of(String string, DataSource dataSource) {
     return new StringValue(string, dataSource);
@@ -25,12 +26,12 @@ public abstract class SimpleValue<T> implements RuleValue<T> {
     return this.dataSource;
   }
 
-  public void setRecordId(String recordId) {
-    this.recordId = recordId;
+  public void setRecordInfo(RecordInfo recordInfo) {
+    this.recordInfo = recordInfo;
   }
 
-  public String getRecordId() {
-    return this.recordId;
+  public RecordInfo getRecordInfo() {
+    return this.recordInfo;
   }
 
   @Override

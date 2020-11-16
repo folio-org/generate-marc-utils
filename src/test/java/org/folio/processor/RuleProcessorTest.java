@@ -13,6 +13,7 @@ import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
+import org.folio.reader.record.RecordType;
 import org.folio.writer.RecordWriter;
 import org.folio.writer.impl.JsonRecordWriter;
 import org.folio.writer.impl.MarcRecordWriter;
@@ -160,7 +161,9 @@ class RuleProcessorTest {
       );
     }
     assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), mappingException.getErrorCode().getCode());
-    assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", mappingException.getRecordId());
+    assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", mappingException.getRecordInfo().getId());
+    assertEquals(RecordType.INSTANCE, mappingException.getRecordInfo().getType());
+
   }
 
   @Test

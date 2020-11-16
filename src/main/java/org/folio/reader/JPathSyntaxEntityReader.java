@@ -6,9 +6,13 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import io.vertx.core.json.JsonObject;
 import net.minidev.json.JSONArray;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
+import org.folio.reader.record.RecordInfo;
+import org.folio.reader.record.RecordType;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.MissingValue;
 import org.folio.reader.values.RuleValue;
@@ -48,7 +52,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     } else {
       CompositeValue compositeValue = buildCompositeValue(matrix);
       applyReadDependingOnDataSourceFlag(compositeValue);
-      setRecordIdToCompositeValue(compositeValue);
+      setRecordInfoToCompositeValue(compositeValue);
       return compositeValue;
     }
   }
@@ -158,7 +162,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     if (readValue instanceof String) {
       String string = (String) readValue;
       ruleValue = SimpleValue.of(string, dataSource);
-      setRecordIdToSimpleValue((SimpleValue) ruleValue);
+      setRecordInfoToSimpleValue((SimpleValue) ruleValue);
     } else if (readValue instanceof JSONArray) {
       JSONArray array = (JSONArray) readValue;
       if (!array.isEmpty()) {
@@ -181,11 +185,12 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    *
    * @param simpleValue simple value
    */
-  private void setRecordIdToSimpleValue(SimpleValue simpleValue) {
+  private void setRecordInfoToSimpleValue(SimpleValue simpleValue) {
     if (simpleValue.getDataSource().getFrom() != null) {
-      String idPath = buildIdPath(simpleValue.getDataSource().getFrom());
-      String recordId = documentContext.read(idPath);
-      simpleValue.setRecordId(recordId);
+      Pair<String, RecordType> idPathType = buildIdPath(simpleValue.getDataSource().getFrom());
+      String recordId = documentContext.read(idPathType.getKey());
+      RecordType recordType = idPathType.getValue();
+      simpleValue.setRecordInfo(new RecordInfo(recordId, recordType));
     }
   }
 
@@ -194,19 +199,23 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    *
    * @param compositeValue composite value
    */
-  private void setRecordIdToCompositeValue(CompositeValue compositeValue) {
+  private void setRecordInfoToCompositeValue(CompositeValue compositeValue) {
     for (List<StringValue> stringValues : compositeValue.getValue()) {
-      String idPath = buildIdPath(stringValues.get(0).getDataSource().getFrom());
+      Pair<String, RecordType> idPathType = buildIdPath(stringValues.get(0).getDataSource().getFrom());
+      String idPath = idPathType.getKey();
+      RecordType recordType = idPathType.getValue();
       Object idObject = documentContext.read(idPath);
       if (idObject instanceof String) {
-        String id = (String) idObject;
+        String recordId = (String) idObject;
+        RecordInfo recordInfo = new RecordInfo(recordId, recordType);
         for (StringValue stringValue : stringValues) {
-          stringValue.setRecordId(id);
+          stringValue.setRecordInfo(recordInfo);
         }
       } else if (idObject instanceof JSONArray) {
         JSONArray ids = (JSONArray) idObject;
         for (int i = 0; i < stringValues.size(); i++) {
-          stringValues.get(i).setRecordId((String) ids.get(i));
+          String recordId = (String) ids.get(i);
+          stringValues.get(i).setRecordInfo(new RecordInfo(recordId, recordType));
         }
       }
     }
@@ -218,14 +227,17 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    * @param valuePath path for the record value
    * @return  id path
    */
-  private String buildIdPath(String valuePath) {
+  private Pair<String, RecordType> buildIdPath(String valuePath) {
     String idPath = "$.id";
-    if (valuePath.contains("items")) {
-      idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 2) + 1).concat(".id");
-    } else if (valuePath.contains("holdings")) {
+    RecordType recordType = RecordType.INSTANCE;
+    if (valuePath.contains("holdings")) {
       idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 1) + 1).concat(".id");
+      recordType = RecordType.HOLDING;
+    } else if (valuePath.contains("items")) {
+      idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 2) + 1).concat(".id");
+      recordType = RecordType.ITEM;
     }
-    return idPath;
+    return new ImmutablePair<>(idPath, recordType);
   }
 
 }

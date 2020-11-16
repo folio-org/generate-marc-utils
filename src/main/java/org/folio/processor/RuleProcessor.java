@@ -8,6 +8,7 @@ import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.reader.EntityReader;
+import org.folio.reader.record.RecordInfo;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.ListValue;
 import org.folio.reader.values.RuleValue;
@@ -110,18 +111,18 @@ public final class RuleProcessor {
     if (translationHolder != null) {
       Translation translation = simpleValue.getDataSource().getTranslation();
       if (translation != null) {
-        String recordId = simpleValue.getRecordId();
+        RecordInfo recordInfo = simpleValue.getRecordInfo();
         if (STRING.equals(simpleValue.getSubType())) {
           StringValue stringValue = (StringValue) simpleValue;
           String readValue = stringValue.getValue();
-          String translatedValue = applyTranslationFunction(readValue, 0, translation, referenceData, metadata, recordId);
+          String translatedValue = applyTranslationFunction(readValue, 0, translation, referenceData, metadata, recordInfo);
           stringValue.setValue(translatedValue);
         } else if (LIST_OF_STRING.equals(simpleValue.getSubType())) {
           ListValue listValue = (ListValue) simpleValue;
           List<String> translatedValues = new ArrayList<>();
           for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
             String readValue = listValue.getValue().get(currentIndex);
-            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordId);
+            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordInfo);
             translatedValues.add(translatedValue);
           }
           listValue.setValue(translatedValues);
@@ -140,10 +141,10 @@ public final class RuleProcessor {
         List<StringValue> readEntry = readValues.get(currentIndex);
         for (StringValue stringValue : readEntry) {
           Translation translation = stringValue.getDataSource().getTranslation();
-          String recordId = stringValue.getRecordId();
           if (translation != null) {
             String readValue = stringValue.getValue();
-            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordId);
+            RecordInfo recordInfo = stringValue.getRecordInfo();
+            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordInfo);
             stringValue.setValue(translatedValue);
           }
         }
@@ -155,12 +156,12 @@ public final class RuleProcessor {
    * Calls translation function for the given value
    * Throws MappingException if RuntimeException occurred
    */
-  private String applyTranslationFunction(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata, String recordId) {
+  private String applyTranslationFunction(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata, RecordInfo recordInfo) {
     try {
       TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
       return translationFunction.apply(value, currentIndex, translation, referenceData, metadata);
     } catch (Exception e) {
-      throw new MappingException(recordId, e);
+      throw new MappingException(recordInfo, e);
     }
   }
 }
