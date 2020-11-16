@@ -8,7 +8,7 @@ import java.text.ParseException;
  * The exception with error code and record metadata needed to identify the exact record caused the error
  */
 public class MappingException extends RuntimeException {
-  private final RecordInfo recordInfo;
+  private final transient RecordInfo recordInfo;
   private final ErrorCode errorCode;
 
   public MappingException(RecordInfo recordInfo, Exception cause) {
