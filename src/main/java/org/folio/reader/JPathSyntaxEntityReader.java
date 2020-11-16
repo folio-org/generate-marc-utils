@@ -170,6 +170,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           List<String> listOfStrings = new ArrayList<>();
           array.forEach(arrayStringItem -> listOfStrings.add(arrayStringItem.toString()));
           ruleValue = SimpleValue.of(listOfStrings, dataSource);
+          setRecordInfoToSimpleValue((SimpleValue) ruleValue);
         } else if (array.get(0) instanceof Map) {
           throw new IllegalArgumentException(format("Reading a list of complex fields is not supported, data source: %s", dataSource));
         }

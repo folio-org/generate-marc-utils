@@ -162,6 +162,34 @@ class RuleProcessorTest {
   }
 
   @Test
+  void shouldCallErrorHandlerForLanguages() {
+    // given
+    Rule rule = new Rule();
+    rule.setField("000");
+    DataSource dataSource = new DataSource();
+    Translation translation = new Translation();
+    translation.setFunction("translate_languages");
+    dataSource.setTranslation(translation);
+    dataSource.setFrom("$.languages");
+    rule.setDataSources(singletonList(dataSource));
+    entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
+    when(translationHolder.lookup("translate_languages")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+      throw new RuntimeException("test exception");
+    });
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when & then
+    ErrorHandler errorHandler = ((recordInfo, cause) -> {
+      assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", recordInfo.getId());
+      assertEquals(RecordType.INSTANCE, recordInfo.getType());
+      assertEquals(RuntimeException.class, cause.getClass());
+    });
+    ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
+  }
+
+  @Test
   void shouldCopyRule() {
     // given
     Rule givenRule = new Rule();
