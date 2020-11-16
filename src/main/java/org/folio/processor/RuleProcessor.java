@@ -1,6 +1,5 @@
 package org.folio.processor;
 
-import org.folio.processor.exception.MappingException;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
@@ -55,12 +54,12 @@ public final class RuleProcessor {
    *
    * @return content of the generated marc record
    */
-  public String process(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules) {
+  public String process(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules, ErrorHandler errorHandler) {
     rules.forEach(rule -> {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        processRule(reader, writer, referenceData, rule);
+        processRule(reader, writer, referenceData, rule, errorHandler);
       }
     });
     return writer.getResult();
@@ -72,12 +71,12 @@ public final class RuleProcessor {
    *
    * @return the list of the generated VariableField of marc record
    */
-  public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules) {
+  public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules, ErrorHandler errorHandler) {
     rules.forEach(rule -> {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
-        processRule(reader, writer, referenceData, rule);
+        processRule(reader, writer, referenceData, rule, errorHandler);
       }
     });
     return writer.getFields();
@@ -86,82 +85,88 @@ public final class RuleProcessor {
   /**
    * Processes the given mapping rule using reader and writer
    */
-  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule) {
+  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule, ErrorHandler errorHandler) {
     RuleValue<?> ruleValue = reader.read(rule);
     switch (ruleValue.getType()) {
       case SIMPLE:
         SimpleValue<?> simpleValue = (SimpleValue) ruleValue;
-        translate(simpleValue, referenceData, rule.getMetadata());
+        translate(simpleValue, referenceData, rule.getMetadata(), errorHandler);
         writer.writeField(rule.getField(), simpleValue);
         break;
       case COMPOSITE:
         CompositeValue compositeValue = (CompositeValue) ruleValue;
-        translate(compositeValue, referenceData, rule.getMetadata());
+        translate(compositeValue, referenceData, rule.getMetadata(), errorHandler);
         writer.writeField(rule.getField(), compositeValue);
         break;
       case MISSING:
     }
   }
 
-
   /**
-   * Translates (modifies) the given simple value
+   * Translates the given simple value
    */
-  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata) {
+  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
     if (translationHolder != null) {
-      Translation translation = simpleValue.getDataSource().getTranslation();
-      if (translation != null) {
-        RecordInfo recordInfo = simpleValue.getRecordInfo();
-        if (STRING.equals(simpleValue.getSubType())) {
-          StringValue stringValue = (StringValue) simpleValue;
-          String readValue = stringValue.getValue();
-          String translatedValue = applyTranslationFunction(readValue, 0, translation, referenceData, metadata, recordInfo);
-          stringValue.setValue(translatedValue);
-        } else if (LIST_OF_STRING.equals(simpleValue.getSubType())) {
-          ListValue listValue = (ListValue) simpleValue;
-          List<String> translatedValues = new ArrayList<>();
-          for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
-            String readValue = listValue.getValue().get(currentIndex);
-            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordInfo);
-            translatedValues.add(translatedValue);
-          }
-          listValue.setValue(translatedValues);
-        }
+      if (STRING.equals(simpleValue.getSubType())) {
+        applyTranslation((StringValue) simpleValue, referenceData, metadata, 0, errorHandler);
+      } else if (LIST_OF_STRING.equals(simpleValue.getSubType())) {
+        applyTranslation((ListValue) simpleValue, referenceData, metadata, errorHandler);
       }
     }
   }
 
   /**
-   * Translates (modifies) the given composite value
+   * Translates the given composite value
    */
-  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata) {
+  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
     if (translationHolder != null) {
       List<List<StringValue>> readValues = compositeValue.getValue();
       for (int currentIndex = 0; currentIndex < readValues.size(); currentIndex++) {
         List<StringValue> readEntry = readValues.get(currentIndex);
         for (StringValue stringValue : readEntry) {
-          Translation translation = stringValue.getDataSource().getTranslation();
-          if (translation != null) {
-            String readValue = stringValue.getValue();
-            RecordInfo recordInfo = stringValue.getRecordInfo();
-            String translatedValue = applyTranslationFunction(readValue, currentIndex, translation, referenceData, metadata, recordInfo);
-            stringValue.setValue(translatedValue);
-          }
+          applyTranslation(stringValue, referenceData, metadata, currentIndex, errorHandler);
         }
       }
     }
   }
 
   /**
-   * Calls translation function for the given value
-   * Throws MappingException if RuntimeException occurred
+   *  Applies translation function for ListValue
    */
-  private String applyTranslationFunction(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata, RecordInfo recordInfo) {
-    try {
-      TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
-      return translationFunction.apply(value, currentIndex, translation, referenceData, metadata);
-    } catch (Exception e) {
-      throw new MappingException(recordInfo, e);
+  private void applyTranslation(ListValue listValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
+    Translation translation = listValue.getDataSource().getTranslation();
+    if (translation != null) {
+      RecordInfo recordInfo = listValue.getRecordInfo();
+      List<String> translatedValues = new ArrayList<>();
+      for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
+        String readValue = listValue.getValue().get(currentIndex);
+        try {
+          TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
+          String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
+          translatedValues.add(translatedValue);
+        } catch (Exception e) {
+          errorHandler.handle(recordInfo, e);
+        }
+      }
+      listValue.setValue(translatedValues);
+    }
+  }
+
+  /**
+   *  Applies translation function for StringValue
+   */
+  private void applyTranslation(StringValue stringValue, ReferenceData referenceData, Metadata metadata, int index, ErrorHandler errorHandler) {
+    Translation translation = stringValue.getDataSource().getTranslation();
+    if (translation != null) {
+      String readValue = stringValue.getValue();
+      RecordInfo recordInfo = stringValue.getRecordInfo();
+      try {
+        TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
+        String translatedValue = translationFunction.apply(readValue, index, translation, referenceData, metadata);
+        stringValue.setValue(translatedValue);
+      } catch (Exception e) {
+        errorHandler.handle(recordInfo, e);
+      }
     }
   }
 }

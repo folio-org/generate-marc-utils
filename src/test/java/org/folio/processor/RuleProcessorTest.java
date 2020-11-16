@@ -2,8 +2,6 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
-import org.folio.processor.exception.ErrorCode;
-import org.folio.processor.exception.MappingException;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
@@ -38,7 +36,6 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -85,7 +82,7 @@ class RuleProcessorTest {
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new MarcRecordWriter();
     // when
-    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules);
+    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
     // then
     String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record.mrc");
     assertEquals(expectedMarcRecord, actualMarcRecord);
@@ -98,7 +95,7 @@ class RuleProcessorTest {
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new JsonRecordWriter();
     // when
-    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules);
+    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
     // then
     String expectedJsonRecord = readFileContentFromResources("processor/mapped_json_record.json");
     assertEquals(expectedJsonRecord, actualJsonRecord);
@@ -111,7 +108,7 @@ class RuleProcessorTest {
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new XmlRecordWriter();
     // when
-    String actualXmlRecord = ruleProcessor.process(reader, writer, referenceData, rules);
+    String actualXmlRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
     // then
     String expectedXmlRecord = readFileContentFromResources("processor/mapped_xml_record.xml");
     assertEquals(expectedXmlRecord, actualXmlRecord);
@@ -125,7 +122,7 @@ class RuleProcessorTest {
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new XmlRecordWriter();
     // when
-    List<VariableField> actualVariableFields = ruleProcessor.processFields(reader, writer, referenceData, rules);
+    List<VariableField> actualVariableFields = ruleProcessor.processFields(reader, writer, referenceData, rules, null);
     // then
     ControlField actualControlField = (ControlField)actualVariableFields.get(0);
     assertEquals("001", actualControlField.getTag());
@@ -133,10 +130,11 @@ class RuleProcessorTest {
   }
 
   @ParameterizedTest
-  @ValueSource(ints = {0, 1})
-  void shouldThrowParseException_whenDateIsInWrongFormat(int value) {
+  @ValueSource(strings = {"process", "processFields"})
+  void shouldThrowParseException_whenDateIsInWrongFormat(String mode) {
     // given
     Rule rule = new Rule();
+    rule.setField("000");
     DataSource dataSource = new DataSource();
     Translation translation = new Translation();
     translation.setFunction("set_transaction_datetime");
@@ -150,20 +148,17 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    MappingException mappingException;
-    if (value == 0) {
-      mappingException = assertThrows(MappingException.class, () ->
-        ruleProcessor.process(reader, writer, referenceData, singletonList(rule))
-      );
-    } else {
-      mappingException  = assertThrows(MappingException.class, () ->
-        ruleProcessor.processFields(reader, writer, referenceData, singletonList(rule))
-      );
+    ErrorHandler errorHandler = ((recordInfo, cause) -> {
+      assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", recordInfo.getId());
+      assertEquals(RecordType.INSTANCE, recordInfo.getType());
+      assertEquals(ParseException.class, cause.getClass());
+    });
+    if ("process".equals(mode)) {
+      ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
     }
-    assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE.getCode(), mappingException.getErrorCode().getCode());
-    assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", mappingException.getRecordInfo().getId());
-    assertEquals(RecordType.INSTANCE, mappingException.getRecordInfo().getType());
-
+    if ("processFields".equals(mode)) {
+      ruleProcessor.processFields(reader, writer, referenceData, singletonList(rule), errorHandler);
+    }
   }
 
   @Test
