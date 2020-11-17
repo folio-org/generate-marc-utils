@@ -11,6 +11,7 @@ import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
+import org.folio.reader.record.ErrorCode;
 import org.folio.reader.record.RecordType;
 import org.folio.writer.RecordWriter;
 import org.folio.writer.impl.JsonRecordWriter;
@@ -148,11 +149,12 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = ((recordInfo, cause) -> {
+    ErrorHandler errorHandler = (recordInfo) -> {
       assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", recordInfo.getId());
       assertEquals(RecordType.INSTANCE, recordInfo.getType());
-      assertEquals(ParseException.class, cause.getClass());
-    });
+      assertEquals(ParseException.class, recordInfo.getCause().getClass());
+      assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE, recordInfo.getErrorCode());
+    };
     if ("process".equals(mode)) {
       ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
     }
@@ -181,11 +183,12 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = ((recordInfo, cause) -> {
+    ErrorHandler errorHandler = (recordInfo) -> {
       assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", recordInfo.getId());
       assertEquals(RecordType.INSTANCE, recordInfo.getType());
-      assertEquals(RuntimeException.class, cause.getClass());
-    });
+      assertEquals(RuntimeException.class, recordInfo.getCause().getClass());
+      assertEquals(ErrorCode.UNDEFINED, recordInfo.getErrorCode());
+    };
     ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
   }
 

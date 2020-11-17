@@ -145,7 +145,7 @@ public final class RuleProcessor {
           String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
           translatedValues.add(translatedValue);
         } catch (Exception e) {
-          errorHandler.handle(recordInfo, e);
+          errorHandler.handle(recordInfo.addCause(e));
         }
       }
       listValue.setValue(translatedValues);
@@ -165,7 +165,7 @@ public final class RuleProcessor {
         String translatedValue = translationFunction.apply(readValue, index, translation, referenceData, metadata);
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
-        errorHandler.handle(recordInfo, e);
+        errorHandler.handle(recordInfo.addCause(e));
       }
     }
   }
