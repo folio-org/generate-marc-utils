@@ -1,9 +1,9 @@
-package org.folio.processor.exception;
-
+package org.folio.reader.record;
 import org.folio.rest.jaxrs.model.Error;
 
 public enum ErrorCode {
-  DATE_PARSE_ERROR_CODE("errorDuringParsingDate", "An error occurs during parsing the date while the mapping process");
+  DATE_PARSE_ERROR_CODE("errorDuringParsingDate", "An error occurs during parsing the date while the mapping process"),
+  UNDEFINED("undefined", "undefined");
 
   private final String code;
   private final String description;
