@@ -6,13 +6,9 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import io.vertx.core.json.JsonObject;
 import net.minidev.json.JSONArray;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
-import org.folio.reader.record.RecordInfo;
-import org.folio.reader.record.RecordType;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.MissingValue;
 import org.folio.reader.values.RuleValue;
@@ -26,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.ordinalIndexOf;
 
 /**
  * The implementation of {@link EntityReader} reads from JSON entity using JSONPath queries
@@ -52,7 +47,6 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     } else {
       CompositeValue compositeValue = buildCompositeValue(matrix);
       applyReadDependingOnDataSourceFlag(compositeValue);
-      setRecordInfoToCompositeValue(compositeValue);
       return compositeValue;
     }
   }
@@ -154,91 +148,28 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
 
   @Override
   protected RuleValue readSimpleValue(Rule rule) {
-    RuleValue ruleValue = MissingValue.getInstance();
     populateMetadata(rule);
     DataSource dataSource = rule.getDataSources().get(0);
     String path = dataSource.getFrom();
     Object readValue = documentContext.read(path);
     if (readValue instanceof String) {
       String string = (String) readValue;
-      ruleValue = SimpleValue.of(string, dataSource);
-      setRecordInfoToSimpleValue((SimpleValue) ruleValue);
+      return SimpleValue.of(string, dataSource);
     } else if (readValue instanceof JSONArray) {
       JSONArray array = (JSONArray) readValue;
-      if (!array.isEmpty()) {
-        if (array.get(0) instanceof String) {
-          List<String> listOfStrings = new ArrayList<>();
-          array.forEach(arrayStringItem -> listOfStrings.add(arrayStringItem.toString()));
-          ruleValue = SimpleValue.of(listOfStrings, dataSource);
-          setRecordInfoToSimpleValue((SimpleValue) ruleValue);
-        } else if (array.get(0) instanceof Map) {
-          throw new IllegalArgumentException(format("Reading a list of complex fields is not supported, data source: %s", dataSource));
-        }
+      if (array.isEmpty()) {
+        return MissingValue.getInstance();
+      }
+      if (array.get(0) instanceof String) {
+        List<String> listOfStrings = new ArrayList<>();
+        array.forEach(arrayItem -> listOfStrings.add(arrayItem.toString()));
+        return SimpleValue.of(listOfStrings, dataSource);
+      } else if (array.get(0) instanceof Map) {
+        throw new IllegalArgumentException(format("Reading a list of complex fields is not supported, data source: %s", dataSource));
       }
     } else if (readValue instanceof Map) {
       throw new IllegalArgumentException(format("Reading a complex field is not supported, data source: %s", dataSource));
     }
-    return ruleValue;
+    return MissingValue.getInstance();
   }
-
-  /**
-   * Populates recordId to the given simple value
-   *
-   * @param simpleValue simple value
-   */
-  private void setRecordInfoToSimpleValue(SimpleValue simpleValue) {
-    if (simpleValue.getDataSource().getFrom() != null) {
-      Pair<String, RecordType> idPathType = buildIdPath(simpleValue.getDataSource().getFrom());
-      String recordId = documentContext.read(idPathType.getKey());
-      RecordType recordType = idPathType.getValue();
-      simpleValue.setRecordInfo(new RecordInfo(recordId, recordType));
-    }
-  }
-
-  /**
-   * Populates recordId to the given composite value
-   *
-   * @param compositeValue composite value
-   */
-  private void setRecordInfoToCompositeValue(CompositeValue compositeValue) {
-    for (List<StringValue> stringValues : compositeValue.getValue()) {
-      Pair<String, RecordType> idPathType = buildIdPath(stringValues.get(0).getDataSource().getFrom());
-      String idPath = idPathType.getKey();
-      RecordType recordType = idPathType.getValue();
-      Object idObject = documentContext.read(idPath);
-      if (idObject instanceof String) {
-        String recordId = (String) idObject;
-        RecordInfo recordInfo = new RecordInfo(recordId, recordType);
-        for (StringValue stringValue : stringValues) {
-          stringValue.setRecordInfo(recordInfo);
-        }
-      } else if (idObject instanceof JSONArray) {
-        JSONArray ids = (JSONArray) idObject;
-        for (int i = 0; i < stringValues.size(); i++) {
-          String recordId = (String) ids.get(i);
-          stringValues.get(i).setRecordInfo(new RecordInfo(recordId, recordType));
-        }
-      }
-    }
-  }
-
-  /**
-   * Builds path to the record id
-   *
-   * @param valuePath path for the record value
-   * @return  id path
-   */
-  private Pair<String, RecordType> buildIdPath(String valuePath) {
-    String idPath = "$.id";
-    RecordType recordType = RecordType.INSTANCE;
-    if (valuePath.contains("holdings")) {
-      idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 1) + 1).concat(".id");
-      recordType = RecordType.HOLDING;
-    } else if (valuePath.contains("items")) {
-      idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 2) + 1).concat(".id");
-      recordType = RecordType.ITEM;
-    }
-    return new ImmutablePair<>(idPath, recordType);
-  }
-
 }
