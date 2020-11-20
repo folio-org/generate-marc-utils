@@ -2,6 +2,7 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.folio.processor.referencedata.ReferenceData;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
@@ -9,10 +10,11 @@ import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
+import org.folio.processor.error.ErrorHandler;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
-import org.folio.reader.record.ErrorCode;
-import org.folio.reader.record.RecordType;
+import org.folio.processor.error.ErrorCode;
+import org.folio.processor.error.RecordType;
 import org.folio.writer.RecordWriter;
 import org.folio.writer.impl.JsonRecordWriter;
 import org.folio.writer.impl.MarcRecordWriter;
@@ -149,11 +151,11 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = (recordInfo) -> {
-      assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", recordInfo.getId());
-      assertEquals(RecordType.INSTANCE, recordInfo.getType());
-      assertEquals(ParseException.class, recordInfo.getCause().getClass());
-      assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE, recordInfo.getErrorCode());
+    ErrorHandler errorHandler = (translationException) -> {
+      assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", translationException.getRecordInfo().getId());
+      assertEquals(RecordType.INSTANCE, translationException.getRecordInfo().getType());
+      assertEquals(ParseException.class, translationException.getCause().getClass());
+      assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE, translationException.getErrorCode());
     };
     if ("process".equals(mode)) {
       ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
@@ -183,11 +185,11 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = (recordInfo) -> {
-      assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", recordInfo.getId());
-      assertEquals(RecordType.INSTANCE, recordInfo.getType());
-      assertEquals(RuntimeException.class, recordInfo.getCause().getClass());
-      assertEquals(ErrorCode.UNDEFINED, recordInfo.getErrorCode());
+    ErrorHandler errorHandler = (translationException) -> {
+      assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", translationException.getRecordInfo().getId());
+      assertEquals(RecordType.INSTANCE, translationException.getRecordInfo().getType());
+      assertEquals(RuntimeException.class, translationException.getCause().getClass());
+      assertEquals(ErrorCode.UNDEFINED, translationException.getErrorCode());
     };
     ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
   }

@@ -4,7 +4,7 @@ import io.vertx.core.json.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.folio.processor.ReferenceData;
+import org.folio.processor.referencedata.ReferenceData;
 import org.folio.processor.rule.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,17 +23,17 @@ import java.util.Map;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.folio.processor.translations.ReferenceDataConstants.CALL_NUMBER_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
-import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_FORMATS;
-import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
-import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
-import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.IDENTIFIER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_FORMATS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 

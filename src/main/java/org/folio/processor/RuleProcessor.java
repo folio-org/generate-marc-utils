@@ -1,13 +1,16 @@
 package org.folio.processor;
 
+import org.folio.processor.error.TranslationException;
+import org.folio.processor.referencedata.ReferenceData;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
+import org.folio.processor.error.ErrorHandler;
 import org.folio.reader.EntityReader;
-import org.folio.reader.record.RecordInfo;
+import org.folio.processor.error.RecordInfo;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.ListValue;
 import org.folio.reader.values.RuleValue;
@@ -120,9 +123,9 @@ public final class RuleProcessor {
    */
   private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
     if (translationHolder != null) {
-      List<List<StringValue>> readValues = compositeValue.getValue();
-      for (int currentIndex = 0; currentIndex < readValues.size(); currentIndex++) {
-        List<StringValue> readEntry = readValues.get(currentIndex);
+      List<List<StringValue>> value = compositeValue.getValue();
+      for (int currentIndex = 0; currentIndex < value.size(); currentIndex++) {
+        List<StringValue> readEntry = value.get(currentIndex);
         for (StringValue stringValue : readEntry) {
           applyTranslation(stringValue, referenceData, metadata, currentIndex, errorHandler);
         }
@@ -145,7 +148,7 @@ public final class RuleProcessor {
           String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
           translatedValues.add(translatedValue);
         } catch (Exception e) {
-          errorHandler.handle(recordInfo.addCause(e));
+          errorHandler.handle(new TranslationException(recordInfo, e));
         }
       }
       listValue.setValue(translatedValues);
@@ -165,7 +168,7 @@ public final class RuleProcessor {
         String translatedValue = translationFunction.apply(readValue, index, translation, referenceData, metadata);
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
-        errorHandler.handle(recordInfo.addCause(e));
+        errorHandler.handle(new TranslationException(recordInfo, e));
       }
     }
   }

@@ -2,7 +2,7 @@ package org.folio.reader.values;
 
 
 import org.folio.processor.rule.DataSource;
-import org.folio.reader.record.RecordInfo;
+import org.folio.processor.error.RecordInfo;
 
 import java.util.List;
 

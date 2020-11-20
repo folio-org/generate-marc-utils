@@ -1,4 +1,4 @@
-package org.folio.reader.record;
+package org.folio.processor.error;
 import org.folio.rest.jaxrs.model.Error;
 
 public enum ErrorCode {

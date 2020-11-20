@@ -1,4 +1,4 @@
-package org.folio.reader.record;
+package org.folio.processor.error;
 
 /**
  * Possible types of the marc record
