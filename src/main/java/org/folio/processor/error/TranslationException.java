@@ -6,8 +6,8 @@ import java.text.ParseException;
  * This exception is thrown when an exception occurs during translation process
  */
 public class TranslationException extends RuntimeException {
-  private ErrorCode errorCode;
-  private RecordInfo recordInfo;
+  private final ErrorCode errorCode;
+  private final transient RecordInfo recordInfo;
 
   public TranslationException(RecordInfo recordInfo, Exception exception) {
     super(exception);
@@ -23,15 +23,7 @@ public class TranslationException extends RuntimeException {
     return errorCode;
   }
 
-  public void setErrorCode(ErrorCode errorCode) {
-    this.errorCode = errorCode;
-  }
-
   public RecordInfo getRecordInfo() {
     return recordInfo;
-  }
-
-  public void setRecordInfo(RecordInfo recordInfo) {
-    this.recordInfo = recordInfo;
   }
 }

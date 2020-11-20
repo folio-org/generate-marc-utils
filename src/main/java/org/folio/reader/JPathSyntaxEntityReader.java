@@ -146,7 +146,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   }
 
   /**
-   *  Applies 'readDependingOnDataSource' field to the given composite value
+   * Applies 'readDependingOnDataSource' field to the given composite value
    */
   private void applyReadDependingOnDataSourceFlag(CompositeValue compositeValue) {
     compositeValue.getValue().removeIf(stringValues -> {
