@@ -1,4 +1,4 @@
-package org.folio.processor.translations;
+package org.folio.processor.referencedata;
 
 public class ReferenceDataConstants {
   public static final String NATURE_OF_CONTENT_TERMS = "natureOfContentTerms";

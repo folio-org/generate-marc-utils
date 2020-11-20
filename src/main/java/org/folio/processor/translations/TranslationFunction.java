@@ -2,7 +2,7 @@ package org.folio.processor.translations;
 
 import org.folio.processor.RuleProcessor;
 import org.folio.processor.rule.Metadata;
-import org.folio.processor.ReferenceData;
+import org.folio.processor.referencedata.ReferenceData;
 
 import java.text.ParseException;
 

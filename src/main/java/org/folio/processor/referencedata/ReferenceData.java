@@ -1,4 +1,4 @@
-package org.folio.processor;
+package org.folio.processor.referencedata;
 
 import io.vertx.core.json.JsonObject;
 
