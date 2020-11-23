@@ -4,7 +4,7 @@
     "description": "Test field 001, reading simple string value, writing control field",
     "dataSources": [
       {
-        "from": "$.id"
+        "from": "$.instance.id"
       }
     ]
   },
@@ -13,7 +13,7 @@
     "description": "Test field 003, reading simple array of string values, writing control field",
     "dataSources": [
       {
-        "from": "$.languages"
+        "from": "$.instance.languages"
       }
     ]
   },
@@ -22,15 +22,15 @@
     "description": "Test field 008, reading simple value of fixed-length data elements, writing control field",
     "dataSources": [
       {
-        "from": "$.metadata.createdDate",
+        "from": "$.instance.metadata.createdDate",
         "translation": {
           "function": "set_fixed_length_data_elements"
         }
       }
     ],
     "metadata": {
-      "datesOfPublication": "$.publication[*].dateOfPublication",
-      "languages": "$.languages"
+      "datesOfPublication": "$.instance.publication[*].dateOfPublication",
+      "languages": "$.instance.languages"
     }
   },
   {
@@ -38,7 +38,7 @@
     "description": "Test field 010, reading simple string value, writing data field",
     "dataSources": [
       {
-        "from": "$.personalNumber",
+        "from": "$.instance.personalNumber",
         "subfield": "a"
       }
     ]
@@ -48,7 +48,7 @@
     "description": "Test field 011, reading simple array of string values, writing data field",
     "dataSources": [
       {
-        "from": "$.fonts",
+        "from": "$.instance.fonts",
         "subfield": "b"
       }
     ]
@@ -71,7 +71,7 @@
     "description": "Test field 013, reading simple string value, writing data field with not empty indicators",
     "dataSources": [
       {
-        "from": "$.title",
+        "from": "$.instance.title",
         "subfield": "a"
       },
       {
@@ -99,15 +99,15 @@
     "description": "Test field 014, reading composite value, writing data field",
     "dataSources": [
       {
-        "from": "$.books[*].title",
+        "from": "$.instance.books[*].title",
         "subfield": "c"
       },
       {
-        "from": "$.books[*].genre",
+        "from": "$.instance.books[*].genre",
         "subfield": "d"
       },
       {
-        "from": "$.books[*].author",
+        "from": "$.instance.books[*].author",
         "subfield": "e"
       }
     ]
@@ -132,7 +132,7 @@
     "description": "Testing selection for array of strings field & simple field",
     "dataSources": [
       {
-        "from": "$.id",
+        "from": "$.instance.id",
         "subfield": "g"
       },
       {
