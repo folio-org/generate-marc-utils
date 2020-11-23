@@ -1,47 +1,49 @@
 {
-  "id": "4bbec474-ba4d-4404-990f-afe2fc86dd3d",
-  "personalNumber": "09448119",
-  "title": "Test title",
-  "languages": [
-    "eng",
-    "lat"
-  ],
-  "fonts": [
-    "Times New Roman",
-    "Wingdings",
-    "Yu Gothic"
-  ],
-  "books": [
-    {
-      "title": "In Search of Lost Time",
-      "genre": "Modernist",
-      "author": "Marcel Proust"
-    },
-    {
-      "title": "Ulysses",
-      "genre": "Novel",
-      "author": "James Joyce"
-    },
-    {
-      "title": "The Great Gatsby",
-      "genre": "Tragedy",
-      "author": "F. Scott Fitzgerald"
+  "instance": {
+    "id": "4bbec474-ba4d-4404-990f-afe2fc86dd3d",
+    "personalNumber": "09448119",
+    "title": "Test title",
+    "languages": [
+      "eng",
+      "lat"
+    ],
+    "fonts": [
+      "Times New Roman",
+      "Wingdings",
+      "Yu Gothic"
+    ],
+    "books": [
+      {
+        "title": "In Search of Lost Time",
+        "genre": "Modernist",
+        "author": "Marcel Proust"
+      },
+      {
+        "title": "Ulysses",
+        "genre": "Novel",
+        "author": "James Joyce"
+      },
+      {
+        "title": "The Great Gatsby",
+        "genre": "Tragedy",
+        "author": "F. Scott Fitzgerald"
+      }
+    ],
+    "publication": [
+      {
+        "dateOfPublication": "2016"
+      },
+      {
+        "dateOfPublication": "2015"
+      }
+    ],
+    "natureOfContentTermIds": [
+      "44cd89f3-2e76-469f-a955-cc57cb9e0395"
+    ],
+    "metadata": {
+      "createdDate": "2019-08-07T03:12:01.011+0000",
+      "updatedDate": "2020-06-17T01:46:42.915+0000"
     }
-  ],
-  "publication": [
-    {
-      "dateOfPublication": "2016"
-    },
-    {
-      "dateOfPublication": "2015"
-    }
-  ],
-  "natureOfContentTermIds": [
-    "44cd89f3-2e76-469f-a955-cc57cb9e0395"
-  ],
-  "metadata": {
-    "createdDate": "2019-08-07T03:12:01.011+0000",
-    "updatedDate": "2020-06-17T01:46:42.915+0000"
   },
   "holdings": [
     {

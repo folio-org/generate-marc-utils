@@ -222,7 +222,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    * Builds path to the record id
    */
   private Pair<String, RecordType> buildIdPath(String valuePath) {
-    String idPath = "$.id";
+    String idPath = "$.instance.id";
     RecordType recordType = RecordType.INSTANCE;
     if (valuePath.contains("items")) {
       idPath = valuePath.substring(0, ordinalIndexOf(valuePath, "]", 2) + 1).concat(".id");

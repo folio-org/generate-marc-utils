@@ -41,6 +41,7 @@ import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -74,7 +75,7 @@ class RuleProcessorTest {
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");
     doReturn(setValueTranslationFunction).when(translationHolder).lookup("set_value");
     doReturn("createdDataTranslatedValue").when(createdDateTranslationFunction).apply(eq("2019-08-07T03:12:01.011+0000"), eq(0), any(Translation.class), eq(referenceData), any(Metadata.class));
-    doReturn("natureOfContentTranslatedValue").when(createdDateTranslationFunction).apply(eq("44cd89f3-2e76-469f-a955-cc57cb9e0395"), eq(0), any(Translation.class), eq(referenceData), any(Metadata.class));
+    doReturn("natureOfContentTranslatedValue").when(natureOfContentTranslationFunction).apply(eq("44cd89f3-2e76-469f-a955-cc57cb9e0395"), eq(0), any(Translation.class), eq(referenceData), isNull());
     doReturn("1").when(setValueTranslationFunction).apply(eq(null), eq(0), any(Translation.class), eq(referenceData), eq(null));
   }
 
