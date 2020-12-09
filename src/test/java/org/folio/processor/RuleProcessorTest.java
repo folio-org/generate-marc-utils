@@ -2,6 +2,7 @@ package org.folio.processor;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.referencedata.ReferenceData;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
@@ -131,6 +132,42 @@ class RuleProcessorTest {
     ControlField actualControlField = (ControlField)actualVariableFields.get(0);
     assertEquals("001", actualControlField.getTag());
     assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", actualControlField.getData());
+  }
+
+  @Test
+  void shouldReturnEmpty_ForEmptyEntity_MarcRecord() {
+    // given
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    RecordWriter writer = new MarcRecordWriter();
+    // when
+    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    assertEquals(StringUtils.EMPTY, actualJsonRecord);
+  }
+
+  @Test
+  void shouldReturnEmpty_ForEmptyEntity_JsonRecord() {
+    // given
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    RecordWriter writer = new JsonRecordWriter();
+    // when
+    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    assertEquals(StringUtils.EMPTY, actualJsonRecord);
+  }
+
+  @Test
+  void shouldReturnEmpty_ForEmptyEntity_XmlRecord() {
+    // given
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    RecordWriter writer = new XmlRecordWriter();
+    // when
+    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    assertEquals(StringUtils.EMPTY, actualJsonRecord);
   }
 
   @ParameterizedTest
