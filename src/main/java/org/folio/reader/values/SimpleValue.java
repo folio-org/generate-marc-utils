@@ -15,7 +15,11 @@ public abstract class SimpleValue<T> implements RuleValue<T> {
   }
 
   public static StringValue ofNullable(DataSource dataSource) {
-    return new StringValue(null, dataSource, null);
+    return ofNullable(dataSource, null);
+  }
+
+  public static StringValue ofNullable(DataSource dataSource, RecordInfo recordInfo) {
+    return new StringValue(null, dataSource, recordInfo);
   }
 
   public static ListValue of(List<StringValue> stringValues, DataSource dataSource) {
