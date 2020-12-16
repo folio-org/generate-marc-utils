@@ -8,18 +8,18 @@ import java.util.List;
 
 public abstract class SimpleValue<T> implements RuleValue<T> {
   protected DataSource dataSource;
-  private RecordInfo recordInfo;
+  protected RecordInfo recordInfo;
 
-  public static StringValue of(String string, DataSource dataSource) {
-    return new StringValue(string, dataSource);
+  public static StringValue of(String string, DataSource dataSource, RecordInfo recordInfo) {
+    return new StringValue(string, dataSource, recordInfo);
   }
 
   public static StringValue ofNullable(DataSource dataSource) {
-    return new StringValue(null, dataSource);
+    return new StringValue(null, dataSource, null);
   }
 
-  public static ListValue of(List<String> listOfStrings, DataSource dataSource) {
-    return new ListValue(listOfStrings, dataSource);
+  public static ListValue of(List<StringValue> stringValues, DataSource dataSource) {
+    return new ListValue(stringValues, dataSource, null);
   }
 
   public DataSource getDataSource() {

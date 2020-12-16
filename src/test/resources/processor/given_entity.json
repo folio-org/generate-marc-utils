@@ -47,7 +47,7 @@
   },
   "holdings": [
     {
-      "id": "eee11ea2-443f-4a13-81c2-f77d0ff9fa2a",
+      "id": "holding1 Id",
       "title": "holding1Title",
       "hrid": "holding1Hrid",
       "items": [
@@ -65,6 +65,10 @@
           ]
         }
       ]
+    },
+    {
+      "id": "holding2 Id",
+      "hrid": "holding2Hrid"
     }
   ]
 }

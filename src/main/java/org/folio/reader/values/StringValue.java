@@ -1,6 +1,7 @@
 package org.folio.reader.values;
 
 
+import org.folio.processor.error.RecordInfo;
 import org.folio.processor.rule.DataSource;
 
 /**
@@ -9,9 +10,10 @@ import org.folio.processor.rule.DataSource;
 public class StringValue extends SimpleValue<String> {
   private String value;
 
-  public StringValue(String value, DataSource dataSource) {
+  public StringValue(String value, DataSource dataSource, RecordInfo recordInfo) {
     this.value = value;
     this.dataSource = dataSource;
+    this.recordInfo = recordInfo;
   }
 
   @Override
