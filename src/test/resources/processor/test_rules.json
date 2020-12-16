@@ -142,6 +142,16 @@
     ]
   },
   {
+    "field": "017",
+    "description": "Testing selection of array of simple fields into a control field",
+    "dataSources": [
+      {
+        "from": "$.holdings[*].hrid",
+        "subfield": "i"
+      }
+    ]
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [

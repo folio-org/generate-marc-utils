@@ -38,8 +38,8 @@ public abstract class AbstractRecordWriter implements RecordWriter {
         RecordDataField recordDataField = buildDataFieldForListOfStrings(field, listValue);
         writeDataField(recordDataField);
       } else {
-        for (String value : listValue.getValue()) {
-          RecordControlField recordControlField = new RecordControlField(field, value);
+        for (StringValue stringValue : listValue.getValue()) {
+          RecordControlField recordControlField = new RecordControlField(field, stringValue.getValue());
           writeControlField(recordControlField);
         }
       }
@@ -63,13 +63,15 @@ public abstract class AbstractRecordWriter implements RecordWriter {
   private RecordDataField buildDataFieldForListOfStrings(String field, ListValue listValue) {
     DataSource dataSource = listValue.getDataSource();
     RecordDataField recordDataField = new RecordDataField(field);
-    for (String stringValue : listValue.getValue()) {
+    for (StringValue stringValue : listValue.getValue()) {
       if (isSubFieldSource(dataSource)) {
         char subFieldCode = dataSource.getSubfield().charAt(0);
-        String subFieldData = stringValue;
-        recordDataField.addSubField(subFieldCode, subFieldData);
+        String subFieldData = stringValue.getValue();
+        if (subFieldData != null) {
+          recordDataField.addSubField(subFieldCode, subFieldData);
+        }
       } else if (isIndicatorSource(dataSource)) {
-        char indicator = stringValue.charAt(0);
+        char indicator = stringValue.getValue().charAt(0);
         if (INDICATOR_1.equals(dataSource.getIndicator())) {
           recordDataField.setIndicator1(indicator);
         } else if (INDICATOR_2.equals(dataSource.getIndicator())) {
