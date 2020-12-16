@@ -68,7 +68,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    */
   private SimpleValue buildSimpleValue(DataSource dataSource, List<ValueWrapper> valueWrappers, Object nonNullValue) {
     SimpleValue simpleValue = null;
-    if (nonNullValue instanceof StringValue && valueWrappers.size() == 1) {
+    if (nonNullValue instanceof String && valueWrappers.size() == 1) {
       /* Building StringValue */
       ValueWrapper valueWrapper = valueWrappers.get(0);
       simpleValue = SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo());
@@ -85,7 +85,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         } else if (valueWrapper.getValue() == null) {
           stringValues.add(StringValue.ofNullable(dataSource));
         } else {
-          throw new IllegalArgumentException(format("Reading a list of complex values into a SimpleValue is not supported, data source: %s", dataSource));
+          throw new IllegalArgumentException(format("Reading a complex values into a SimpleValue is not supported, data source: %s", dataSource));
         }
       }
       simpleValue = SimpleValue.of(stringValues, dataSource);
