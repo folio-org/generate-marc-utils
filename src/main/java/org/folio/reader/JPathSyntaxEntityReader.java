@@ -67,34 +67,28 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    * Builds a SimpleValue, could be StringValue or ListValue
    */
   private SimpleValue buildSimpleValue(DataSource dataSource, List<ValueWrapper> valueWrappers, Object nonNullValue) {
-    boolean isStringRuleValue = false;
-    boolean isListRuleValue = false;
-    if (nonNullValue instanceof StringValue && valueWrappers.size() == 1) {
-      isStringRuleValue = true;
-    } else {
-      isListRuleValue = true;
-    }
     SimpleValue simpleValue = null;
-    if (isStringRuleValue) {
+    if (nonNullValue instanceof StringValue && valueWrappers.size() == 1) {
+      /* Building StringValue */
       ValueWrapper valueWrapper = valueWrappers.get(0);
       simpleValue = SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo());
-    }
-    if (isListRuleValue) {
-      List<StringValue> stringValues = new ArrayList<>();
-      for (ValueWrapper valueWrapper : valueWrappers) {
-        if (valueWrapper.getValue() instanceof String) {
-          stringValues.add(SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo()));
-        } else if (valueWrapper.getValue() instanceof JSONArray) {
-          ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> {
-            stringValues.add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo()));
-          });
-        } else if (valueWrapper.getValue() == null) {
-          stringValues.add(StringValue.ofNullable(dataSource));
-        } else {
-          throw new IllegalArgumentException(format("Reading a list of complex values into a SimpleValue is not supported, data source: %s", dataSource));
+    } else {
+      /* Building ListValue */
+        List<StringValue> stringValues = new ArrayList<>();
+        for (ValueWrapper valueWrapper : valueWrappers) {
+          if (valueWrapper.getValue() instanceof String) {
+            stringValues.add(SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo()));
+          } else if (valueWrapper.getValue() instanceof JSONArray) {
+            ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> {
+              stringValues.add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo()));
+            });
+          } else if (valueWrapper.getValue() == null) {
+            stringValues.add(StringValue.ofNullable(dataSource));
+          } else {
+            throw new IllegalArgumentException(format("Reading a list of complex values into a SimpleValue is not supported, data source: %s", dataSource));
+          }
         }
-      }
-      simpleValue = SimpleValue.of(stringValues, dataSource);
+        simpleValue = SimpleValue.of(stringValues, dataSource);
     }
     return simpleValue;
   }
