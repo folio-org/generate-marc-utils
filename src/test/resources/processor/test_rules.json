@@ -152,6 +152,26 @@
     ]
   },
   {
+    "field": "018",
+    "description": "Testing selection of array of simple fields (some nulls) into a control field",
+    "dataSources": [
+      {
+        "from": "$.holdings[*].items[*].yearCaption",
+        "subfield": "j"
+      }
+    ]
+  },
+  {
+    "field": "019",
+    "description": "Testing selection of array of simple fields (all nulls) into a control field",
+    "dataSources": [
+      {
+        "from": "$.holdings[*].none",
+        "subfield": "k"
+      }
+    ]
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [

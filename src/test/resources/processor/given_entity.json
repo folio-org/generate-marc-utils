@@ -52,23 +52,28 @@
       "hrid": "holding1Hrid",
       "items": [
         {
-          "id": "item11Id",
+          "id": "item11 Id"
+        },
+        {
+          "id": "item12 Id",
+          "barcode": "barcode12",
           "yearCaption": [
-            "1930", "1931"
+            "1940", "1941", "1942"
           ]
         },
         {
-          "id": "item12Id",
-          "barcode": "barcode11",
+          "id": "item13 Id",
+          "barcode": "barcode13",
           "yearCaption": [
-            "1940", "1941", "1942"
+            "1930", "1931"
           ]
         }
       ]
     },
     {
       "id": "holding2 Id",
-      "hrid": "holding2Hrid"
+      "hrid": "holding2Hrid",
+      "callNumber": "9985 3342"
     }
   ]
 }
