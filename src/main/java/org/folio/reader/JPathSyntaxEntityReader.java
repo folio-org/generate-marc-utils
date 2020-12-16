@@ -74,21 +74,21 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       simpleValue = SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo());
     } else {
       /* Building ListValue */
-        List<StringValue> stringValues = new ArrayList<>();
-        for (ValueWrapper valueWrapper : valueWrappers) {
-          if (valueWrapper.getValue() instanceof String) {
-            stringValues.add(SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo()));
-          } else if (valueWrapper.getValue() instanceof JSONArray) {
-            ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> {
-              stringValues.add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo()));
-            });
-          } else if (valueWrapper.getValue() == null) {
-            stringValues.add(StringValue.ofNullable(dataSource));
-          } else {
-            throw new IllegalArgumentException(format("Reading a list of complex values into a SimpleValue is not supported, data source: %s", dataSource));
-          }
+      List<StringValue> stringValues = new ArrayList<>();
+      for (ValueWrapper valueWrapper : valueWrappers) {
+        if (valueWrapper.getValue() instanceof String) {
+          stringValues.add(SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo()));
+        } else if (valueWrapper.getValue() instanceof JSONArray) {
+          ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> {
+            stringValues.add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo()));
+          });
+        } else if (valueWrapper.getValue() == null) {
+          stringValues.add(StringValue.ofNullable(dataSource));
+        } else {
+          throw new IllegalArgumentException(format("Reading a list of complex values into a SimpleValue is not supported, data source: %s", dataSource));
         }
-        simpleValue = SimpleValue.of(stringValues, dataSource);
+      }
+      simpleValue = SimpleValue.of(stringValues, dataSource);
     }
     return simpleValue;
   }
