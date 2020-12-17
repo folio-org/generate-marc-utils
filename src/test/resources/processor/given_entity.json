@@ -58,14 +58,17 @@
           "id": "item12 Id",
           "barcode": "barcode12",
           "yearCaption": [
-            "1940", "1941", "1942"
+            "1940",
+            "1941",
+            "1942"
           ]
         },
         {
           "id": "item13 Id",
           "barcode": "barcode13",
           "yearCaption": [
-            "1930", "1931"
+            "1930",
+            "1931"
           ]
         }
       ]
