@@ -19,7 +19,6 @@ import org.folio.reader.values.StringValue;
 import org.folio.writer.RecordWriter;
 import org.marc4j.marc.VariableField;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.folio.reader.values.SimpleValue.SubType.LIST_OF_STRING;
@@ -140,18 +139,17 @@ public final class RuleProcessor {
     Translation translation = listValue.getDataSource().getTranslation();
     if (translation != null) {
       RecordInfo recordInfo = listValue.getRecordInfo();
-      List<String> translatedValues = new ArrayList<>();
       for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
-        String readValue = listValue.getValue().get(currentIndex);
+      StringValue stringValue = listValue.getValue().get(currentIndex);
+      String readValue = stringValue.getValue();
         try {
           TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
           String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
-          translatedValues.add(translatedValue);
+          stringValue.setValue(translatedValue);
         } catch (Exception e) {
           errorHandler.handle(new TranslationException(recordInfo, e));
         }
       }
-      listValue.setValue(translatedValues);
     }
   }
 

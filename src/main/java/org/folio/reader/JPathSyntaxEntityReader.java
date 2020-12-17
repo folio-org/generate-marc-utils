@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -43,6 +44,53 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL)
         .addOptions(Option.SUPPRESS_EXCEPTIONS)
     );
+  }
+
+  @Override
+  protected RuleValue readSimpleValue(Rule rule, DataSource dataSource) {
+    populateMetadata(rule);
+    List<ValueWrapper> valueWrappers = readMatrix(rule).get(0).getValue();
+    if (valueWrappers.isEmpty()) {
+      return MissingValue.getInstance();
+    } else {
+      Optional<ValueWrapper> optionalNonNullValue = valueWrappers.stream().filter(valueWrapper -> valueWrapper.getValue() != null).findFirst();
+      if (optionalNonNullValue.isPresent()) {
+        SimpleValue simpleValue = buildSimpleValue(dataSource, valueWrappers, optionalNonNullValue.get().getValue());
+        return simpleValue;
+      } else {
+        return MissingValue.getInstance();
+      }
+    }
+  }
+
+  /**
+   * Builds a SimpleValue, could be StringValue or ListValue
+   */
+  private SimpleValue buildSimpleValue(DataSource dataSource, List<ValueWrapper> valueWrappers, Object nonNullValue) {
+    SimpleValue simpleValue = null;
+    if (nonNullValue instanceof String && valueWrappers.size() == 1) {
+      /* Building StringValue */
+      ValueWrapper valueWrapper = valueWrappers.get(0);
+      simpleValue = SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo());
+    } else {
+      /* Building ListValue */
+      List<StringValue> stringValues = new ArrayList<>();
+      for (ValueWrapper valueWrapper : valueWrappers) {
+        if (valueWrapper.getValue() instanceof String) {
+          stringValues.add(SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo()));
+        } else if (valueWrapper.getValue() instanceof JSONArray) {
+          ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> {
+            stringValues.add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo()));
+          });
+        } else if (valueWrapper.getValue() == null) {
+          stringValues.add(StringValue.ofNullable(dataSource));
+        } else {
+          throw new IllegalArgumentException(format("Reading a complex values into a SimpleValue is not supported, data source: %s", dataSource));
+        }
+      }
+      simpleValue = SimpleValue.of(stringValues, dataSource);
+    }
+    return simpleValue;
   }
 
   @Override
@@ -116,27 +164,27 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         List<ValueWrapper> valueWrappers = field.getValue();
         DataSource dataSource = field.getKey();
         if (valueWrappers.isEmpty()) {
-          entry.add(SimpleValue.ofNullable(dataSource));
+          entry.add(StringValue.ofNullable(dataSource));
         } else {
           if (valueWrappers.size() > widthIndex) {
             ValueWrapper valueWrapper = valueWrappers.get(widthIndex);
             Object object = valueWrapper.getValue();
             if (object instanceof String) {
-              StringValue stringValue = SimpleValue.of((String) object, dataSource);
+              StringValue stringValue = SimpleValue.of((String) object, dataSource, valueWrapper.getRecordInfo());
               stringValue.setRecordInfo(valueWrapper.getRecordInfo());
               entry.add(stringValue);
             } else if (valueWrapper.getValue() instanceof JSONArray) {
               JSONArray arrayValue = ((JSONArray) object);
               arrayValue.forEach(item -> {
-                StringValue stringValue = SimpleValue.of((String) item, dataSource);
+                StringValue stringValue = SimpleValue.of((String) item, dataSource, valueWrapper.getRecordInfo());
                 stringValue.setRecordInfo(valueWrapper.getRecordInfo());
                 entry.add(stringValue);
               });
             } else {
-              entry.add(SimpleValue.of((String) object, dataSource));
+              entry.add(SimpleValue.of((String) object, dataSource, valueWrapper.getRecordInfo()));
             }
           } else {
-            entry.add(SimpleValue.of((String) valueWrappers.get(0).getValue(), dataSource));
+            entry.add(SimpleValue.of((String) valueWrappers.get(0).getValue(), dataSource, valueWrappers.get(0).getRecordInfo()));
           }
         }
       }
@@ -158,47 +206,6 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       }
       return false;
     });
-  }
-
-  @Override
-  protected RuleValue readSimpleValue(Rule rule) {
-    RuleValue ruleValue = MissingValue.getInstance();
-    populateMetadata(rule);
-    DataSource dataSource = rule.getDataSources().get(0);
-    String path = dataSource.getFrom();
-    Object readValue = documentContext.read(path);
-    if (readValue instanceof String) {
-      String string = (String) readValue;
-      ruleValue = SimpleValue.of(string, dataSource);
-      setRecordInfoToSimpleValue((SimpleValue) ruleValue);
-    } else if (readValue instanceof JSONArray) {
-      JSONArray array = (JSONArray) readValue;
-      if (!array.isEmpty()) {
-        if (array.get(0) instanceof String) {
-          List<String> listOfStrings = new ArrayList<>();
-          array.forEach(arrayStringItem -> listOfStrings.add(arrayStringItem.toString()));
-          ruleValue = SimpleValue.of(listOfStrings, dataSource);
-          setRecordInfoToSimpleValue((SimpleValue) ruleValue);
-        } else if (array.get(0) instanceof Map) {
-          throw new IllegalArgumentException(format("Reading a list of complex fields is not supported, data source: %s", dataSource));
-        }
-      }
-    } else if (readValue instanceof Map) {
-      throw new IllegalArgumentException(format("Reading a complex field is not supported, data source: %s", dataSource));
-    }
-    return ruleValue;
-  }
-
-  /**
-   * Populates recordId to the given simple value
-   */
-  private void setRecordInfoToSimpleValue(SimpleValue simpleValue) {
-    if (simpleValue.getDataSource().getFrom() != null) {
-      Pair<String, RecordType> idPathType = buildIdPath(simpleValue.getDataSource().getFrom());
-      String recordId = documentContext.read(idPathType.getKey());
-      RecordType recordType = idPathType.getValue();
-      simpleValue.setRecordInfo(new RecordInfo(recordId, recordType));
-    }
   }
 
   /**
