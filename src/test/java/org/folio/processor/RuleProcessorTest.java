@@ -240,6 +240,7 @@ class RuleProcessorTest {
     givenRule.setDescription("test description");
     givenRule.setField("test field");
     givenRule.setMetadata(Collections.singletonMap("test key", "test value"));
+    givenRule.setItemTypeRule(true);
     DataSource givenDataSource = new DataSource();
     givenDataSource.setTranslation(new Translation());
     givenDataSource.setIndicator("1");
@@ -252,6 +253,7 @@ class RuleProcessorTest {
     assertEquals(givenRule.getDescription(), copiedRule.getDescription());
     assertEquals(givenRule.getField(), copiedRule.getField());
     assertEquals(givenRule.getMetadata(), copiedRule.getMetadata());
+    assertEquals(givenRule.isItemTypeRule(), copiedRule.isItemTypeRule());
     DataSource copiedDataSource = copiedRule.getDataSources().get(0);
     assertEquals(givenDataSource.getFrom(), copiedDataSource.getFrom());
     assertEquals(givenDataSource.getIndicator(), copiedDataSource.getIndicator());

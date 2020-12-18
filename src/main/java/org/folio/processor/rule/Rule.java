@@ -14,7 +14,8 @@ public class Rule {
   private List<DataSource> dataSources;
   private Metadata metadata;
   private String id;
-  private boolean hasSameTagInItems;
+  /* The flag means that this rule is generated from TransformationField with RecordType equals ITEM */
+  private boolean isItemTypeRule;
 
   public String getField() {
     return field;
@@ -56,12 +57,12 @@ public class Rule {
     this.metadata = metadata;
   }
 
-  public boolean isHasSameTagInItems() {
-    return hasSameTagInItems;
+  public boolean isItemTypeRule() {
+    return isItemTypeRule;
   }
 
-  public void setHasSameTagInItems(boolean hasSameTagInItems) {
-    this.hasSameTagInItems = hasSameTagInItems;
+  public void setItemTypeRule(boolean isItemTypeRule) {
+    this.isItemTypeRule = isItemTypeRule;
   }
 
   public Rule copy() {
@@ -73,7 +74,7 @@ public class Rule {
     List<DataSource> clonedDataSources = new ArrayList<>();
     this.dataSources.forEach(originDataSource -> clonedDataSources.add(originDataSource.copy()));
     rule.setDataSources(clonedDataSources);
-    rule.setHasSameTagInItems(hasSameTagInItems);
+    rule.setItemTypeRule(isItemTypeRule);
     return rule;
   }
 
