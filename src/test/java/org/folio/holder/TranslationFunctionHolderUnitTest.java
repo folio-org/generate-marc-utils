@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
@@ -100,7 +101,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -155,7 +156,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
 
@@ -178,7 +179,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -192,7 +193,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -256,7 +257,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -352,7 +353,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -374,7 +375,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -413,7 +414,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -424,7 +425,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -483,7 +484,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -620,7 +621,7 @@ class TranslationFunctionHolderUnitTest {
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
-    metadata.addData("languages", new Metadata.Entry("$.languages", singletonList(StringUtils.EMPTY)));
+    metadata.addData("languages", new Metadata.Entry("$.languages", singletonList(EMPTY)));
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
@@ -765,7 +766,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -787,7 +788,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -809,7 +810,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -823,5 +824,48 @@ class TranslationFunctionHolderUnitTest {
     // then
     Assert.assertEquals(expectedResult, result);
   }
+
+  @Test
+  void SetHoldingPermanentLocation_shouldReturnLocationName() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_PERMANENT_LOCATION;
+    Translation translation = new Translation();
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    Metadata metadata = new Metadata();
+    metadata.addData("temporaryLocationId", new Metadata.Entry("$.holdings[*].temporaryLocationId", Collections.emptyList()));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("Miller General Stacks", result);
+  }
+
+  @Test
+  void SetHoldingPermanentLocation_shouldReturnEmpty_whenTemporaryLocationIsPresent() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_PERMANENT_LOCATION;
+    Translation translation = new Translation();
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    Metadata metadata = new Metadata();
+    metadata.addData("temporaryLocationId", new Metadata.Entry("$.holdings[*].temporaryLocationId", singletonList("fbeec574-4111-11eb-b378-0242ac130002")));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetHoldingPermanentLocation_shouldReturnEmpty_whenLocationIdNotPresentInReferenceData() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_PERMANENT_LOCATION;
+    Translation translation = new Translation();
+    String value = "bb0bc416-4112-11eb-b378-0242ac130002";
+    Metadata metadata = new Metadata();
+    metadata.addData("temporaryLocationId", new Metadata.Entry("$.holdings[*].temporaryLocationId", Collections.emptyList()));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
 
 }
