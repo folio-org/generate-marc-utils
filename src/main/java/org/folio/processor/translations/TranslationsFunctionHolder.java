@@ -1,7 +1,6 @@
 package org.folio.processor.translations;
 
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.referencedata.ReferenceData;
@@ -21,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
@@ -245,7 +245,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     @Override
     public String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
       List<String> relationshipIds = (List<String>) metadata.getData().get("relationshipId").getData();
-      if (CollectionUtils.isNotEmpty(relationshipIds)) {
+      if (isNotEmpty(relationshipIds)) {
         String relationshipId = relationshipIds.get(currentIndex);
         JsonObject relationship = referenceData.get(ELECTRONIC_ACCESS_RELATIONSHIPS).get(relationshipId);
         if (relationship != null) {
@@ -311,6 +311,24 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
           return entry.getString(field);
         }
         return StringUtils.EMPTY;
+      }
+    }
+  },
+
+  SET_HOLDINGS_PERMANENT_LOCATION() {
+    @Override
+    public String apply(String locationId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException {
+      List<String> temporaryLocationId = (List<String>) metadata.getData().get("temporaryLocationId").getData();
+      if (isNotEmpty(temporaryLocationId) && isNotEmpty(temporaryLocationId.get(0))) {
+        return StringUtils.EMPTY;
+      } else {
+        JsonObject entry = referenceData.get(LOCATIONS).get(locationId);
+        if (entry == null) {
+          LOGGER.error("Location is not found by the given id: {}", locationId);
+          return StringUtils.EMPTY;
+        } else {
+          return entry.getString(NAME);
+        }
       }
     }
   },
