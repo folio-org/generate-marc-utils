@@ -14,7 +14,7 @@ public class Rule {
   private List<DataSource> dataSources;
   private Metadata metadata;
   private String id;
-  private boolean hasSameTagInItems;
+  private boolean isItemTypeRule;
 
   public String getField() {
     return field;
@@ -56,12 +56,12 @@ public class Rule {
     this.metadata = metadata;
   }
 
-  public boolean isHasSameTagInItems() {
-    return hasSameTagInItems;
+  public boolean isItemTypeRule() {
+    return isItemTypeRule;
   }
 
-  public void setHasSameTagInItems(boolean hasSameTagInItems) {
-    this.hasSameTagInItems = hasSameTagInItems;
+  public void setItemTypeRule(boolean itemTypeRule) {
+    this.isItemTypeRule = itemTypeRule;
   }
 
   public Rule copy() {
@@ -73,7 +73,7 @@ public class Rule {
     List<DataSource> clonedDataSources = new ArrayList<>();
     this.dataSources.forEach(originDataSource -> clonedDataSources.add(originDataSource.copy()));
     rule.setDataSources(clonedDataSources);
-    rule.setHasSameTagInItems(hasSameTagInItems);
+    rule.setItemTypeRule(isItemTypeRule);
     return rule;
   }
 

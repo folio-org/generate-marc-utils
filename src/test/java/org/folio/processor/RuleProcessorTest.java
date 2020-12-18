@@ -40,6 +40,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -240,6 +241,7 @@ class RuleProcessorTest {
     givenRule.setDescription("test description");
     givenRule.setField("test field");
     givenRule.setMetadata(Collections.singletonMap("test key", "test value"));
+    givenRule.setItemTypeRule(true);
     DataSource givenDataSource = new DataSource();
     givenDataSource.setTranslation(new Translation());
     givenDataSource.setIndicator("1");
@@ -252,6 +254,7 @@ class RuleProcessorTest {
     assertEquals(givenRule.getDescription(), copiedRule.getDescription());
     assertEquals(givenRule.getField(), copiedRule.getField());
     assertEquals(givenRule.getMetadata(), copiedRule.getMetadata());
+    assertEquals(givenRule.isItemTypeRule(), copiedRule.isItemTypeRule());
     DataSource copiedDataSource = copiedRule.getDataSources().get(0);
     assertEquals(givenDataSource.getFrom(), copiedDataSource.getFrom());
     assertEquals(givenDataSource.getIndicator(), copiedDataSource.getIndicator());
