@@ -1,7 +1,7 @@
 package org.folio.processor.translations;
 
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.referencedata.ReferenceData;
 import org.folio.processor.rule.Metadata;
