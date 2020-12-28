@@ -3,7 +3,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>generate-marc-utils</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>3.1.0</version>
   <packaging>jar</packaging>
   <name>generate-marc-utils</name>
   <organization>
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>12.0</version>
+      <version>30.1-jre</version>
     </dependency>
     <dependency>
       <groupId>javax.validation</groupId>
