@@ -19,8 +19,7 @@ public class Error {
   @JsonPropertyDescription("Error message code")
   private String code;
 
-  public Error() {
-  }
+  public Error() {}
 
   @JsonProperty("message")
   public String getMessage() {
