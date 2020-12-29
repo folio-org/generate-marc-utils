@@ -84,7 +84,7 @@ class RuleProcessorTest {
   void shouldMapEntityTo_MarcRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    EntityReader reader = new JPathSyntaxEntityReader(entity.encode());
     RecordWriter writer = new MarcRecordWriter();
     // when
     String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -97,7 +97,7 @@ class RuleProcessorTest {
   void shouldMapEntityTo_JsonRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    EntityReader reader = new JPathSyntaxEntityReader(entity.encode());
     RecordWriter writer = new JsonRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -110,7 +110,7 @@ class RuleProcessorTest {
   void shouldMapEntityTo_XmlRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    EntityReader reader = new JPathSyntaxEntityReader(entity.encode());
     RecordWriter writer = new XmlRecordWriter();
     // when
     String actualXmlRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -124,7 +124,7 @@ class RuleProcessorTest {
     // given
     entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_one_field.json"));
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    EntityReader reader = new JPathSyntaxEntityReader(entity.encode());
     RecordWriter writer = new XmlRecordWriter();
     // when
     List<VariableField> actualVariableFields = ruleProcessor.processFields(reader, writer, referenceData, rules, null);
@@ -138,7 +138,7 @@ class RuleProcessorTest {
   void shouldReturnEmpty_ForEmptyEntity_MarcRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject().encode());
     RecordWriter writer = new MarcRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -150,7 +150,7 @@ class RuleProcessorTest {
   void shouldReturnEmpty_ForEmptyEntity_JsonRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject().encode());
     RecordWriter writer = new JsonRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -162,7 +162,7 @@ class RuleProcessorTest {
   void shouldReturnEmpty_ForEmptyEntity_XmlRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject().encode());
     RecordWriter writer = new XmlRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -185,7 +185,7 @@ class RuleProcessorTest {
     entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_wrong_data.json"));
     when(translationHolder.lookup("set_transaction_datetime")).thenReturn(TranslationsFunctionHolder.SET_TRANSACTION_DATETIME);
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    EntityReader reader = new JPathSyntaxEntityReader(entity.encode());
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
@@ -219,7 +219,7 @@ class RuleProcessorTest {
       throw new RuntimeException("test exception");
     });
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    EntityReader reader = new JPathSyntaxEntityReader(entity.encode());
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then

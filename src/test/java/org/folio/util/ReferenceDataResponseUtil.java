@@ -2,20 +2,32 @@ package org.folio.util;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import net.minidev.json.parser.JSONParser;
+import org.folio.processor.referencedata.JsonObjectWrapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ReferenceDataResponseUtil {
 
-  public static Map<String, JsonObject> getNatureOfContentTerms() {
-    JsonArray natureOfContentTerm =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json"))
-        .getJsonArray("natureOfContentTerms");
+  public static Map<String, JSONObject> getNatureOfContentTerms() {
+    String json = TestUtil.readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json");
+    JSONArray array = getJsonArray(json, "natureOfContentTerms");
 
-    return natureOfContentTerm.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    //key - inner json object
+    return array.stream()
+      .collect(Collectors.toMap(key -> ((JSONObject)key).getAsString("id"), val -> val));
+  })
+
+  private static JSONArray getJsonArray(String json, String arrayKey) {
+    JSONParser parser = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
+    JSONObject jsonObject = (JSONObject) JSONValue.parse(json);
+    return (JSONArray) jsonObject.get(arrayKey);
   }
 
   public static Map<String, JsonObject> getIdentifierTypes() {
