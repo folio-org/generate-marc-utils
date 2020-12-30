@@ -378,7 +378,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   private static boolean isRelatedIdentifierTypesPresent(List<String> identifierTypeIds, ReferenceData referenceData, Translation translation) {
     for (String identifierTypeId : identifierTypeIds) {
       JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
-      List<String> relatedIdentifierTypes = Splitter.on(",").trimResults().splitToList(translation.getParameter("relatedIdentifierTypes"));
+      List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter("relatedIdentifierTypes"));
       for (String relatedIdentifierType : relatedIdentifierTypes) {
         if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
           return true;
