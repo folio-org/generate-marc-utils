@@ -1,5 +1,6 @@
 package org.folio.processor.translations;
 
+import com.google.common.base.Splitter;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,6 +66,23 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
           String identifierTypeId = identifierTypeIds.get(currentIndex);
           JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
           if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
+            return identifierValue;
+          }
+        }
+      }
+      return StringUtils.EMPTY;
+    }
+  },
+  SET_RELATED_IDENTIFIER() {
+    @Override
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      Object metadataIdentifierTypeIds = metadata.getData().get("identifierTypeId").getData();
+      if (metadataIdentifierTypeIds != null) {
+        List<String> identifierTypeIds = (List<String>) metadataIdentifierTypeIds;
+        if (!identifierTypeIds.isEmpty() && isRelatedIdentifierTypesPresent(identifierTypeIds, referenceData, translation)) {
+          String currentIdentifierTypeId = identifierTypeIds.get(currentIndex);
+          JsonObject currentIdentifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierTypeId);
+          if (currentIdentifierType != null && currentIdentifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -355,6 +373,20 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     String[] patterns = {"yyyy-MM-dd'T'HH:mm:ss.SSSZ", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"};
     Date date = DateUtils.parseDateStrictly(incomingDate, patterns);
     return date.toInstant().atZone(ZoneId.of("Z"));
+  }
+
+  private static boolean isRelatedIdentifierTypesPresent(List<String> identifierTypeIds, ReferenceData referenceData, Translation translation) {
+    for (String identifierTypeId : identifierTypeIds) {
+      JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
+      List<String> relatedIdentifierTypes = Splitter.on(",").trimResults().splitToList(translation.getParameter("relatedIdentifierTypes"));
+      for (String relatedIdentifierType : relatedIdentifierTypes) {
+        if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
+          return true;
+        }
+      }
+
+    }
+    return false;
   }
 
 }

@@ -1,5 +1,6 @@
 package org.folio.holder;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.folio.processor.referencedata.ReferenceData;
@@ -159,6 +160,68 @@ class TranslationFunctionHolderUnitTest {
     Assert.assertEquals(EMPTY, result);
   }
 
+  @Test
+  void SetRelatedIdentifier_shouldReturnIdentifierValue_whenRelatedIdentifierPresent() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "LCCN,ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierTypeId",
+      new Metadata.Entry("$.identifiers[*].identifierTypeId",
+        asList("8261054f-be78-422d-bd51-4ed9f33c3422", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a")));
+    // when
+    String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(value, result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnEmptyValue_whenRelatedIdentifierNotPresent() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "LCCN,System control number",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierTypeId",
+      new Metadata.Entry("$.identifiers[*].identifierTypeId",
+        asList("8261054f-be78-422d-bd51-4ed9f33c3422", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a")));
+    // when
+    String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnEmptyValue_whenIdentifierTypeNotPresentInInstance() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "LCCN,System control number",
+      "type", "Invalid ISSN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierTypeId",
+      new Metadata.Entry("$.identifiers[*].identifierTypeId",
+        asList("8261054f-be78-422d-bd51-4ed9f33c3422", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a")));
+    // when
+    String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
 
   @Test
   void SetMaterialType_shouldReturnMaterialTypeValue() throws ParseException {
