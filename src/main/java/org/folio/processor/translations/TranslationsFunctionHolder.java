@@ -1,5 +1,21 @@
 package org.folio.processor.translations;
 
+import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.IDENTIFIER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_FORMATS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+
 import com.google.common.base.Splitter;
 import io.vertx.core.json.JsonObject;
 import org.apache.commons.lang.time.DateUtils;
@@ -19,22 +35,6 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.String.format;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
-import static org.folio.processor.referencedata.ReferenceDataConstants.IDENTIFIER_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_FORMATS;
-import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.LOAN_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS;
-import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 
@@ -59,12 +59,12 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_IDENTIFIER() {
     @Override
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      Object metadataIdentifierTypeIds = metadata.getData().get("identifierTypeId").getData();
+      Object metadataIdentifierTypeIds = metadata.getData().get("identifierType").getData();
       if (metadataIdentifierTypeIds != null) {
-        List<String> identifierTypeIds = (List<String>) metadataIdentifierTypeIds;
-        if (!identifierTypeIds.isEmpty()) {
-          String identifierTypeId = identifierTypeIds.get(currentIndex);
-          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
+        List<Map> identifierTypes = (List<Map>) metadataIdentifierTypeIds;
+        if (!identifierTypes.isEmpty()) {
+          Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
+          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get("identifierTypeId"));
           if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
@@ -76,14 +76,46 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_RELATED_IDENTIFIER() {
     @Override
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      Object metadataIdentifierTypeIds = metadata.getData().get("identifierTypeId").getData();
+      Object metadataIdentifierTypeIds = metadata.getData().get("identifierType").getData();
       if (metadataIdentifierTypeIds != null) {
-        List<String> identifierTypeIds = (List<String>) metadataIdentifierTypeIds;
-        if (!identifierTypeIds.isEmpty() && isRelatedIdentifierTypesPresent(identifierTypeIds, referenceData, translation)) {
-          String currentIdentifierTypeId = identifierTypeIds.get(currentIndex);
-          JsonObject currentIdentifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierTypeId);
-          if (currentIdentifierType != null && currentIdentifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
-            return identifierValue;
+        List<Map> identifierTypes = (List<Map>) metadataIdentifierTypeIds;
+        if (!identifierTypes.isEmpty()) {
+          Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
+          JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get("identifierTypeId"));
+          List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter("relatedIdentifierTypes"));
+          for (String relatedIdentifierType : relatedIdentifierTypes) {
+            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
+
+              boolean isCurrentIndexLeast = true;
+              if (relatedIdentifierTypes.size() > 1) {
+                for (String relatedIdentifierType2 : relatedIdentifierTypes) {
+                  for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
+                    if (referenceDataEntry.getString(NAME).equalsIgnoreCase(relatedIdentifierType2)) {
+                      for (int i = 0; i < identifierTypes.size(); i++) {
+                        if (identifierTypes.get(i).get("identifierTypeId").equals(referenceDataEntry.getString("id"))) {
+                          if (i < currentIndex) {
+                            isCurrentIndexLeast = false;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              if(isCurrentIndexLeast) {
+                String actualIdentifierTypeName = translation.getParameter("type");
+                for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
+                  if (referenceDataEntry.getString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
+                    for (Map<String, String> identifierType : identifierTypes) {
+                      if (identifierType.get("identifierTypeId").equalsIgnoreCase(referenceDataEntry.getString("id"))) {
+                        return identifierType.get("value");
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
