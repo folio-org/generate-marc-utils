@@ -186,7 +186,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetRelatedIdentifier_shouldReturnNewValue_whenRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
+  void SetRelatedIdentifier_shouldReturnInvalidIsbnValue_whenRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
     // given
     String value = "isbn value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
@@ -208,7 +208,7 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetRelatedIdentifier_shouldReturnEmptyValue_whenApplyValueMatchesRelatedIdentifierTypeWithNotLeastIndex() throws ParseException {
+  void SetRelatedIdentifier_shouldReturnEmptyValue_whenCurrentIdentifierIssnIndexNotLeast() throws ParseException {
     // given
     String value = "issn value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
@@ -260,7 +260,7 @@ class TranslationFunctionHolderUnitTest {
     Map<String, String> parameters = new HashMap<>();
     Translation translation = new Translation();
     translation.setParameters(parameters);
-    // when
+    // wheon
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
     Assert.assertEquals(EMPTY, result);

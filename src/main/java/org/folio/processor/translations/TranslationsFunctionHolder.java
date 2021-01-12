@@ -18,6 +18,7 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF
 
 import com.google.common.base.Splitter;
 import io.vertx.core.json.JsonObject;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.referencedata.ReferenceData;
@@ -59,12 +60,12 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_IDENTIFIER() {
     @Override
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      Object metadataIdentifierTypeIds = metadata.getData().get("identifierType").getData();
+      Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
         List<Map> identifierTypes = (List<Map>) metadataIdentifierTypeIds;
         if (!identifierTypes.isEmpty()) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
-          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get("identifierTypeId"));
+          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
           if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
@@ -76,41 +77,22 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_RELATED_IDENTIFIER() {
     @Override
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      Object metadataIdentifierTypeIds = metadata.getData().get("identifierType").getData();
+      Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
         List<Map> identifierTypes = (List<Map>) metadataIdentifierTypeIds;
-        if (!identifierTypes.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(identifierTypes)) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
-          JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get("identifierTypeId"));
-          List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter("relatedIdentifierTypes"));
+          JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
+          List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter(RELATED_IDENTIFIER_TYPES_PARAM));
           for (String relatedIdentifierType : relatedIdentifierTypes) {
-            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
-
-              boolean isCurrentIndexLeast = true;
-              if (relatedIdentifierTypes.size() > 1) {
-                for (String relatedIdentifierType2 : relatedIdentifierTypes) {
-                  for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
-                    if (referenceDataEntry.getString(NAME).equalsIgnoreCase(relatedIdentifierType2)) {
-                      for (int i = 0; i < identifierTypes.size(); i++) {
-                        if (identifierTypes.get(i).get("identifierTypeId").equals(referenceDataEntry.getString("id"))) {
-                          if (i < currentIndex) {
-                            isCurrentIndexLeast = false;
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-
-              if(isCurrentIndexLeast) {
-                String actualIdentifierTypeName = translation.getParameter("type");
-                for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
-                  if (referenceDataEntry.getString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
-                    for (Map<String, String> identifierType : identifierTypes) {
-                      if (identifierType.get("identifierTypeId").equalsIgnoreCase(referenceDataEntry.getString("id"))) {
-                        return identifierType.get("value");
-                      }
+            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)
+              && isCurrentIdentifierIndexLeast(currentIndex, referenceData, identifierTypes, relatedIdentifierTypes)) {
+              String actualIdentifierTypeName = translation.getParameter(TYPE_PARAM);
+              for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
+                if (referenceDataEntry.getString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
+                  for (Map<String, String> identifierType : identifierTypes) {
+                    if (identifierType.get(IDENTIFIER_TYPE_ID_PARAM).equalsIgnoreCase(referenceDataEntry.getString(ID_PARAM))) {
+                      return identifierType.get(VALUE_PARAM);
                     }
                   }
                 }
@@ -120,6 +102,24 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         }
       }
       return StringUtils.EMPTY;
+    }
+
+    private boolean isCurrentIdentifierIndexLeast(int currentIndex, ReferenceData referenceData, List<Map> identifierTypes, List<String> relatedIdentifierTypes) {
+      if (relatedIdentifierTypes.size() > 1) {
+        for (String relatedIdentifierType2 : relatedIdentifierTypes) {
+          for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
+            if (referenceDataEntry.getString(NAME).equalsIgnoreCase(relatedIdentifierType2)) {
+              for (int i = 0; i < identifierTypes.size(); i++) {
+                if (identifierTypes.get(i).get(IDENTIFIER_TYPE_ID_PARAM).equals(referenceDataEntry.getString(ID_PARAM))
+                  && i < currentIndex) {
+                  return false;
+                }
+              }
+            }
+          }
+        }
+      }
+      return true;
     }
   },
   SET_CONTRIBUTOR() {
@@ -392,9 +392,15 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     }
   };
 
+  private static final String VALUE_PARAM = "value";
+  private static final String ID_PARAM = "id";
+  private static final String TYPE_PARAM = "type";
+  private static final String RELATED_IDENTIFIER_TYPES_PARAM = "relatedIdentifierTypes";
+  private static final String IDENTIFIER_TYPE_ID_PARAM = "identifierTypeId";
+  private static final String IDENTIFIER_TYPE_METADATA = "identifierType";
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
-  private static final String VALUE = "value";
+  private static final String VALUE = VALUE_PARAM;
 
   @Override
   public TranslationFunction lookup(String function) {
@@ -407,18 +413,5 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     return date.toInstant().atZone(ZoneId.of("Z"));
   }
 
-  private static boolean isRelatedIdentifierTypesPresent(List<String> identifierTypeIds, ReferenceData referenceData, Translation translation) {
-    for (String identifierTypeId : identifierTypeIds) {
-      JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
-      List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter("relatedIdentifierTypes"));
-      for (String relatedIdentifierType : relatedIdentifierTypes) {
-        if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
-          return true;
-        }
-      }
-
-    }
-    return false;
-  }
 
 }
