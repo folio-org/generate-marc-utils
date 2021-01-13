@@ -1,6 +1,26 @@
 package org.folio.processor.translations;
 
-import static java.lang.String.format;
+import java.lang.invoke.MethodHandles;
+import java.text.ParseException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.rule.Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
+import io.vertx.core.json.JsonObject;
+
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -15,27 +35,7 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS
 import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
-
-import com.google.common.base.Splitter;
-import io.vertx.core.json.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.folio.processor.referencedata.ReferenceData;
-import org.folio.processor.rule.Metadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
-import java.text.ParseException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import static java.lang.String.format;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 
@@ -85,8 +85,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
           JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
           List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter(RELATED_IDENTIFIER_TYPES_PARAM));
           for (String relatedIdentifierType : relatedIdentifierTypes) {
-            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)
-              && isCurrentIdentifierIndexLeast(currentIndex, referenceData, identifierTypes, relatedIdentifierTypes)) {
+            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
               String actualIdentifierTypeName = translation.getParameter(TYPE_PARAM);
               for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
                 if (referenceDataEntry.getString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
@@ -102,23 +101,6 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         }
       }
       return StringUtils.EMPTY;
-    }
-
-    private boolean isCurrentIdentifierIndexLeast(int currentIndex, ReferenceData referenceData, List<Map> identifierTypes, List<String> relatedIdentifierTypes) {
-      if (relatedIdentifierTypes.size() > 1) {
-        for (String relatedIdentifierType : relatedIdentifierTypes) {
-          for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
-            if (referenceDataEntry.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
-              for (int i = 0; i < identifierTypes.size(); i++) {
-                if (identifierTypes.get(i).get(IDENTIFIER_TYPE_ID_PARAM).equals(referenceDataEntry.getString(ID_PARAM)) && i < currentIndex) {
-                  return false;
-                }
-              }
-            }
-          }
-        }
-      }
-      return true;
     }
   },
   SET_CONTRIBUTOR() {

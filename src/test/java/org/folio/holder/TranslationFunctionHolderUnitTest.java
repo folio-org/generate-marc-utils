@@ -1,7 +1,31 @@
 package org.folio.holder;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Lists;
+import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.rule.Metadata;
+import org.folio.processor.translations.Translation;
+import org.folio.processor.translations.TranslationFunction;
+import org.folio.processor.translations.TranslationsFunctionHolder;
+import org.folio.util.ReferenceDataResponseUtil;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.google.common.collect.ImmutableMap;
+
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
@@ -19,35 +43,8 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_I
 import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
-
-import com.google.common.collect.ImmutableMap;
-import io.vertx.core.json.JsonObject;
-import net.bytebuddy.pool.TypePool;
-import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
-import org.folio.processor.referencedata.ReferenceData;
-import org.folio.processor.rule.Metadata;
-import org.folio.processor.translations.Translation;
-import org.folio.processor.translations.TranslationFunction;
-import org.folio.processor.translations.TranslationsFunctionHolder;
-import org.folio.util.ReferenceDataResponseUtil;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Assert;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -208,26 +205,25 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
-  void SetRelatedIdentifier_shouldReturnEmptyValue_whenCurrentIdentifierIssnIndexNotLeast() throws ParseException {
+  void SetRelatedIdentifier_shouldReturnInvalidIsbnValue_whenSecondRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
     // given
-    String value = "issn value";
+    String value = "isbn value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(ImmutableMap.of(
-      "relatedIdentifierTypes", "ISBN,ISSN",
+      "relatedIdentifierTypes", "ISSN,ISBN",
       "type", "Invalid ISBN"));
 
     Metadata metadata = new Metadata();
     metadata.addData("identifierType",
       new Metadata.Entry("$.identifiers[*]",
         asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
-               ImmutableMap.of("value", "issn value", "identifierTypeId", "913300b2-03ed-469a-8179-c1092c991227"),
                ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
     // when
-    String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    Assert.assertEquals("invalid isbn value", result);
   }
 
   @Test
@@ -260,7 +256,7 @@ class TranslationFunctionHolderUnitTest {
     Map<String, String> parameters = new HashMap<>();
     Translation translation = new Translation();
     translation.setParameters(parameters);
-    // wheon
+    // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
     Assert.assertEquals(EMPTY, result);
