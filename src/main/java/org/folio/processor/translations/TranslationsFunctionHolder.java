@@ -106,12 +106,11 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
     private boolean isCurrentIdentifierIndexLeast(int currentIndex, ReferenceData referenceData, List<Map> identifierTypes, List<String> relatedIdentifierTypes) {
       if (relatedIdentifierTypes.size() > 1) {
-        for (String relatedIdentifierType2 : relatedIdentifierTypes) {
+        for (String relatedIdentifierType : relatedIdentifierTypes) {
           for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
-            if (referenceDataEntry.getString(NAME).equalsIgnoreCase(relatedIdentifierType2)) {
+            if (referenceDataEntry.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
               for (int i = 0; i < identifierTypes.size(); i++) {
-                if (identifierTypes.get(i).get(IDENTIFIER_TYPE_ID_PARAM).equals(referenceDataEntry.getString(ID_PARAM))
-                  && i < currentIndex) {
+                if (identifierTypes.get(i).get(IDENTIFIER_TYPE_ID_PARAM).equals(referenceDataEntry.getString(ID_PARAM)) && i < currentIndex) {
                   return false;
                 }
               }
