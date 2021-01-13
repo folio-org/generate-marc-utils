@@ -62,7 +62,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
       Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
-        List<Map> identifierTypes = (List<Map>) metadataIdentifierTypeIds;
+        List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
         if (!identifierTypes.isEmpty()) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
           JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
@@ -79,7 +79,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
       Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
-        List<Map> identifierTypes = (List<Map>) metadataIdentifierTypeIds;
+        List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
         if (CollectionUtils.isNotEmpty(identifierTypes)) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
           JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
