@@ -11,6 +11,11 @@
       "source": "folio"
     },
     {
+      "id": "47c7bf8e-d2a3-4b3f-84b8-79944031a55a",
+      "name": "Invalid ISBN",
+      "source": "folio"
+    },
+    {
       "id": "913300b2-03ed-469a-8179-c1092c991227",
       "name": "ISSN",
       "source": "folio"
@@ -28,6 +33,26 @@
     {
       "id": "351ebc1c-3aae-4825-8765-c6d50dbf011f",
       "name": "GPO item number",
+      "source": "folio"
+    },
+    {
+      "id": "5a8c36c0-7765-4863-87be-7146abe8f5f7",
+      "name": "Invalid ISBN",
+      "source": "folio"
+    },
+    {
+      "id": "846e7bb9-f06c-4ec9-8523-2527314fec9e",
+      "name": "Invalid ISSN",
+      "source": "folio"
+    },
+    {
+      "id": "c77e947d-ee93-4185-8c3e-06104bdda923",
+      "name": "Linking ISSN",
+      "source": "folio"
+    },
+    {
+      "id": "d70f3282-489e-40cd-b144-64e68a3b0514",
+      "name": "Cancelled GPO item number",
       "source": "folio"
     }
   ],

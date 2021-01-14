@@ -1,13 +1,5 @@
 package org.folio.processor.translations;
 
-import io.vertx.core.json.JsonObject;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.folio.processor.referencedata.ReferenceData;
-import org.folio.processor.rule.Metadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -18,8 +10,17 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.rule.Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static java.lang.String.format;
+import com.google.common.base.Splitter;
+import io.vertx.core.json.JsonObject;
+
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -34,6 +35,7 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS
 import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+import static java.lang.String.format;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 
@@ -58,14 +60,43 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_IDENTIFIER() {
     @Override
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      Object metadataIdentifierTypeIds = metadata.getData().get("identifierTypeId").getData();
+      Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
-        List<String> identifierTypeIds = (List<String>) metadataIdentifierTypeIds;
-        if (!identifierTypeIds.isEmpty()) {
-          String identifierTypeId = identifierTypeIds.get(currentIndex);
-          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
+        List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
+        if (!identifierTypes.isEmpty()) {
+          Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
+          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
           if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
+          }
+        }
+      }
+      return StringUtils.EMPTY;
+    }
+  },
+  SET_RELATED_IDENTIFIER() {
+    @Override
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+      Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
+      if (metadataIdentifierTypeIds != null) {
+        List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
+        if (CollectionUtils.isNotEmpty(identifierTypes)) {
+          Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
+          JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
+          List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter(RELATED_IDENTIFIER_TYPES_PARAM));
+          for (String relatedIdentifierType : relatedIdentifierTypes) {
+            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
+              String actualIdentifierTypeName = translation.getParameter(TYPE_PARAM);
+              for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
+                if (referenceDataEntry.getString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
+                  for (Map<String, String> identifierType : identifierTypes) {
+                    if (identifierType.get(IDENTIFIER_TYPE_ID_PARAM).equalsIgnoreCase(referenceDataEntry.getString(ID_PARAM))) {
+                      return identifierType.get(VALUE_PARAM);
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -342,9 +373,15 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     }
   };
 
+  private static final String VALUE_PARAM = "value";
+  private static final String ID_PARAM = "id";
+  private static final String TYPE_PARAM = "type";
+  private static final String RELATED_IDENTIFIER_TYPES_PARAM = "relatedIdentifierTypes";
+  private static final String IDENTIFIER_TYPE_ID_PARAM = "identifierTypeId";
+  private static final String IDENTIFIER_TYPE_METADATA = "identifierType";
   private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
-  private static final String VALUE = "value";
+  private static final String VALUE = VALUE_PARAM;
 
   @Override
   public TranslationFunction lookup(String function) {
@@ -356,5 +393,6 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     Date date = DateUtils.parseDateStrictly(incomingDate, patterns);
     return date.toInstant().atZone(ZoneId.of("Z"));
   }
+
 
 }

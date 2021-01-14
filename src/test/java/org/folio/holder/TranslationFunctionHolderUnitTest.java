@@ -1,5 +1,10 @@
 package org.folio.holder;
 
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
 import org.folio.processor.referencedata.ReferenceData;
@@ -19,14 +24,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
@@ -44,6 +43,8 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_I
 import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
@@ -107,16 +108,17 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetIdentifier_shouldReturnIdentifierValue() throws ParseException {
     // given
-    String value = "value";
+    String value = "lccn value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "LCCN"));
 
     Metadata metadata = new Metadata();
-    metadata.addData("identifierTypeId",
-      new Metadata.Entry("$.identifiers[*].identifierTypeId",
-        asList("8261054f-be78-422d-bd51-4ed9f33c3422", "c858e4f2-2b6b-4385-842b-60732ee14abb")));
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+               ImmutableMap.of("value", "lccn value", "identifierTypeId", "c858e4f2-2b6b-4385-842b-60732ee14abb"))));
     // when
     String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
     // then
@@ -126,16 +128,16 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetIdentifier_shouldReturnIdentifierValue_forSystemControlNumber() throws ParseException {
     // given
-    String value = "value";
+    String value = "system control number value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "System control number"));
 
     Metadata metadata = new Metadata();
-    metadata.addData("identifierTypeId",
-      new Metadata.Entry("$.identifiers[*].identifierTypeId",
-        singletonList("7e591197-f335-4afb-bc6d-a6d76ca3bace")));
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        singletonList(ImmutableMap.of("value", "system control number value", "identifierTypeId", "7e591197-f335-4afb-bc6d-a6d76ca3bace"))));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
@@ -152,13 +154,77 @@ class TranslationFunctionHolderUnitTest {
     translation.setParameters(Collections.singletonMap("type", "LCCN"));
 
     Metadata metadata = new Metadata();
-    metadata.addData("identifierTypeId", new Metadata.Entry("$.identifiers[*].identifierTypeId", Collections.emptyList()));
+    metadata.addData("identifierType", new Metadata.Entry("$.identifiers[*]", Collections.emptyList()));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
     Assert.assertEquals(EMPTY, result);
   }
 
+  @Test
+  void SetRelatedIdentifier_shouldReturnEmptyValue_whenRelatedIdentifierDoesNotMatchCurrentIdentifierValue() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnInvalidIsbnValue_whenRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
+    // given
+    String value = "isbn value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+               ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("invalid isbn value", result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnInvalidIsbnValue_whenSecondRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
+    // given
+    String value = "isbn value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISSN,ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+               ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("invalid isbn value", result);
+  }
 
   @Test
   void SetMaterialType_shouldReturnMaterialTypeValue() throws ParseException {
