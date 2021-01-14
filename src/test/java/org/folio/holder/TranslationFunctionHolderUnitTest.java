@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
-import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
@@ -50,7 +50,7 @@ import static java.util.Collections.singletonList;
 @RunWith(MockitoJUnitRunner.class)
 class TranslationFunctionHolderUnitTest {
 
-  private static ReferenceData referenceData = Mockito.mock(ReferenceData.class);
+  private static ReferenceDataWrapper referenceData = Mockito.mock(ReferenceDataWrapper.class);
 
   @BeforeAll
   static void setUp() {

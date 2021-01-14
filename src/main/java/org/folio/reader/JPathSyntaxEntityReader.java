@@ -4,15 +4,14 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import io.vertx.core.json.JsonObject;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.folio.processor.error.RecordInfo;
+import org.folio.processor.error.RecordType;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
-import org.folio.processor.error.RecordInfo;
-import org.folio.processor.error.RecordType;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.MissingValue;
 import org.folio.reader.values.RuleValue;
@@ -37,9 +36,9 @@ import static org.apache.commons.lang3.StringUtils.ordinalIndexOf;
 public class JPathSyntaxEntityReader extends AbstractEntityReader {
   private final DocumentContext documentContext;
 
-  public JPathSyntaxEntityReader(JsonObject entity) {
+  public JPathSyntaxEntityReader(String json) {
     this.documentContext = JsonPath.parse(
-      entity.encode(),
+      json,
       Configuration.defaultConfiguration()
         .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL)
         .addOptions(Option.SUPPRESS_EXCEPTIONS)

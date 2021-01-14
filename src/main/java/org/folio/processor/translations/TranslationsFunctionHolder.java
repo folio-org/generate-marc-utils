@@ -1,26 +1,5 @@
 package org.folio.processor.translations;
 
-import java.lang.invoke.MethodHandles;
-import java.text.ParseException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.folio.processor.referencedata.ReferenceData;
-import org.folio.processor.rule.Metadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
-import io.vertx.core.json.JsonObject;
-
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -35,38 +14,60 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS
 import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+
+import com.google.common.base.Splitter;
+import java.lang.invoke.MethodHandles;
+import java.text.ParseException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import net.minidev.json.JSONObject;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
+import org.folio.processor.referencedata.JsonObjectWrapper;
+import org.folio.processor.referencedata.ReferenceDataWrapper;
+import org.folio.processor.rule.Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import static java.lang.String.format;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 
   SET_VALUE() {
     @Override
-    public String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+    public String apply(String value, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       return translation.getParameter(VALUE);
     }
   },
   SET_NATURE_OF_CONTENT_TERM() {
     @Override
-    public String apply(String id, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(NATURE_OF_CONTENT_TERMS).get(id);
-      if (entry == null) {
+    public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(id, referenceData, NATURE_OF_CONTENT_TERMS);
+      if (entry.isEmpty()) {
         LOGGER.error("Nature of content term is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
-        return entry.getString(NAME);
+        return entry.getAsString(NAME);
       }
     }
   },
   SET_IDENTIFIER() {
     @Override
-    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
         List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
         if (!identifierTypes.isEmpty()) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
-          JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
-          if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
+          JSONObject identifierType = convertToJson(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM), referenceData, IDENTIFIER_TYPES);
+          if (!identifierType.isEmpty() && identifierType.getAsString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -76,21 +77,22 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   },
   SET_RELATED_IDENTIFIER() {
     @Override
-    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
         List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
         if (CollectionUtils.isNotEmpty(identifierTypes)) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
-          JsonObject currentIdentifierTypeReferenceData = referenceData.get(IDENTIFIER_TYPES).get(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM));
+          JSONObject currentIdentifierTypeReferenceData = convertToJson(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM), referenceData, IDENTIFIER_TYPES);
           List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter(RELATED_IDENTIFIER_TYPES_PARAM));
           for (String relatedIdentifierType : relatedIdentifierTypes) {
-            if (currentIdentifierTypeReferenceData.getString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
+            if (currentIdentifierTypeReferenceData.getAsString(NAME).equalsIgnoreCase(relatedIdentifierType)) {
               String actualIdentifierTypeName = translation.getParameter(TYPE_PARAM);
-              for (JsonObject referenceDataEntry : referenceData.get(IDENTIFIER_TYPES).values()) {
-                if (referenceDataEntry.getString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
+              for (JsonObjectWrapper wrapper : referenceData.get(IDENTIFIER_TYPES).values()) {
+                JSONObject referenceDataEntry = new JSONObject(wrapper == null ? Collections.emptyMap() : wrapper.getMap());
+                if (referenceDataEntry.getAsString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
                   for (Map<String, String> identifierType : identifierTypes) {
-                    if (identifierType.get(IDENTIFIER_TYPE_ID_PARAM).equalsIgnoreCase(referenceDataEntry.getString(ID_PARAM))) {
+                    if (identifierType.get(IDENTIFIER_TYPE_ID_PARAM).equalsIgnoreCase(referenceDataEntry.getAsString(ID_PARAM))) {
                       return identifierType.get(VALUE_PARAM);
                     }
                   }
@@ -105,14 +107,14 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   },
   SET_CONTRIBUTOR() {
     @Override
-    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       Object metadataContributorNameTypeIds = metadata.getData().get("contributorNameTypeId").getData();
       if (metadataContributorNameTypeIds != null) {
         List<String> contributorNameTypeIds = (List<String>) metadataContributorNameTypeIds;
         if (!contributorNameTypeIds.isEmpty()) {
           String contributorNameTypeId = contributorNameTypeIds.get(currentIndex);
-          JsonObject contributorNameType = referenceData.get(CONTRIBUTOR_NAME_TYPES).get(contributorNameTypeId);
-          if (contributorNameType != null && contributorNameType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
+          JSONObject contributorNameType = convertToJson(contributorNameTypeId, referenceData, CONTRIBUTOR_NAME_TYPES);
+          if (!contributorNameType.isEmpty() && contributorNameType.getAsString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
             return identifierValue;
           }
         }
@@ -123,25 +125,25 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
   SET_LOAN_TYPE() {
     @Override
-    public String apply(String id, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(LOAN_TYPES).get(id);
-      if (entry == null) {
+    public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(id, referenceData, LOAN_TYPES);
+      if (entry.isEmpty()) {
         LOGGER.error("Loan Type is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
-        return entry.getString(NAME);
+        return entry.getAsString(NAME);
       }
     }
   },
   SET_MATERIAL_TYPE() {
     @Override
-    public String apply(String materialTypeId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(MATERIAL_TYPES).get(materialTypeId);
-      if (entry == null) {
+    public String apply(String materialTypeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(materialTypeId, referenceData, MATERIAL_TYPES);
+      if (entry.isEmpty()) {
         LOGGER.error("Material type is not found by the given id: {}", materialTypeId);
         return StringUtils.EMPTY;
       } else {
-        return entry.getString(NAME);
+        return entry.getAsString(NAME);
       }
     }
   },
@@ -160,7 +162,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       .toFormatter();
 
     @Override
-    public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException {
+    public String apply(String updatedDate, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) throws ParseException {
       ZonedDateTime originDateTime = getParsedDate(updatedDate);
       return targetDateFormatter.format(originDateTime);
     }
@@ -190,7 +192,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     private static final String FIELD_PATTERN = "%s|%s%s||||||||       |||||%s||";
 
     @Override
-    public String apply(String originCreatedDate, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+    public String apply(String originCreatedDate, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       String createdDateParam;
       if (isNotEmpty(originCreatedDate)) {
         try {
@@ -238,13 +240,13 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
   SET_INSTANCE_TYPE_ID() {
     @Override
-    public String apply(String instanceTypeId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(INSTANCE_TYPES).get(instanceTypeId);
-      if (entry == null) {
+    public String apply(String instanceTypeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(instanceTypeId, referenceData, INSTANCE_TYPES);
+      if (entry.isEmpty()) {
         LOGGER.error("Instance type id is not found by the given id: {}", instanceTypeId);
         return StringUtils.EMPTY;
       } else {
-        return entry.getString(NAME);
+        return entry.getAsString(NAME);
       }
     }
   },
@@ -253,13 +255,13 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     private static final String REGEX = "--";
 
     @Override
-    public String apply(String instanceFormatId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(INSTANCE_FORMATS).get(instanceFormatId);
-      if (entry == null) {
+    public String apply(String instanceFormatId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(instanceFormatId, referenceData, INSTANCE_FORMATS);
+      if (entry.isEmpty()) {
         LOGGER.error("Instance format is not found by the given id: {}", instanceFormatId);
         return StringUtils.EMPTY;
       } else {
-        String instanceFormatIdValue = entry.getString(NAME);
+        String instanceFormatIdValue = entry.getAsString(NAME);
         String[] instanceFormatsResult = instanceFormatIdValue.split(REGEX);
         if (translation.getParameter(VALUE).equals("0") && isNotBlank(instanceFormatsResult[0])) {
           return instanceFormatsResult[0].trim();
@@ -274,13 +276,13 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
   SET_ELECTRONIC_ACCESS_INDICATOR() {
     @Override
-    public String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
+    public String apply(String value, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       List<String> relationshipIds = (List<String>) metadata.getData().get("relationshipId").getData();
       if (isNotEmpty(relationshipIds)) {
         String relationshipId = relationshipIds.get(currentIndex);
-        JsonObject relationship = referenceData.get(ELECTRONIC_ACCESS_RELATIONSHIPS).get(relationshipId);
-        if (relationship != null) {
-          String relationshipName = relationship.getString(NAME);
+        JSONObject entry = convertToJson(relationshipId, referenceData, ELECTRONIC_ACCESS_RELATIONSHIPS);
+        if (!entry.isEmpty()) {
+          String relationshipName = entry.getAsString(NAME);
           for (Map.Entry<String, String> parameter : translation.getParameters().entrySet()) {
             if (relationshipName.equalsIgnoreCase(parameter.getKey())) {
               return parameter.getValue();
@@ -294,35 +296,35 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
   SET_MODE_OF_ISSUANCE_ID() {
     @Override
-    public String apply(String modeOfIssuanceId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(MODE_OF_ISSUANCES).get(modeOfIssuanceId);
-      if (entry == null) {
+    public String apply(String modeOfIssuanceId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(modeOfIssuanceId, referenceData, MODE_OF_ISSUANCES);
+      if (entry.isEmpty()) {
         LOGGER.error("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
         return StringUtils.EMPTY;
       } else {
-        return entry.getString(NAME);
+        return entry.getAsString(NAME);
       }
     }
   },
 
   SET_CALL_NUMBER_TYPE_ID() {
     @Override
-    public String apply(String typeId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(CALL_NUMBER_TYPES).get(typeId);
-      if (entry == null) {
+    public String apply(String typeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(typeId, referenceData, CALL_NUMBER_TYPES);
+      if (entry.isEmpty()) {
         LOGGER.error("Call number type is not found by the given id: {}", typeId);
         return StringUtils.EMPTY;
       } else {
-        return entry.getString(NAME);
+        return entry.getAsString(NAME);
       }
     }
   },
 
   SET_LOCATION() {
     @Override
-    public String apply(String locationId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
-      JsonObject entry = referenceData.get(LOCATIONS).get(locationId);
-      if (entry == null) {
+    public String apply(String locationId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
+      if (entry.isEmpty()) {
         LOGGER.error("Location is not found by the given id: {}", locationId);
         return StringUtils.EMPTY;
       } else {
@@ -330,16 +332,16 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         String referenceDataIdField = translation.getParameter("referenceDataIdField");
         String field = translation.getParameter("field");
         if (relatedReferenceData != null && referenceDataIdField != null && field != null) {
-          String referenceDataIdValue = entry.getString(referenceDataIdField);
-          JsonObject relatedEntry = referenceData.get(relatedReferenceData).get(referenceDataIdValue);
-          if (relatedEntry == null) {
+          String referenceDataIdValue = entry.getAsString(referenceDataIdField);
+          JSONObject relatedEntry = convertToJson(referenceDataIdValue, referenceData, relatedReferenceData);
+          if (relatedEntry.isEmpty()) {
             LOGGER.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
             return StringUtils.EMPTY;
           } else {
-            return relatedEntry.getString(field);
+            return relatedEntry.getAsString(field);
           }
         } else if (field != null) {
-          return entry.getString(field);
+          return entry.getAsString(field);
         }
         return StringUtils.EMPTY;
       }
@@ -348,17 +350,17 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
 
   SET_HOLDINGS_PERMANENT_LOCATION() {
     @Override
-    public String apply(String locationId, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException {
+    public String apply(String locationId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) throws ParseException {
       List<String> temporaryLocationId = (List<String>) metadata.getData().get("temporaryLocationId").getData();
       if (isNotEmpty(temporaryLocationId) && isNotEmpty(temporaryLocationId.get(0))) {
         return StringUtils.EMPTY;
       } else {
-        JsonObject entry = referenceData.get(LOCATIONS).get(locationId);
-        if (entry == null) {
+        JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
+        if (entry.isEmpty()) {
           LOGGER.error("Location is not found by the given id: {}", locationId);
           return StringUtils.EMPTY;
         } else {
-          return entry.getString(NAME);
+          return entry.getAsString(NAME);
         }
       }
     }
@@ -367,11 +369,16 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   SET_METADATA_DATE_TIME() {
     private transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
     @Override
-    public String apply(String date, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException {
+    public String apply(String date, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) throws ParseException {
       ZonedDateTime originDateTime = getParsedDate(date);
       return targetFormatter.format(originDateTime);
     }
   };
+
+  private static JSONObject convertToJson(String id, ReferenceDataWrapper referenceData, String constant) {
+    JsonObjectWrapper wrapper = referenceData.get(constant).get(id);
+    return new JSONObject(wrapper == null ? Collections.emptyMap() : wrapper.getMap());
+  }
 
   private static final String VALUE_PARAM = "value";
   private static final String ID_PARAM = "id";
@@ -393,6 +400,5 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     Date date = DateUtils.parseDateStrictly(incomingDate, patterns);
     return date.toInstant().atZone(ZoneId.of("Z"));
   }
-
 
 }

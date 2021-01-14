@@ -1,5 +1,4 @@
 package org.folio.processor.error;
-import org.folio.rest.jaxrs.model.Error;
 
 public enum ErrorCode {
   DATE_PARSE_ERROR_CODE("error.mapping.dateParse", "An error occurs during parsing the date while the mapping process"),

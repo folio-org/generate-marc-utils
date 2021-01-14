@@ -2,7 +2,7 @@ package org.folio.processor.translations;
 
 import org.folio.processor.RuleProcessor;
 import org.folio.processor.rule.Metadata;
-import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.referencedata.ReferenceDataWrapper;
 
 import java.text.ParseException;
 
@@ -22,5 +22,5 @@ public interface TranslationFunction {
    * @param referenceData reference data from inventory-storage
    * @return translated result
    */
-  String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) throws ParseException;
+  String apply(String value, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) throws ParseException;
 }
