@@ -1,21 +1,5 @@
 package org.folio.processor.translations;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
-import static org.folio.processor.referencedata.ReferenceDataConstants.IDENTIFIER_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_FORMATS;
-import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.LOAN_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS;
-import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
-import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
-
-import com.google.common.base.Splitter;
 import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.time.ZoneId;
@@ -27,7 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import net.minidev.json.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -36,7 +19,15 @@ import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
+import net.minidev.json.JSONObject;
+
 import static java.lang.String.format;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.folio.processor.referencedata.ReferenceDataConstants.*;
 
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 
