@@ -1,9 +1,26 @@
 package org.folio.processor;
 
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
+import static java.util.Collections.singletonList;
+import static org.folio.util.TestUtil.readFileContentFromResources;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.error.ErrorCode;
+import org.folio.processor.error.ErrorHandler;
+import org.folio.processor.error.RecordType;
+import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
@@ -11,11 +28,8 @@ import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
-import org.folio.processor.error.ErrorHandler;
 import org.folio.reader.EntityReader;
 import org.folio.reader.JPathSyntaxEntityReader;
-import org.folio.processor.error.ErrorCode;
-import org.folio.processor.error.RecordType;
 import org.folio.writer.RecordWriter;
 import org.folio.writer.impl.JsonRecordWriter;
 import org.folio.writer.impl.MarcRecordWriter;
@@ -33,28 +47,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.Collections.singletonList;
-import static org.folio.util.TestUtil.readFileContentFromResources;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doReturn;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
 class RuleProcessorTest {
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
   private static List<Rule> rules;
-  private JsonObject entity;
+  private String entity;
 
   @Mock(lenient = true)
-  private ReferenceData referenceData;
+  private ReferenceDataWrapper referenceData;
   @Mock(lenient = true)
   private TranslationHolder translationHolder;
   @Mock(lenient = true)
@@ -65,13 +67,14 @@ class RuleProcessorTest {
   private TranslationFunction setValueTranslationFunction;
 
   @BeforeAll
-  static void beforeAll() {
-    rules = Arrays.asList(Json.decodeValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
+  static void beforeAll() throws JsonProcessingException {
+      rules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
   }
 
   @BeforeEach
   public void beforeEach() throws ParseException {
-    entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
+    entity = readFileContentFromResources("processor/given_entity.json");
+
     doReturn(createdDateTranslationFunction).when(translationHolder).lookup("set_fixed_length_data_elements");
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");
     doReturn(setValueTranslationFunction).when(translationHolder).lookup("set_value");
@@ -122,7 +125,7 @@ class RuleProcessorTest {
   @Test
   void shouldReturnVariableFieldsList_MarcRecord() {
     // given
-    entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_one_field.json"));
+    entity = readFileContentFromResources("processor/given_entity_with_one_field.json");
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new XmlRecordWriter();
@@ -138,7 +141,7 @@ class RuleProcessorTest {
   void shouldReturnEmpty_ForEmptyEntity_MarcRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    EntityReader reader = new JPathSyntaxEntityReader(new JSONObject().toJSONString());
     RecordWriter writer = new MarcRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -150,7 +153,7 @@ class RuleProcessorTest {
   void shouldReturnEmpty_ForEmptyEntity_JsonRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    EntityReader reader = new JPathSyntaxEntityReader(new JSONObject().toJSONString());
     RecordWriter writer = new JsonRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -162,7 +165,7 @@ class RuleProcessorTest {
   void shouldReturnEmpty_ForEmptyEntity_XmlRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(new JsonObject());
+    EntityReader reader = new JPathSyntaxEntityReader(new JSONObject().toJSONString());
     RecordWriter writer = new XmlRecordWriter();
     // when
     String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
@@ -182,7 +185,7 @@ class RuleProcessorTest {
     dataSource.setTranslation(translation);
     dataSource.setFrom("$.metadata.updatedDate");
     rule.setDataSources(singletonList(dataSource));
-    entity = new JsonObject(readFileContentFromResources("processor/given_entity_with_wrong_data.json"));
+    entity = readFileContentFromResources("processor/given_entity_with_wrong_data.json");
     when(translationHolder.lookup("set_transaction_datetime")).thenReturn(TranslationsFunctionHolder.SET_TRANSACTION_DATETIME);
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
     EntityReader reader = new JPathSyntaxEntityReader(entity);
@@ -214,7 +217,7 @@ class RuleProcessorTest {
     dataSource.setTranslation(translation);
     dataSource.setFrom("$.languages");
     rule.setDataSources(singletonList(dataSource));
-    entity = new JsonObject(readFileContentFromResources("processor/given_entity.json"));
+    entity = readFileContentFromResources("processor/given_entity.json");
     when(translationHolder.lookup("translate_languages")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
       throw new RuntimeException("test exception");
     });

@@ -1,142 +1,147 @@
 package org.folio.util;
 
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import org.folio.processor.referencedata.JsonObjectWrapper;
+
+import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.IDENTIFIER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_FORMATS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTITUTIONS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LIBRARIES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+import static org.folio.util.TestUtil.readFileContentFromResources;
 
 public class ReferenceDataResponseUtil {
 
-  public static Map<String, JsonObject> getNatureOfContentTerms() {
-    JsonArray natureOfContentTerm =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json"))
-        .getJsonArray("natureOfContentTerms");
+  public static Map<String, JsonObjectWrapper> getNatureOfContentTerms() {
+    JSONArray natureOfContentTerms = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_nature_of_content_terms_response.json"),
+      NATURE_OF_CONTENT_TERMS);
 
-    return natureOfContentTerm.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(natureOfContentTerms);
   }
 
-  public static Map<String, JsonObject> getIdentifierTypes() {
-    JsonArray identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_identifier_types_response.json"))
-        .getJsonArray("identifierTypes");
+  public static Map<String, JsonObjectWrapper> getIdentifierTypes() {
+    JSONArray identifierTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_identifier_types_response.json"),
+      IDENTIFIER_TYPES);
 
-    return identifierType.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(identifierTypes);
   }
 
-  public static Map<String, JsonObject> getContributorNameTypes() {
-    JsonArray contributorNameTypes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_contributor_name_types_response.json"))
-        .getJsonArray("contributorNameTypes");
+  public static Map<String, JsonObjectWrapper> getContributorNameTypes() {
+    JSONArray contributorNameTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_contributor_name_types_response.json"),
+      CONTRIBUTOR_NAME_TYPES);
 
-    return contributorNameTypes.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(contributorNameTypes);
   }
 
-  public static Map<String, JsonObject> getLocations() {
-    JsonArray locations =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_locations_response.json"))
-        .getJsonArray("locations");
-    return locations.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+  public static Map<String, JsonObjectWrapper> getLocations() {
+    JSONArray locations = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_locations_response.json"), LOCATIONS);
+
+    return convertArrayToMap(locations);
   }
 
+  public static Map<String, JsonObjectWrapper> getLoanTypes() {
+    JSONArray loanTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_loan_types_response.json"), LOAN_TYPES);
 
-  public static Map<String, JsonObject> getLoanTypes() {
-    JsonArray loanType = new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_loan_types_response.json"))
-      .getJsonArray("loantypes");
-    return loanType.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(loanTypes);
   }
 
-  public static Map<String, JsonObject> getLibraries() {
-    JsonArray libraries =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_libraries_response.json"))
-        .getJsonArray("loclibs");
+  public static Map<String, JsonObjectWrapper> getLibraries() {
+    JSONArray libraries = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_libraries_response.json"), LIBRARIES);
 
-    return libraries.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(libraries);
   }
 
-  public static Map<String, JsonObject> getCampuses() {
-    JsonArray campus =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_campuses_response.json"))
-        .getJsonArray("loccamps");
+  public static Map<String, JsonObjectWrapper> getCampuses() {
+    JSONArray campus = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_campuses_response.json"), CAMPUSES);
 
-    return campus.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(campus);
   }
 
-  public static Map<String, JsonObject> getInstitutions() {
-    JsonArray institutions =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_institutions_response.json"))
-        .getJsonArray("locinsts");
+  public static Map<String, JsonObjectWrapper> getInstitutions() {
+    JSONArray institutions = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_institutions_response.json"),
+      INSTITUTIONS);
 
-    return institutions.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(institutions);
   }
 
-  public static Map<String, JsonObject> getMaterialTypes() {
-    JsonArray identifierType =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_material_types_response.json"))
-        .getJsonArray("mtypes");
+  public static Map<String, JsonObjectWrapper> getMaterialTypes() {
+    JSONArray identifierTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_material_types_response.json"),
+      MATERIAL_TYPES);
 
-    return identifierType.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(identifierTypes);
   }
 
-  public static Map<String, JsonObject> getInstanceTypes() {
-    JsonArray instanceTypes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_instance_types_response.json"))
-        .getJsonArray("instanceTypes");
+  public static Map<String, JsonObjectWrapper> getInstanceTypes() {
+    JSONArray instanceTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_instance_types_response.json"),
+      INSTANCE_TYPES);
 
-    return instanceTypes.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(instanceTypes);
   }
 
-  public static Map<String, JsonObject> getInstanceFormats() {
-    Map<String, JsonObject> stringJsonObjectMap = new HashMap<>();
-    JsonArray instanceFormats =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_instance_formats_response.json"))
-        .getJsonArray("instanceFormats");
-    instanceFormats.stream().forEach(instanceFormat -> {
-      JsonObject jsonObject = new JsonObject(instanceFormat.toString());
-      stringJsonObjectMap.put(jsonObject.getString("id"), jsonObject);
-    });
-    return stringJsonObjectMap;
+  public static Map<String, JsonObjectWrapper> getInstanceFormats() {
+    JSONArray instanceFormats = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_instance_formats_response.json"),
+      INSTANCE_FORMATS);
+
+    return convertArrayToMap(instanceFormats);
   }
 
-  public static Map<String, JsonObject> getElectronicAccessRelationships() {
-    Map<String, JsonObject> stringJsonObjectMap = new HashMap<>();
-    JsonArray electronicAccessRelationships =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_electronic_access_relationships_response.json"))
-        .getJsonArray("electronicAccessRelationships");
-    electronicAccessRelationships.stream().forEach(electronicAccessRelationship -> {
-      JsonObject jsonObject = new JsonObject(electronicAccessRelationship.toString());
-      stringJsonObjectMap.put(jsonObject.getString("id"), jsonObject);
-    });
-    return stringJsonObjectMap;
+  public static Map<String, JsonObjectWrapper> getElectronicAccessRelationships() {
+    JSONArray electronicAccessRelationships = getJsonArray(readFileContentFromResources(
+      "mockData/inventory/get_electronic_access_relationships_response.json"),
+      ELECTRONIC_ACCESS_RELATIONSHIPS);
+
+    return convertArrayToMap(electronicAccessRelationships);
   }
 
-  public static Map<String, JsonObject> getModeOfIssuances() {
-    JsonArray issuanceModes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_mode_of_issuance_response.json"))
-        .getJsonArray("issuanceModes");
+  public static Map<String, JsonObjectWrapper> getModeOfIssuances() {
+    JSONArray issuanceModes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_mode_of_issuance_response.json"),
+      MODE_OF_ISSUANCES);
 
-    return issuanceModes.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(issuanceModes);
   }
 
-  public static Map<String, JsonObject> getCallNumberTypes() {
-    JsonArray callNumberTypes =
-      new JsonObject(TestUtil.readFileContentFromResources("mockData/inventory/get_call_number_types_response.json"))
-        .getJsonArray("callNumberTypes");
+  public static Map<String, JsonObjectWrapper> getCallNumberTypes() {
+    JSONArray callNumberTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_call_number_types_response.json"),
+      CALL_NUMBER_TYPES);
 
-    return callNumberTypes.stream()
-      .collect(Collectors.toMap(key -> new JsonObject(key.toString()).getString("id"), val -> new JsonObject(val.toString())));
+    return convertArrayToMap(callNumberTypes);
+  }
+
+  private static Map<String, JsonObjectWrapper> convertArrayToMap(JSONArray array) {
+    return array.stream()
+      .collect(Collectors.toMap(key -> ((JSONObject) key).getAsString("id"),
+        value -> new JsonObjectWrapper((JSONObject) value)));
+  }
+
+  private static JSONArray getJsonArray(String json, String key) {
+    JSONObject jsonObject = JSONValue.parse(json, JSONObject.class);
+    return (JSONArray) jsonObject.get(key);
   }
 
 }

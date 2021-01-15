@@ -1,7 +1,7 @@
 package org.folio.processor;
 
 import org.folio.processor.error.TranslationException;
-import org.folio.processor.referencedata.ReferenceData;
+import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.rule.Rule;
 import org.folio.processor.translations.Translation;
@@ -56,7 +56,7 @@ public final class RuleProcessor {
    *
    * @return content of the generated marc record
    */
-  public String process(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules, ErrorHandler errorHandler) {
+  public String process(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, List<Rule> rules, ErrorHandler errorHandler) {
     rules.forEach(rule -> {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
@@ -73,7 +73,7 @@ public final class RuleProcessor {
    *
    * @return the list of the generated VariableField of marc record
    */
-  public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceData referenceData, List<Rule> rules, ErrorHandler errorHandler) {
+  public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, List<Rule> rules, ErrorHandler errorHandler) {
     rules.forEach(rule -> {
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
@@ -87,7 +87,7 @@ public final class RuleProcessor {
   /**
    * Processes the given mapping rule using reader and writer
    */
-  private void processRule(EntityReader reader, RecordWriter writer, ReferenceData referenceData, Rule rule, ErrorHandler errorHandler) {
+  private void processRule(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, Rule rule, ErrorHandler errorHandler) {
     RuleValue<?> ruleValue = reader.read(rule);
     switch (ruleValue.getType()) {
       case SIMPLE:
@@ -107,7 +107,7 @@ public final class RuleProcessor {
   /**
    * Translates the given simple value
    */
-  private <S extends SimpleValue> void translate(S simpleValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
+  private <S extends SimpleValue> void translate(S simpleValue, ReferenceDataWrapper referenceData, Metadata metadata, ErrorHandler errorHandler) {
     if (translationHolder != null) {
       if (STRING.equals(simpleValue.getSubType())) {
         applyTranslation((StringValue) simpleValue, referenceData, metadata, 0, errorHandler);
@@ -120,7 +120,7 @@ public final class RuleProcessor {
   /**
    * Translates the given composite value
    */
-  private void translate(CompositeValue compositeValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
+  private void translate(CompositeValue compositeValue, ReferenceDataWrapper referenceData, Metadata metadata, ErrorHandler errorHandler) {
     if (translationHolder != null) {
       List<List<StringValue>> value = compositeValue.getValue();
       for (int currentIndex = 0; currentIndex < value.size(); currentIndex++) {
@@ -135,7 +135,7 @@ public final class RuleProcessor {
   /**
    *  Applies translation function for ListValue
    */
-  private void applyTranslation(ListValue listValue, ReferenceData referenceData, Metadata metadata, ErrorHandler errorHandler) {
+  private void applyTranslation(ListValue listValue, ReferenceDataWrapper referenceData, Metadata metadata, ErrorHandler errorHandler) {
     Translation translation = listValue.getDataSource().getTranslation();
     if (translation != null) {
       RecordInfo recordInfo = listValue.getRecordInfo();
@@ -156,7 +156,7 @@ public final class RuleProcessor {
   /**
    *  Applies translation function for StringValue
    */
-  private void applyTranslation(StringValue stringValue, ReferenceData referenceData, Metadata metadata, int index, ErrorHandler errorHandler) {
+  private void applyTranslation(StringValue stringValue, ReferenceDataWrapper referenceData, Metadata metadata, int index, ErrorHandler errorHandler) {
     Translation translation = stringValue.getDataSource().getTranslation();
     if (translation != null) {
       String readValue = stringValue.getValue();
