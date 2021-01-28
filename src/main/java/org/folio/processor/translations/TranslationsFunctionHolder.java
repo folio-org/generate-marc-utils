@@ -1,7 +1,6 @@
 package org.folio.processor.translations;
 
 import io.vertx.core.json.JsonObject;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.ReferenceData;
@@ -61,7 +60,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       Object metadataIdentifierTypeIds = metadata.getData().get("identifierTypeId").getData();
       if (metadataIdentifierTypeIds != null) {
         List<String> identifierTypeIds = (List<String>) metadataIdentifierTypeIds;
-        if (!identifierTypeIds.isEmpty()) {
+        if (identifierTypeIds.size() > currentIndex) {
           String identifierTypeId = identifierTypeIds.get(currentIndex);
           JsonObject identifierType = referenceData.get(IDENTIFIER_TYPES).get(identifierTypeId);
           if (identifierType != null && identifierType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
@@ -78,7 +77,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       Object metadataContributorNameTypeIds = metadata.getData().get("contributorNameTypeId").getData();
       if (metadataContributorNameTypeIds != null) {
         List<String> contributorNameTypeIds = (List<String>) metadataContributorNameTypeIds;
-        if (!contributorNameTypeIds.isEmpty()) {
+        if (contributorNameTypeIds.size() > currentIndex) {
           String contributorNameTypeId = contributorNameTypeIds.get(currentIndex);
           JsonObject contributorNameType = referenceData.get(CONTRIBUTOR_NAME_TYPES).get(contributorNameTypeId);
           if (contributorNameType != null && contributorNameType.getString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
@@ -245,7 +244,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     @Override
     public String apply(String value, int currentIndex, Translation translation, ReferenceData referenceData, Metadata metadata) {
       List<String> relationshipIds = (List<String>) metadata.getData().get("relationshipId").getData();
-      if (CollectionUtils.isNotEmpty(relationshipIds)) {
+      if (relationshipIds != null && relationshipIds.size() > currentIndex) {
         String relationshipId = relationshipIds.get(currentIndex);
         JsonObject relationship = referenceData.get(ELECTRONIC_ACCESS_RELATIONSHIPS).get(relationshipId);
         if (relationship != null) {
