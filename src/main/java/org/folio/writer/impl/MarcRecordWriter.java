@@ -1,5 +1,7 @@
 package org.folio.writer.impl;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.translations.Translation;
 import org.folio.writer.RecordWriter;
 import org.folio.writer.fields.RecordControlField;
@@ -59,9 +61,14 @@ public class MarcRecordWriter extends AbstractRecordWriter {
   public String getResult() {
     OutputStream outputStream = new ByteArrayOutputStream();
     MarcWriter writer = new MarcStreamWriter(outputStream, encoding);
-    writer.write(record);
-    writer.close();
-    return outputStream.toString();
+    if (CollectionUtils.isNotEmpty(getFields())) {
+      writer.write(record);
+      writer.close();
+      return outputStream.toString();
+    } else {
+      writer.close();
+      return StringUtils.EMPTY;
+    }
   }
 
   @Override

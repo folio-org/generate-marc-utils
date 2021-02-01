@@ -1,8 +1,13 @@
 package org.folio.holder;
 
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.util.Lists;
-import org.folio.processor.ReferenceData;
+import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.Metadata;
 import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
@@ -19,36 +24,33 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.folio.processor.translations.ReferenceDataConstants.CALL_NUMBER_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.CAMPUSES;
-import static org.folio.processor.translations.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
-import static org.folio.processor.translations.ReferenceDataConstants.IDENTIFIER_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_FORMATS;
-import static org.folio.processor.translations.ReferenceDataConstants.INSTANCE_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.INSTITUTIONS;
-import static org.folio.processor.translations.ReferenceDataConstants.LIBRARIES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOAN_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.LOCATIONS;
-import static org.folio.processor.translations.ReferenceDataConstants.MATERIAL_TYPES;
-import static org.folio.processor.translations.ReferenceDataConstants.MODE_OF_ISSUANCES;
-import static org.folio.processor.translations.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.ELECTRONIC_ACCESS_RELATIONSHIPS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.IDENTIFIER_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_FORMATS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTANCE_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.INSTITUTIONS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LIBRARIES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOAN_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
+import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(MockitoJUnitRunner.class)
 class TranslationFunctionHolderUnitTest {
 
-  private static ReferenceData referenceData = Mockito.mock(ReferenceData.class);
+  private static ReferenceDataWrapper referenceData = Mockito.mock(ReferenceDataWrapper.class);
 
   @BeforeAll
   static void setUp() {
@@ -100,22 +102,23 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
   void SetIdentifier_shouldReturnIdentifierValue() throws ParseException {
     // given
-    String value = "value";
+    String value = "lccn value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "LCCN"));
 
     Metadata metadata = new Metadata();
-    metadata.addData("identifierTypeId",
-      new Metadata.Entry("$.identifiers[*].identifierTypeId",
-        asList("8261054f-be78-422d-bd51-4ed9f33c3422", "c858e4f2-2b6b-4385-842b-60732ee14abb")));
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+               ImmutableMap.of("value", "lccn value", "identifierTypeId", "c858e4f2-2b6b-4385-842b-60732ee14abb"))));
     // when
     String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
     // then
@@ -125,16 +128,16 @@ class TranslationFunctionHolderUnitTest {
   @Test
   void SetIdentifier_shouldReturnIdentifierValue_forSystemControlNumber() throws ParseException {
     // given
-    String value = "value";
+    String value = "system control number value";
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
 
     Translation translation = new Translation();
     translation.setParameters(Collections.singletonMap("type", "System control number"));
 
     Metadata metadata = new Metadata();
-    metadata.addData("identifierTypeId",
-      new Metadata.Entry("$.identifiers[*].identifierTypeId",
-        singletonList("7e591197-f335-4afb-bc6d-a6d76ca3bace")));
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        singletonList(ImmutableMap.of("value", "system control number value", "identifierTypeId", "7e591197-f335-4afb-bc6d-a6d76ca3bace"))));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
@@ -151,13 +154,77 @@ class TranslationFunctionHolderUnitTest {
     translation.setParameters(Collections.singletonMap("type", "LCCN"));
 
     Metadata metadata = new Metadata();
-    metadata.addData("identifierTypeId", new Metadata.Entry("$.identifiers[*].identifierTypeId", Collections.emptyList()));
+    metadata.addData("identifierType", new Metadata.Entry("$.identifiers[*]", Collections.emptyList()));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
+  @Test
+  void SetRelatedIdentifier_shouldReturnEmptyValue_whenRelatedIdentifierDoesNotMatchCurrentIdentifierValue() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnInvalidIsbnValue_whenRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
+    // given
+    String value = "isbn value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+               ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("invalid isbn value", result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnInvalidIsbnValue_whenSecondRelatedIdentifierMatchesCurrentIdentifierValue() throws ParseException {
+    // given
+    String value = "isbn value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISSN,ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+               ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("invalid isbn value", result);
+  }
 
   @Test
   void SetMaterialType_shouldReturnMaterialTypeValue() throws ParseException {
@@ -178,7 +245,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -192,7 +259,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -256,7 +323,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -352,7 +419,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -374,7 +441,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -413,7 +480,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -424,7 +491,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -483,7 +550,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -620,7 +687,7 @@ class TranslationFunctionHolderUnitTest {
     TranslationFunction translationFunction = TranslationsFunctionHolder.SET_FIXED_LENGTH_DATA_ELEMENTS;
     Metadata metadata = new Metadata();
     metadata.addData("datesOfPublication", null);
-    metadata.addData("languages", new Metadata.Entry("$.languages", singletonList(StringUtils.EMPTY)));
+    metadata.addData("languages", new Metadata.Entry("$.languages", singletonList(EMPTY)));
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
@@ -765,7 +832,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -787,7 +854,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -809,7 +876,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(StringUtils.EMPTY, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -823,5 +890,48 @@ class TranslationFunctionHolderUnitTest {
     // then
     Assert.assertEquals(expectedResult, result);
   }
+
+  @Test
+  void SetHoldingPermanentLocation_shouldReturnLocationName() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_PERMANENT_LOCATION;
+    Translation translation = new Translation();
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    Metadata metadata = new Metadata();
+    metadata.addData("temporaryLocationId", new Metadata.Entry("$.holdings[*].temporaryLocationId", Collections.emptyList()));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("Miller General Stacks", result);
+  }
+
+  @Test
+  void SetHoldingPermanentLocation_shouldReturnEmpty_whenTemporaryLocationIsPresent() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_PERMANENT_LOCATION;
+    Translation translation = new Translation();
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    Metadata metadata = new Metadata();
+    metadata.addData("temporaryLocationId", new Metadata.Entry("$.holdings[*].temporaryLocationId", singletonList("fbeec574-4111-11eb-b378-0242ac130002")));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetHoldingPermanentLocation_shouldReturnEmpty_whenLocationIdNotPresentInReferenceData() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_PERMANENT_LOCATION;
+    Translation translation = new Translation();
+    String value = "bb0bc416-4112-11eb-b378-0242ac130002";
+    Metadata metadata = new Metadata();
+    metadata.addData("temporaryLocationId", new Metadata.Entry("$.holdings[*].temporaryLocationId", Collections.emptyList()));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
 
 }
