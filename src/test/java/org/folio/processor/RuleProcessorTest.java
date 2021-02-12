@@ -183,7 +183,7 @@ class RuleProcessorTest {
     Translation translation = new Translation();
     translation.setFunction("set_transaction_datetime");
     dataSource.setTranslation(translation);
-    dataSource.setFrom("$.metadata.updatedDate");
+    dataSource.setFrom("$.instance.metadata.updatedDate");
     rule.setDataSources(singletonList(dataSource));
     entity = readFileContentFromResources("processor/given_entity_with_wrong_data.json");
     when(translationHolder.lookup("set_transaction_datetime")).thenReturn(TranslationsFunctionHolder.SET_TRANSACTION_DATETIME);
@@ -196,6 +196,8 @@ class RuleProcessorTest {
       assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", translationException.getRecordInfo().getId());
       assertEquals(RecordType.INSTANCE, translationException.getRecordInfo().getType());
       assertEquals(ParseException.class, translationException.getCause().getClass());
+      assertEquals("metadata.updatedDate", translationException.getRecordInfo().getFieldName());
+      assertEquals("2020-06-17T01:46:42 test", translationException.getRecordInfo().getFieldValue());
       assertEquals(ErrorCode.DATE_PARSE_ERROR_CODE, translationException.getErrorCode());
     };
     if ("process".equals(mode)) {
@@ -207,18 +209,18 @@ class RuleProcessorTest {
   }
 
   @Test
-  void shouldCallErrorHandlerForLanguages() {
+  void shouldCallErrorHandlerForTitle() {
     // given
     Rule rule = new Rule();
     rule.setField("000");
     DataSource dataSource = new DataSource();
     Translation translation = new Translation();
-    translation.setFunction("translate_languages");
+    translation.setFunction("set_value");
     dataSource.setTranslation(translation);
-    dataSource.setFrom("$.languages");
+    dataSource.setFrom("$.instance.title");
     rule.setDataSources(singletonList(dataSource));
     entity = readFileContentFromResources("processor/given_entity.json");
-    when(translationHolder.lookup("translate_languages")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
       throw new RuntimeException("test exception");
     });
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
@@ -229,6 +231,70 @@ class RuleProcessorTest {
     ErrorHandler errorHandler = (translationException) -> {
       assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", translationException.getRecordInfo().getId());
       assertEquals(RecordType.INSTANCE, translationException.getRecordInfo().getType());
+      assertEquals("title", translationException.getRecordInfo().getFieldName());
+      assertEquals("Test title", translationException.getRecordInfo().getFieldValue());
+      assertEquals(RuntimeException.class, translationException.getCause().getClass());
+      assertEquals(ErrorCode.UNDEFINED, translationException.getErrorCode());
+    };
+    ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
+  }
+
+  @Test
+  void shouldCallErrorHandlerForHoldingsCallNumber() {
+    // given
+    Rule rule = new Rule();
+    rule.setField("000");
+    DataSource dataSource = new DataSource();
+    Translation translation = new Translation();
+    translation.setFunction("set_call_number_type_id");
+    dataSource.setTranslation(translation);
+    dataSource.setFrom("$.holdings[*].callNumber");
+    rule.setDataSources(singletonList(dataSource));
+    entity = readFileContentFromResources("processor/given_entity_one_holding_one_item.json");
+    when(translationHolder.lookup("set_call_number_type_id")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+      throw new RuntimeException("test exception");
+    });
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when & then
+    ErrorHandler errorHandler = (translationException) -> {
+      assertEquals("holding1 Id", translationException.getRecordInfo().getId());
+      assertEquals(RecordType.HOLDING, translationException.getRecordInfo().getType());
+      assertEquals("callNumber", translationException.getRecordInfo().getFieldName());
+      assertEquals("9985 3342", translationException.getRecordInfo().getFieldValue());
+      assertEquals(RuntimeException.class, translationException.getCause().getClass());
+      assertEquals(ErrorCode.UNDEFINED, translationException.getErrorCode());
+    };
+    ruleProcessor.process(reader, writer, referenceData, singletonList(rule), errorHandler);
+  }
+
+  @Test
+  void shouldCallErrorHandlerForItemBarcode() {
+    // given
+    Rule rule = new Rule();
+    rule.setField("000");
+    DataSource dataSource = new DataSource();
+    Translation translation = new Translation();
+    translation.setFunction("set_value");
+    dataSource.setTranslation(translation);
+    dataSource.setFrom("$.holdings[*].items[*].barcode");
+    rule.setDataSources(singletonList(dataSource));
+    entity = readFileContentFromResources("processor/given_entity_one_holding_one_item.json");
+    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+      throw new RuntimeException("test exception");
+    });
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when & then
+    ErrorHandler errorHandler = (translationException) -> {
+      assertEquals("item12 Id", translationException.getRecordInfo().getId());
+      assertEquals(RecordType.ITEM, translationException.getRecordInfo().getType());
+      assertEquals("barcode", translationException.getRecordInfo().getFieldName());
+      assertEquals("barcode12", translationException.getRecordInfo().getFieldValue());
       assertEquals(RuntimeException.class, translationException.getCause().getClass());
       assertEquals(ErrorCode.UNDEFINED, translationException.getErrorCode());
     };

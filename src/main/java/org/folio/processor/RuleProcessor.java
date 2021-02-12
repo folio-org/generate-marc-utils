@@ -1,5 +1,8 @@
 package org.folio.processor;
 
+import java.util.List;
+import org.folio.processor.error.ErrorHandler;
+import org.folio.processor.error.RecordInfo;
 import org.folio.processor.error.TranslationException;
 import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.Metadata;
@@ -8,9 +11,7 @@ import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationHolder;
 import org.folio.processor.translations.TranslationsFunctionHolder;
-import org.folio.processor.error.ErrorHandler;
 import org.folio.reader.EntityReader;
-import org.folio.processor.error.RecordInfo;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.ListValue;
 import org.folio.reader.values.RuleValue;
@@ -19,8 +20,7 @@ import org.folio.reader.values.StringValue;
 import org.folio.writer.RecordWriter;
 import org.marc4j.marc.VariableField;
 
-import java.util.List;
-
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.reader.values.SimpleValue.SubType.LIST_OF_STRING;
 import static org.folio.reader.values.SimpleValue.SubType.STRING;
 
@@ -39,6 +39,10 @@ import static org.folio.reader.values.SimpleValue.SubType.STRING;
  */
 public final class RuleProcessor {
   private static final String LEADER_FIELD = "leader";
+  private static final String EXCEPT_VALUES_IN_BRACKETS_REGEX = "\\[.*?]";
+  private static final String INSTANCE_REGEX = "\\$.instance.";
+  private static final String HOLDING_REGEX = "\\$.holdings.";
+  private static final String ITEM_REGEX = "\\$.holdings.items.";
 
   private TranslationHolder translationHolder;
 
@@ -138,15 +142,16 @@ public final class RuleProcessor {
   private void applyTranslation(ListValue listValue, ReferenceDataWrapper referenceData, Metadata metadata, ErrorHandler errorHandler) {
     Translation translation = listValue.getDataSource().getTranslation();
     if (translation != null) {
-      RecordInfo recordInfo = listValue.getRecordInfo();
       for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
       StringValue stringValue = listValue.getValue().get(currentIndex);
       String readValue = stringValue.getValue();
+      RecordInfo recordInfo = stringValue.getRecordInfo();
         try {
           TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
           String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
           stringValue.setValue(translatedValue);
         } catch (Exception e) {
+          populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
           errorHandler.handle(new TranslationException(recordInfo, e));
         }
       }
@@ -166,8 +171,28 @@ public final class RuleProcessor {
         String translatedValue = translationFunction.apply(readValue, index, translation, referenceData, metadata);
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
+        populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
         errorHandler.handle(new TranslationException(recordInfo, e));
       }
     }
+  }
+
+  private void populateFieldNameAndValue(RecordInfo recordInfo, String fieldName, String fieldValue) {
+    if (recordInfo != null) {
+      recordInfo.setFieldName(fieldName);
+      recordInfo.setFieldValue(fieldValue);
+    }
+  }
+
+  private String getProperFieldName(String from, RecordInfo recordInfo) {
+    if (recordInfo != null) {
+      String nameWithoutDataFromBracket = from.replaceAll(EXCEPT_VALUES_IN_BRACKETS_REGEX, EMPTY);
+      if (recordInfo.getType().isInstance()) {
+        return nameWithoutDataFromBracket.replaceAll(INSTANCE_REGEX, EMPTY);
+      } else return recordInfo.getType().isHolding()
+        ? nameWithoutDataFromBracket.replaceAll(HOLDING_REGEX, EMPTY)
+        : nameWithoutDataFromBracket.replaceAll(ITEM_REGEX, EMPTY);
+    }
+    return EMPTY;
   }
 }
