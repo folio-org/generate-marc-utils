@@ -189,7 +189,8 @@ public final class RuleProcessor {
       String nameWithoutDataFromBracket = from.replaceAll(EXCEPT_VALUES_IN_BRACKETS_REGEX, EMPTY);
       if (recordInfo.getType().isInstance()) {
         return nameWithoutDataFromBracket.replaceAll(INSTANCE_REGEX, EMPTY);
-      } else return recordInfo.getType().isHolding()
+      }
+      return recordInfo.getType().isHolding()
         ? nameWithoutDataFromBracket.replaceAll(HOLDING_REGEX, EMPTY)
         : nameWithoutDataFromBracket.replaceAll(ITEM_REGEX, EMPTY);
     }
