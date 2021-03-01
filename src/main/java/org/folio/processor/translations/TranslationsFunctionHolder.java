@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.folio.processor.referencedata.JsonObjectWrapper;
@@ -55,7 +54,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
         List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
-        if (!identifierTypes.isEmpty()) {
+        if (identifierTypes.size() > currentIndex) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
           JSONObject identifierType = convertToJson(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM), referenceData, IDENTIFIER_TYPES);
           if (!identifierType.isEmpty() && identifierType.getAsString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
@@ -72,7 +71,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
       if (metadataIdentifierTypeIds != null) {
         List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
-        if (CollectionUtils.isNotEmpty(identifierTypes)) {
+        if (identifierTypes.size() > currentIndex) {
           Map<String, String> currentIdentifierType = identifierTypes.get(currentIndex);
           JSONObject currentIdentifierTypeReferenceData = convertToJson(currentIdentifierType.get(IDENTIFIER_TYPE_ID_PARAM), referenceData, IDENTIFIER_TYPES);
           List<String> relatedIdentifierTypes = Splitter.on(",").splitToList(translation.getParameter(RELATED_IDENTIFIER_TYPES_PARAM));
@@ -102,7 +101,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       Object metadataContributorNameTypeIds = metadata.getData().get("contributorNameTypeId").getData();
       if (metadataContributorNameTypeIds != null) {
         List<String> contributorNameTypeIds = (List<String>) metadataContributorNameTypeIds;
-        if (!contributorNameTypeIds.isEmpty()) {
+        if (contributorNameTypeIds.size() > currentIndex) {
           String contributorNameTypeId = contributorNameTypeIds.get(currentIndex);
           JSONObject contributorNameType = convertToJson(contributorNameTypeId, referenceData, CONTRIBUTOR_NAME_TYPES);
           if (!contributorNameType.isEmpty() && contributorNameType.getAsString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
@@ -269,7 +268,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     @Override
     public String apply(String value, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       List<String> relationshipIds = (List<String>) metadata.getData().get("relationshipId").getData();
-      if (isNotEmpty(relationshipIds)) {
+      if (isNotEmpty(relationshipIds) && relationshipIds.size() > currentIndex) {
         String relationshipId = relationshipIds.get(currentIndex);
         JSONObject entry = convertToJson(relationshipId, referenceData, ELECTRONIC_ACCESS_RELATIONSHIPS);
         if (!entry.isEmpty()) {
