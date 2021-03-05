@@ -162,6 +162,24 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
+  void SetIdentifier_shouldReturnEmptyString_whenMetadataIsNull() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(Collections.singletonMap("type", "LCCN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType", new Metadata.Entry("$.identifiers[*]", null));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+
+  @Test
   void SetRelatedIdentifier_shouldReturnEmptyValue_whenRelatedIdentifierDoesNotMatchCurrentIdentifierValue() throws ParseException {
     // given
     String value = "value";
@@ -176,6 +194,25 @@ class TranslationFunctionHolderUnitTest {
     metadata.addData("identifierType",
       new Metadata.Entry("$.identifiers[*]",
         asList(ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetRelatedIdentifier_shouldReturnEmptyValue_whenIdentifierTypeNull() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_RELATED_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISBN",
+      "type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType", new Metadata.Entry("$.identifiers[*]", null));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
@@ -547,6 +584,23 @@ class TranslationFunctionHolderUnitTest {
 
     Metadata metadata = new Metadata();
     metadata.addData("contributorNameTypeId", new Metadata.Entry("$.instance.contributors[?(@.primary && @.primary == true)].contributorNameTypeId", Collections.emptyList()));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void setContributor_shouldReturnEmptyString_whenMetadataIsNull() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_CONTRIBUTOR;
+
+    Translation translation = new Translation();
+    translation.setParameters(Collections.singletonMap("type", "Personal name"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("contributorNameTypeId", new Metadata.Entry("$.instance.contributors[?(@.primary && @.primary == true)].contributorNameTypeId", null));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
