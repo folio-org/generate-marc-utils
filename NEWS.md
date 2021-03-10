@@ -20,7 +20,6 @@
 * [GMU-3](https://issues.folio.org/browse/GMU-3) - Fix class cast exception during fields mapping
 * [MDEXP-345](https://issues.folio.org/browse/MDEXP-345) - Subfield $3 not always present when multiple holdings and items are associated with the instance
 * [MDEXP-367](https://issues.folio.org/browse/MDEXP-367) - Provide granular error in the error log so that the same information is not repeated multiple times
-* [GMU-3](https://issues.folio.org/browse/GMU-3) - Fix class cast exception during fields mapping
 
 ## 01/02/2021 v1.0.2 - Released
  This bugfix release includes fix for inconsistent results when exporting the same dataset with default mapping profile.
