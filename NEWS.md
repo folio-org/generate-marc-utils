@@ -1,4 +1,4 @@
-## 10/03/2021 1.1.0 - Released
+## 03/10/2021 v1.1.0 - Released
  Major version release which includes below features :
  * Improve error handling to detect which record exactly leads to the exception during the export to the error logs
  * Add new translation functions for Related Identifiers adn Holdings Permanent Location fields
