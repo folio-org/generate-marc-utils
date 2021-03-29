@@ -1,10 +1,21 @@
 package org.folio.reader;
 
+import static java.lang.String.format;
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.StringUtils.ordinalIndexOf;
+
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.minidev.json.JSONArray;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.folio.processor.error.RecordInfo;
@@ -19,21 +30,11 @@ import org.folio.reader.values.SimpleValue;
 import org.folio.reader.values.StringValue;
 import org.folio.reader.values.ValueWrapper;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static java.lang.String.format;
-import static java.util.Collections.emptyList;
-import static org.apache.commons.lang3.StringUtils.ordinalIndexOf;
-
 /**
  * The implementation of {@link EntityReader} reads from JSON entity using JSONPath queries
  */
 public class JPathSyntaxEntityReader extends AbstractEntityReader {
+
   private final DocumentContext documentContext;
 
   public JPathSyntaxEntityReader(String json) {
@@ -52,10 +53,10 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     if (valueWrappers.isEmpty()) {
       return MissingValue.getInstance();
     } else {
-      Optional<ValueWrapper> optionalNonNullValue = valueWrappers.stream().filter(valueWrapper -> valueWrapper.getValue() != null).findFirst();
+      Optional<ValueWrapper> optionalNonNullValue = valueWrappers.stream()
+        .filter(valueWrapper -> valueWrapper.getValue() != null).findFirst();
       if (optionalNonNullValue.isPresent()) {
-        SimpleValue simpleValue = buildSimpleValue(dataSource, valueWrappers, optionalNonNullValue.get().getValue());
-        return simpleValue;
+        return buildSimpleValue(dataSource, valueWrappers, optionalNonNullValue.get().getValue());
       } else {
         return MissingValue.getInstance();
       }
@@ -78,13 +79,13 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         if (valueWrapper.getValue() instanceof String) {
           stringValues.add(SimpleValue.of((String) valueWrapper.getValue(), dataSource, valueWrapper.getRecordInfo()));
         } else if (valueWrapper.getValue() instanceof JSONArray) {
-          ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> {
-            stringValues.add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo()));
-          });
+          ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> stringValues
+            .add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo())));
         } else if (valueWrapper.getValue() == null) {
           stringValues.add(StringValue.ofNullable(dataSource));
         } else {
-          throw new IllegalArgumentException(format("Reading a complex values into a SimpleValue is not supported, data source: %s", dataSource));
+          throw new IllegalArgumentException(
+            format("Reading a complex values into a SimpleValue is not supported, data source: %s", dataSource));
         }
       }
       simpleValue = SimpleValue.of(stringValues, dataSource);
@@ -96,7 +97,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   protected RuleValue readCompositeValue(Rule rule) {
     populateMetadata(rule);
     List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix = readMatrix(rule);
-    if (matrix.get(0).getValue().size() == 0) {
+    if (CollectionUtils.isEmpty(matrix.get(0).getValue())) {
       return MissingValue.getInstance();
     } else {
       CompositeValue compositeValue = buildCompositeValue(matrix);
@@ -126,9 +127,8 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           if (valueObject instanceof String) {
             valueWrappers.add(new ValueWrapper(recordInfo, valueObject));
           } else if (valueObject instanceof JSONArray) {
-            ((JSONArray) valueObject).forEach(arrayValue -> {
-              valueWrappers.add(new ValueWrapper(recordInfo, arrayValue));
-            });
+            ((JSONArray) valueObject).forEach(arrayValue ->
+              valueWrappers.add(new ValueWrapper(recordInfo, arrayValue)));
           }
         } else if (idObject instanceof JSONArray) {
           JSONArray ids = (JSONArray) idObject;
@@ -139,9 +139,8 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
             if (valueObject instanceof String) {
               valueWrappers.add(new ValueWrapper(recordInfo, valueObject));
             } else if (valueObject instanceof JSONArray) {
-              ((JSONArray) valueObject).forEach(arrayValue -> {
-                valueWrappers.add(new ValueWrapper(recordInfo, arrayValue));
-              });
+              ((JSONArray) valueObject).forEach(arrayValue ->
+                valueWrappers.add(new ValueWrapper(recordInfo, arrayValue)));
             }
           }
         }
@@ -156,7 +155,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    */
   private CompositeValue buildCompositeValue(List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix) {
     CompositeValue compositeValue = new CompositeValue();
-    int matrixWidth = matrix.get(0).getValue().size();
+    int matrixWidth = getProperMatrixWidth(matrix);
     for (int widthIndex = 0; widthIndex < matrixWidth; widthIndex++) {
       List<StringValue> entry = new ArrayList<>();
       for (SimpleEntry<DataSource, List<ValueWrapper>> field : matrix) {
@@ -183,13 +182,20 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
               entry.add(SimpleValue.of((String) object, dataSource, valueWrapper.getRecordInfo()));
             }
           } else {
-            entry.add(SimpleValue.of((String) valueWrappers.get(0).getValue(), dataSource, valueWrappers.get(0).getRecordInfo()));
+            entry.add(SimpleValue
+              .of((String) valueWrappers.get(0).getValue(), dataSource, valueWrappers.get(0).getRecordInfo()));
           }
         }
       }
       compositeValue.addEntry(entry);
     }
     return compositeValue;
+  }
+
+  private int getProperMatrixWidth(List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix) {
+    return matrix.stream()
+      .mapToInt(dataSourceListSimpleEntry -> dataSourceListSimpleEntry.getValue().size()).max()
+      .orElse(0);
   }
 
   /**
