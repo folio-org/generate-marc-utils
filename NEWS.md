@@ -1,3 +1,12 @@
+## 04/02/2021 v1.1.1 - Released
+This bugfix release includes fix for inconsistent results when holdings and items data incorrectly appended to the srs record
+in MARC file.
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.1.0...v1.1.1)
+
+### Bug Fixes
+* [MDEXP-385](https://issues.folio.org/browse/MDEXP-385) - Holdings and items data incorrectly appended to the srs record
+
 ## 03/10/2021 v1.1.0 - Released
  Major version release which includes below features :
  * Improve error handling to detect which record exactly leads to the exception during the export to the error logs
