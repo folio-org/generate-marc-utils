@@ -3,6 +3,7 @@ package org.folio.processor;
 import static java.util.Collections.singletonList;
 import static org.folio.util.TestUtil.readFileContentFromResources;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -328,5 +329,31 @@ class RuleProcessorTest {
     assertEquals(givenDataSource.getIndicator(), copiedDataSource.getIndicator());
     assertEquals(givenDataSource.getSubfield(), copiedDataSource.getSubfield());
     assertEquals(givenDataSource.getTranslation(), copiedDataSource.getTranslation());
+  }
+
+  // see https://issues.folio.org/browse/GMU-7
+  @Test
+  void shouldNotReturnEmptyMarcRecordIfMatrixNotEmpty() {
+    // given
+    Rule givenRule = new Rule();
+    givenRule.setField("000");
+    DataSource dataSourceHoldingsStatementsWithNoValue = new DataSource();
+    dataSourceHoldingsStatementsWithNoValue.setSubfield("a");
+    dataSourceHoldingsStatementsWithNoValue.setFrom("$.holdings[*].holdingsStatements[*].statement");
+    DataSource dataSourcePermanentLocationWithValue = new DataSource();
+    dataSourcePermanentLocationWithValue.setSubfield("b");
+    dataSourcePermanentLocationWithValue.setFrom("$.holdings[*].permanentLocationId");
+    dataSourcePermanentLocationWithValue.setTranslation(new Translation());
+    dataSourcePermanentLocationWithValue.getTranslation().setFunction("set_value");
+    givenRule.setDataSources(List.of(dataSourceHoldingsStatementsWithNoValue, dataSourcePermanentLocationWithValue));
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when
+    String marcRecord = ruleProcessor.process(reader, writer, referenceData, singletonList(givenRule), exc -> {});
+
+    // then
+    assertNotEquals(StringUtils.EMPTY, marcRecord);
   }
 }
