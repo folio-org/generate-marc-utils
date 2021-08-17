@@ -97,13 +97,21 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   protected RuleValue readCompositeValue(Rule rule) {
     populateMetadata(rule);
     List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix = readMatrix(rule);
-    if (CollectionUtils.isEmpty(matrix.get(0).getValue())) {
+    if (isMatrixEmpty(matrix)) {
       return MissingValue.getInstance();
     } else {
       CompositeValue compositeValue = buildCompositeValue(matrix);
       applyReadDependingOnDataSourceFlag(compositeValue);
       return compositeValue;
     }
+  }
+
+  /**
+   * Checks whether there is at least one non-empty entry in the matrix and returns false
+   * if found, otherwise true.
+   */
+  private boolean isMatrixEmpty(List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix) {
+    return !matrix.stream().filter(entry -> !entry.getValue().isEmpty()).findFirst().isPresent();
   }
 
   /**
