@@ -1,3 +1,13 @@
+## 1.3.0 - Unreleased
+
+## 1.2.0 - Released
+This release includes modifying logic of processing for composite Rules.
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.1.1...v1.2.0)
+
+### Stories
+* [GMU-7](https://issues.folio.org/browse/GMU-7) - Missing holdings statement causes permanent location to be omitted in the export
+
 ## 04/02/2021 v1.1.1 - Released
 This bugfix release includes fix for inconsistent results when holdings and items data incorrectly appended to the srs record
 in MARC file.
