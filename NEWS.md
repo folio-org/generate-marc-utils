@@ -1,6 +1,6 @@
-## 1.3.0 - Unreleased
+## 1.4.0 - Unreleased
 
-## 1.2.0 - Released
+## 1.3.0 - Released
 This release includes modifying logic of processing for composite Rules.
 
 [Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.1.1...v1.2.0)
