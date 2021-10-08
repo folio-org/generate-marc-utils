@@ -3,7 +3,7 @@
 ## 1.3.0 - Released
 This release includes modifying logic of processing for composite Rules.
 
-[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.1.1...v1.2.0)
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.1.1...v1.3.0)
 
 ### Stories
 * [GMU-7](https://issues.folio.org/browse/GMU-7) - Missing holdings statement causes permanent location to be omitted in the export
