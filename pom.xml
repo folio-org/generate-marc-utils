@@ -3,7 +3,7 @@
 
   <groupId>org.folio</groupId>
   <artifactId>generate-marc-utils</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>generate-marc-utils</name>
   <organization>
@@ -40,6 +40,13 @@
         <version>${junit.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-bom</artifactId>
+        <version>2.16.0</version>
+        <scope>import</scope>
+        <type>pom</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -84,7 +91,6 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.9.1</version>
     </dependency>
     <dependency>
       <groupId>org.marc4j</groupId>
@@ -131,7 +137,7 @@
     <url>https://github.com/folio-org/generate-marc-utils</url>
     <connection>scm:git:git@github.com:folio-org/generate-marc-utils.git</connection>
     <developerConnection>scm:git:git@github.com:folio-org/generate-marc-utils.git</developerConnection>
-    <tag>v1.1.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <build>
