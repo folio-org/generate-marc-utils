@@ -10,6 +10,7 @@ import java.util.Map;
  */
 public class Rule {
   private String field;
+  private String indicators;
   private String description;
   private List<DataSource> dataSources;
   private Metadata metadata;
@@ -23,6 +24,14 @@ public class Rule {
 
   public void setField(String field) {
     this.field = field;
+  }
+
+  public String getIndicators() {
+    return indicators;
+  }
+
+  public void setIndicators(String indicators) {
+    this.indicators = indicators;
   }
 
   public String getDescription() {
