@@ -1,5 +1,13 @@
 ## 1.4.0 - Unreleased
 
+## 1.3.1 - Released
+This release fixes log4j vulnerability
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.3.0...v1.3.1)
+
+### Bug Fixes
+* [GMU-10](https://issues.folio.org/browse/GMU-10) - Kiwi R3 2021 - Log4j vulnerability verification and correction
+
 ## 1.3.0 - Released
 This release includes modifying logic of processing for composite Rules.
 
