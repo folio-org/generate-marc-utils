@@ -1,3 +1,13 @@
+## 1.2.0 - Unreleased
+
+## 1.1.2 - Released
+This release fixes log4j vulnerability
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.1.1...v1.1.2)
+
+### Bug Fixes
+* [GMU-10](https://issues.folio.org/browse/GMU-10) - Kiwi R3 2021 - Log4j vulnerability verification and correction
+
 ## 04/02/2021 v1.1.1 - Released
 This bugfix release includes fix for inconsistent results when holdings and items data incorrectly appended to the srs record
 in MARC file.
