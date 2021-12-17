@@ -68,6 +68,7 @@
   },
   {
     "field": "013",
+    "indicators": "11",
     "description": "Test field 013, reading simple string value, writing data field with not empty indicators",
     "dataSources": [
       {
