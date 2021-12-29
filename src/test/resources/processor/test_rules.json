@@ -173,7 +173,7 @@
   },
   {
     "field": "020",
-    "description": "Testing selection of array of simple fields (all nulls) into a control field",
+    "description": "Testing the field with empty volume in the item record",
     "dataSources": [
       {
         "from": "$.holdings[0].items[*].volume",
