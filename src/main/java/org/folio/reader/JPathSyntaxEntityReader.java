@@ -13,9 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import net.minidev.json.JSONArray;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.folio.processor.error.RecordInfo;
@@ -101,7 +102,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       return MissingValue.getInstance();
     } else {
       CompositeValue compositeValue = buildCompositeValue(matrix);
-      applyReadDependingOnDataSourceFlag(compositeValue);
+      applyReadIfFieldsNotEmpty(compositeValue);
       return compositeValue;
     }
   }
@@ -209,16 +210,27 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   /**
    * Applies 'readDependingOnDataSource' field to the given composite value
    */
-  private void applyReadDependingOnDataSourceFlag(CompositeValue compositeValue) {
-    compositeValue.getValue().removeIf(stringValues -> {
-      for (StringValue stringValue : stringValues) {
-        Integer dataSourceIndex = stringValue.getDataSource().getReadDependingOnDataSource();
-        if (dataSourceIndex != null) {
-          return stringValues.get(dataSourceIndex).getValue() == null;
-        }
-      }
-      return false;
-    });
+  private void applyReadIfFieldsNotEmpty(CompositeValue compositeValue) {
+    compositeValue.getValue().removeIf(stringValues -> isItemTypeValues(stringValues) && allRequiredItemFieldsAreEmpty(stringValues));
+  }
+
+  private boolean isItemTypeValues(List<StringValue> stringValues) {
+    return stringValues.stream().map(stringValue -> stringValue.getDataSource().getFrom())
+      .filter(StringUtils::isNoneEmpty)
+      .anyMatch(from -> from.contains(".items"));
+  }
+
+  /**
+   * Checks if any one item field that should be mapped in scope of a single composite value has a value.
+   * StringValue with holding hrId is not involved since always has a value.
+   *
+   * @param stringValues - item string values to verify
+   * @return true if all related item fields are empty
+   */
+  private boolean allRequiredItemFieldsAreEmpty(List<StringValue> stringValues) {
+    return stringValues.subList(0, stringValues.size() - 1).stream()
+      .map(StringValue::getValue)
+      .allMatch(Objects::isNull);
   }
 
   /**

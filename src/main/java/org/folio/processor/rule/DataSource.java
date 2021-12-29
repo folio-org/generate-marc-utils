@@ -10,7 +10,6 @@ public class DataSource {
   private String subfield;
   private String indicator;
   private Translation translation;
-  private Integer readDependingOnDataSource;
 
   public String getFrom() {
     return from;
@@ -42,14 +41,6 @@ public class DataSource {
 
   public void setTranslation(Translation translation) {
     this.translation = translation;
-  }
-
-  public Integer getReadDependingOnDataSource() {
-    return readDependingOnDataSource;
-  }
-
-  public void setReadDependingOnDataSource(Integer readDependingOnDataSource) {
-    this.readDependingOnDataSource = readDependingOnDataSource;
   }
 
   public DataSource copy() {
