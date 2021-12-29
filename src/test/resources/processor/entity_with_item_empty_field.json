@@ -1,0 +1,74 @@
+{
+  "holdings": [
+    {
+      "id": "0a0369fc-0383-47a5-a532-a62e8e3c07b7",
+      "_version": 1,
+      "hrid": "ho00000000001",
+      "formerIds": [],
+      "instanceId": "14f69234-480e-4e93-a90f-66894dec0f43",
+      "permanentLocationId": "53cf956f-c1df-410b-8bea-27f712cca7c0",
+      "temporaryLocationId": "fcd64ce1-6995-48f0-840e-89ffa2288371",
+      "effectiveLocationId": "fcd64ce1-6995-48f0-840e-89ffa2288371",
+      "electronicAccess": [],
+      "administrativeNotes": [],
+      "notes": [],
+      "holdingsStatements": [
+        {
+          "statement": "Holdings statement\n",
+          "note": "Holdings statement public note\n",
+          "staffNote": "Holdings statement staff note\n"
+        }
+      ],
+      "holdingsStatementsForIndexes": [],
+      "holdingsStatementsForSupplements": [],
+      "statisticalCodeIds": [],
+      "holdingsItems": [],
+      "bareHoldingsItems": [],
+      "metadata": {
+        "createdDate": "2021-12-29T10:08:02.908+00:00",
+        "createdByUserId": "713b5b3b-2bb1-53a5-ac62-238bbd2696bb",
+        "updatedDate": "2021-12-29T10:08:02.908+00:00",
+        "updatedByUserId": "713b5b3b-2bb1-53a5-ac62-238bbd2696bb"
+      },
+      "sourceId": "f32d531e-df79-46b3-8932-cdd35f7a2264",
+      "items": [
+        {
+          "id": "19370bc4-aa7b-4e4c-9613-f9f1a591eff1",
+          "_version": 4,
+          "hrid": "it00000000001",
+          "holdingsRecordId": "0a0369fc-0383-47a5-a532-a62e8e3c07b7",
+          "formerIds": [],
+          "accessionNumber": "234234234",
+          "barcode": "123123123",
+          "effectiveCallNumberComponents": {},
+          "enumeration": "Enumeration",
+          "chronology": "Chronology",
+          "yearCaption": [],
+          "itemIdentifier": "345345345",
+          "administrativeNotes": [],
+          "notes": [],
+          "circulationNotes": [],
+          "status": {
+            "name": "Available",
+            "date": "2021-12-29T10:08:33.423+00:00"
+          },
+          "materialTypeId": "1a54b431-2e4f-452d-9cae-9cee66c9a892",
+          "permanentLoanTypeId": "2b94c631-fca9-4892-a730-03ee529ffe27",
+          "effectiveLocationId": "fcd64ce1-6995-48f0-840e-89ffa2288371",
+          "electronicAccess": [],
+          "statisticalCodeIds": [],
+          "tags": {
+            "tagList": []
+          },
+          "metadata": {
+            "createdDate": "2021-12-29T10:08:33.423+00:00",
+            "createdByUserId": "713b5b3b-2bb1-53a5-ac62-238bbd2696bb",
+            "updatedDate": "2021-12-29T11:54:42.293+00:00",
+            "updatedByUserId": "713b5b3b-2bb1-53a5-ac62-238bbd2696bb"
+          }
+        }
+      ],
+      "instanceHrId": "in00000000023"
+    }
+  ]
+}

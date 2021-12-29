@@ -115,7 +115,7 @@
   },
   {
     "field": "015",
-    "description": "Testing readDependingOnDataSource flag",
+    "description": "Testing item field mapping",
     "dataSources": [
       {
         "from": "$.holdings[0].items[*].barcode",
@@ -123,8 +123,7 @@
       },
       {
         "from": "$.holdings[0].hrid",
-        "subfield": "3",
-        "readDependingOnDataSource": 0
+        "subfield": "3"
       }
     ]
   },
@@ -169,6 +168,24 @@
       {
         "from": "$.holdings[*].none",
         "subfield": "k"
+      }
+    ]
+  },
+  {
+    "field": "020",
+    "description": "Testing the field with empty volume in the item record",
+    "dataSources": [
+      {
+        "from": "$.holdings[0].items[*].volume",
+        "subfield": "a"
+      },
+      {
+        "from": "$.holdings[0].items[*].effectiveLocationId",
+        "subfield": "z"
+      },
+      {
+        "from": "$.holdings[0].hrid",
+        "subfield": "3"
       }
     ]
   },
