@@ -172,6 +172,24 @@
     ]
   },
   {
+    "field": "020",
+    "description": "Testing selection of array of simple fields (all nulls) into a control field",
+    "dataSources": [
+      {
+        "from": "$.holdings[0].items[*].volume",
+        "subfield": "a"
+      },
+      {
+        "from": "$.holdings[0].items[*].effectiveLocationId",
+        "subfield": "z"
+      },
+      {
+        "from": "$.holdings[0].hrid",
+        "subfield": "3"
+      }
+    ]
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [

@@ -43,6 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
 import org.marc4j.marc.VariableField;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -356,4 +357,22 @@ class RuleProcessorTest {
     // then
     assertNotEquals(StringUtils.EMPTY, marcRecord);
   }
+
+  @Test
+  void shouldNotOmitCompositeFieldWithHoldingHrId_whenOneOfItemFieldsIsNullAndGoesFirstInDataSourceList() {
+    // given
+    entity = readFileContentFromResources("processor/entity_with_item_empty_field.json");
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entity);
+    RecordWriter writer = new XmlRecordWriter();
+    // when
+    List<VariableField> actualVariableFields = ruleProcessor.processFields(reader, writer, referenceData, rules, null);
+    // then
+    DataField dataField = (DataField) actualVariableFields.get(3);
+    assertEquals("020", dataField.getTag());
+    assertEquals(2, dataField.getSubfields().size());
+    assertEquals("$zfcd64ce1-6995-48f0-840e-89ffa2288371", dataField.getSubfields().get(0).toString());
+    assertEquals("$3ho00000000001", dataField.getSubfields().get(1).toString());
+  }
+
 }
