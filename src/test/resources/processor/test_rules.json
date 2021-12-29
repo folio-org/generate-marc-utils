@@ -115,7 +115,7 @@
   },
   {
     "field": "015",
-    "description": "Testing readDependingOnDataSource flag",
+    "description": "Testing item field mapping",
     "dataSources": [
       {
         "from": "$.holdings[0].items[*].barcode",
@@ -123,8 +123,7 @@
       },
       {
         "from": "$.holdings[0].hrid",
-        "subfield": "3",
-        "readDependingOnDataSource": 0
+        "subfield": "3"
       }
     ]
   },
