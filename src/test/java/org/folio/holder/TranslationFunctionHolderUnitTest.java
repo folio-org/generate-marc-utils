@@ -27,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.google.common.collect.ImmutableMap;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.processor.referencedata.ReferenceDataConstants.ALTERNATIVE_TITLE_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
@@ -57,6 +58,7 @@ class TranslationFunctionHolderUnitTest {
     Mockito.when(referenceData.get(eq(NATURE_OF_CONTENT_TERMS))).thenReturn(ReferenceDataResponseUtil.getNatureOfContentTerms());
     Mockito.when(referenceData.get(eq(IDENTIFIER_TYPES))).thenReturn(ReferenceDataResponseUtil.getIdentifierTypes());
     Mockito.when(referenceData.get(eq(CONTRIBUTOR_NAME_TYPES))).thenReturn(ReferenceDataResponseUtil.getContributorNameTypes());
+    Mockito.when(referenceData.get(eq(ALTERNATIVE_TITLE_TYPES))).thenReturn(ReferenceDataResponseUtil.getAlternativeTitleTypes());
     Mockito.when(referenceData.get(eq(LOCATIONS))).thenReturn(ReferenceDataResponseUtil.getLocations());
     Mockito.when(referenceData.get(eq(LOAN_TYPES))).thenReturn(ReferenceDataResponseUtil.getLoanTypes());
     Mockito.when(referenceData.get(eq(LIBRARIES))).thenReturn(ReferenceDataResponseUtil.getLibraries());
@@ -547,6 +549,42 @@ class TranslationFunctionHolderUnitTest {
 
     Metadata metadata = new Metadata();
     metadata.addData("contributorNameTypeId", new Metadata.Entry("$.instance.contributors[?(@.primary && @.primary == true)].contributorNameTypeId", Collections.emptyList()));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
+  void SetAlternativeTitle_shouldReturnAlternativeTitleValue() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_ALTERNATIVE_TITLE;
+
+    Translation translation = new Translation();
+    translation.setParameters(Collections.singletonMap("type", "Uniform title"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("alternativeTitleTypeId",
+      new Metadata.Entry("$.instance.alternativeTitles[*].alternativeTitleTypeId",
+        Arrays.asList("30512027-cdc9-4c79-af75-1565b3bd888d", "82ab78de-7359-489c-a532-3ab1be1ba3f4")));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(value, result);
+  }
+
+  @Test
+  void SetAlternativeTitle_shouldReturnEmptyString_whenMetadataIsEmpty() throws ParseException {
+    // given
+    String value = "value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_ALTERNATIVE_TITLE;
+
+    Translation translation = new Translation();
+    translation.setParameters(Collections.singletonMap("type", "Uniform title"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("alternativeTitleTypeId", new Metadata.Entry("$.instance.alternativeTitles[*].alternativeTitleTypeId", Collections.emptyList()));
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then

@@ -7,6 +7,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.folio.processor.referencedata.JsonObjectWrapper;
 
+import static org.folio.processor.referencedata.ReferenceDataConstants.ALTERNATIVE_TITLE_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CALL_NUMBER_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CAMPUSES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.CONTRIBUTOR_NAME_TYPES;
@@ -45,6 +46,14 @@ public class ReferenceDataResponseUtil {
     JSONArray contributorNameTypes = getJsonArray(
       readFileContentFromResources("mockData/inventory/get_contributor_name_types_response.json"),
       CONTRIBUTOR_NAME_TYPES);
+
+    return convertArrayToMap(contributorNameTypes);
+  }
+
+  public static Map<String, JsonObjectWrapper> getAlternativeTitleTypes() {
+    JSONArray contributorNameTypes = getJsonArray(
+      readFileContentFromResources("mockData/inventory/get_alternative_title_types_response.json"),
+      ALTERNATIVE_TITLE_TYPES);
 
     return convertArrayToMap(contributorNameTypes);
   }

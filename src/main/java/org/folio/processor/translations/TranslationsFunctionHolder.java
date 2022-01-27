@@ -112,7 +112,23 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       return StringUtils.EMPTY;
     }
   },
-
+  SET_ALTERNATIVE_TITLE() {
+    @Override
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      Object metadataAlternativeTitleTypesIds = metadata.getData().get("alternativeTitleTypeId").getData();
+      if (metadataAlternativeTitleTypesIds != null) {
+        List<String> alternativeTitleTypesIds = (List<String>) metadataAlternativeTitleTypesIds;
+        if (alternativeTitleTypesIds.size() > currentIndex) {
+          String alternativeTitleTypeId = alternativeTitleTypesIds.get(currentIndex);
+          JSONObject alternativeTitleType = convertToJson(alternativeTitleTypeId, referenceData, ALTERNATIVE_TITLE_TYPES);
+          if (!alternativeTitleType.isEmpty() && alternativeTitleType.getAsString(NAME).equalsIgnoreCase(translation.getParameter("type"))) {
+            return identifierValue;
+          }
+        }
+      }
+      return StringUtils.EMPTY;
+    }
+  },
   SET_LOAN_TYPE() {
     @Override
     public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
@@ -365,8 +381,8 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     }
   };
 
-  private static JSONObject convertToJson(String id, ReferenceDataWrapper referenceData, String constant) {
-    JsonObjectWrapper wrapper = referenceData.get(constant).get(id);
+  private static JSONObject convertToJson(String id, ReferenceDataWrapper referenceData, String referenceDataKey) {
+    JsonObjectWrapper wrapper = referenceData.get(referenceDataKey).get(id);
     return new JSONObject(wrapper == null ? Collections.emptyMap() : wrapper.getMap());
   }
 
