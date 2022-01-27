@@ -4,6 +4,7 @@ public class ReferenceDataConstants {
   public static final String NATURE_OF_CONTENT_TERMS = "natureOfContentTerms";
   public static final String IDENTIFIER_TYPES = "identifierTypes";
   public static final String CONTRIBUTOR_NAME_TYPES = "contributorNameTypes";
+  public static final String ALTERNATIVE_TITLE_TYPES = "alternativeTitleTypes";
   public static final String LOCATIONS = "locations";
   public static final String LOAN_TYPES = "loantypes";
   public static final String LIBRARIES = "loclibs";
