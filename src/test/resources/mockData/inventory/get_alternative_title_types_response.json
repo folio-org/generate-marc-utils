@@ -1,0 +1,17 @@
+{
+  "alternativeTitleTypes": [
+    {
+      "id": "30512027-cdc9-4c79-af75-1565b3bd888d",
+      "name": "Uniform title"
+    },
+    {
+      "id": "82ab78de-7359-489c-a532-3ab1be1ba3f4",
+      "name": "Former title"
+    },
+    {
+      "id": "d57da436-f7f1-48b9-b815-f800223263f4",
+      "name": "Variant title"
+    }
+  ],
+  "totalRecords": 3
+}
