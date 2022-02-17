@@ -10,11 +10,11 @@ class RecordInfoTest {
   void testEquals() {
     RecordInfo recordInfo = new RecordInfo("id", RecordType.INSTANCE);
     RecordInfo recordInfoRef = recordInfo;
-    assertTrue(recordInfo.equals(recordInfoRef));
-    assertFalse(recordInfo.equals(null));
+    assertEquals(recordInfo, recordInfoRef);
+    assertNotEquals(recordInfo, null);
     RecordInfo recordInfoCopy = new RecordInfo("id", RecordType.INSTANCE);
-    assertTrue(recordInfo.equals(recordInfoCopy));
+    assertEquals(recordInfo, recordInfoCopy);
     RecordInfo recordInfoNotCopy = new RecordInfo("id", RecordType.HOLDING);
-    assertFalse(recordInfo.equals(recordInfoNotCopy));
+    assertNotEquals(recordInfo, recordInfoNotCopy);
   }
 }

@@ -10,11 +10,11 @@ class TranslationExceptionTest {
   void testEquals() {
     TranslationException translationException = new TranslationException(new RecordInfo("id", RecordType.INSTANCE), new Exception());
     TranslationException translationExceptionRef = translationException;
-    assertTrue(translationException.equals(translationExceptionRef));
-    assertFalse(translationException.equals(null));
+    assertEquals(translationException, translationExceptionRef);
+    assertNotEquals(translationException, null);
     TranslationException translationExceptionCopy = new TranslationException(new RecordInfo("id", RecordType.INSTANCE), new Exception());
-    assertTrue(translationException.equals(translationExceptionCopy));
+    assertEquals(translationException, translationExceptionCopy);
     TranslationException translationExceptionNotCopy = new TranslationException(new RecordInfo("id", RecordType.HOLDING), new Exception());
-    assertFalse(translationException.equals(translationExceptionNotCopy));
+    assertNotEquals(translationException, translationExceptionNotCopy);
   }
 }
