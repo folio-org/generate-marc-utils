@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableMap;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.error.ErrorCode;
@@ -378,7 +380,7 @@ class RuleProcessorTest {
   }
 
   @Test
-  void shouldNotDuplicateErrors_whenIdentifierIsWrong() {
+  void shouldNotDuplicateErrors_whenIdentifierIsWrongWithSimpleRule() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(TranslationsFunctionHolder.SET_RELATED_IDENTIFIER);
     EntityReader reader = new JPathSyntaxEntityReader(readFileContentFromResources("processor/given_entity_with_wrong_identifier.json"));
@@ -392,6 +394,35 @@ class RuleProcessorTest {
     };
 
     ruleProcessor.process(reader, writer, referenceData, rules, errorHandler);
+  }
+
+  @Test
+  void shouldNotDuplicateErrors_whenIdentifierIsWrongWithCompositeRule() throws JsonProcessingException {
+    // given
+    RuleProcessor ruleProcessor = new RuleProcessor(TranslationsFunctionHolder.SET_RELATED_IDENTIFIER);
+    EntityReader reader = new JPathSyntaxEntityReader(readFileContentFromResources("processor/given_entity_with_wrong_identifier.json"));
+    RecordWriter writer = new MarcRecordWriter();
+
+    AtomicInteger times = new AtomicInteger();
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of(
+      "relatedIdentifierTypes", "ISBN",
+      "type", "Invalid ISBN"));
+    translation.setFunction("set_related_identifier");
+
+    List<Rule> compositeRules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"),
+      Rule[].class)).stream().filter(rule -> rule.getField().equals("003")).collect(Collectors.toList());
+
+    // Enrich with translation for composite rule values.
+    compositeRules.forEach(r -> r.getDataSources().forEach(ds -> ds.setTranslation(translation)));
+
+    // when & then
+    ErrorHandler errorHandler = (translationException) -> {
+      assertEquals(1, times.incrementAndGet());
+    };
+
+    ruleProcessor.process(reader, writer, referenceData, compositeRules, errorHandler);
   }
 
 }
