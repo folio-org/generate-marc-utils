@@ -105,9 +105,9 @@ class RuleProcessorTest {
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new JsonRecordWriter();
     // when
-    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    String actualJsonRecord = ruleProcessor.process(reader, writer, referenceData, rules, null).trim();
     // then
-    String expectedJsonRecord = readFileContentFromResources("processor/mapped_json_record.json");
+    String expectedJsonRecord = readFileContentFromResources("processor/mapped_json_record.json").trim();
     assertEquals(expectedJsonRecord, actualJsonRecord);
   }
 
@@ -118,9 +118,9 @@ class RuleProcessorTest {
     EntityReader reader = new JPathSyntaxEntityReader(entity);
     RecordWriter writer = new XmlRecordWriter();
     // when
-    String actualXmlRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    String actualXmlRecord = ruleProcessor.process(reader, writer, referenceData, rules, null).trim();
     // then
-    String expectedXmlRecord = readFileContentFromResources("processor/mapped_xml_record.xml");
+    String expectedXmlRecord = readFileContentFromResources("processor/mapped_xml_record.xml").trim();
     assertEquals(expectedXmlRecord, actualXmlRecord);
   }
 

@@ -1,5 +1,7 @@
 package org.folio.processor.error;
 
+import java.util.Objects;
+
 /**
  * Shorten information about record that helps to identify the exact record in an instance object
  */
@@ -30,4 +32,16 @@ public class RecordInfo {
 
   public String getFieldValue() { return fieldValue; }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    RecordInfo that = (RecordInfo) o;
+    return Objects.equals(id, that.id) && type == that.type && Objects.equals(fieldName, that.fieldName) && Objects.equals(fieldValue, that.fieldValue);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, type, fieldName, fieldValue);
+  }
 }

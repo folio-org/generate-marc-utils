@@ -1,6 +1,9 @@
 package org.folio.processor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.folio.processor.error.ErrorHandler;
 import org.folio.processor.error.RecordInfo;
 import org.folio.processor.error.TranslationException;
@@ -46,6 +49,8 @@ public final class RuleProcessor {
 
   private TranslationHolder translationHolder;
 
+  private final Set<TranslationException> usedTranslationExceptions = new HashSet<>();
+
   public RuleProcessor() {
     this.translationHolder = TranslationsFunctionHolder.SET_VALUE;
   }
@@ -68,6 +73,7 @@ public final class RuleProcessor {
         processRule(reader, writer, referenceData, rule, errorHandler);
       }
     });
+    usedTranslationExceptions.clear();
     return writer.getResult();
   }
 
@@ -152,7 +158,7 @@ public final class RuleProcessor {
           stringValue.setValue(translatedValue);
         } catch (Exception e) {
           populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
-          errorHandler.handle(new TranslationException(recordInfo, e));
+          handleError(recordInfo, e, errorHandler);
         }
       }
     }
@@ -172,7 +178,7 @@ public final class RuleProcessor {
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
         populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
-        errorHandler.handle(new TranslationException(recordInfo, e));
+        handleError(recordInfo, e, errorHandler);
       }
     }
   }
@@ -195,5 +201,13 @@ public final class RuleProcessor {
         : nameWithoutDataFromBracket.replaceAll(ITEM_REGEX, EMPTY);
     }
     return EMPTY;
+  }
+
+  private void handleError(RecordInfo recordInfo, Exception e, ErrorHandler errorHandler) {
+    TranslationException translationException = new TranslationException(recordInfo, e);
+    if (!usedTranslationExceptions.contains(translationException)) {
+      usedTranslationExceptions.add(translationException);
+      errorHandler.handle(translationException);
+    }
   }
 }
