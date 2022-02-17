@@ -1,7 +1,6 @@
 package org.folio.processor.error;
 
 import java.text.ParseException;
-import java.util.Objects;
 
 /**
  * This exception is thrown when an exception occurs during translation process

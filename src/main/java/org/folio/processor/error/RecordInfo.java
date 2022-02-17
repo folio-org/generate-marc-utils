@@ -1,7 +1,5 @@
 package org.folio.processor.error;
 
-import java.util.Objects;
-
 /**
  * Shorten information about record that helps to identify the exact record in an instance object
  */
