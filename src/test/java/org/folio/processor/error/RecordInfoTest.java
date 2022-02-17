@@ -11,7 +11,7 @@ class RecordInfoTest {
     RecordInfo recordInfo = new RecordInfo("id", RecordType.INSTANCE);
     RecordInfo recordInfoRef = recordInfo;
     assertEquals(recordInfo, recordInfoRef);
-    assertNotEquals(recordInfo, null);
+    assertNotEquals(null, recordInfo);
     RecordInfo recordInfoCopy = new RecordInfo("id", RecordType.INSTANCE);
     assertEquals(recordInfo, recordInfoCopy);
     RecordInfo recordInfoNotCopy = new RecordInfo("id", RecordType.HOLDING);
