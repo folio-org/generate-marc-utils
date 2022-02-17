@@ -1,8 +1,7 @@
 package org.folio.processor;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
 
 import org.folio.processor.error.ErrorHandler;
 import org.folio.processor.error.RecordInfo;
@@ -49,7 +48,7 @@ public final class RuleProcessor {
 
   private TranslationHolder translationHolder;
 
-  private final Set<TranslationException> usedTranslationExceptions = new HashSet<>();
+  private final List<TranslationException> usedTranslationExceptions = new ArrayList<>();
 
   public RuleProcessor() {
     this.translationHolder = TranslationsFunctionHolder.SET_VALUE;
@@ -205,9 +204,24 @@ public final class RuleProcessor {
 
   private void handleError(RecordInfo recordInfo, Exception e, ErrorHandler errorHandler) {
     TranslationException translationException = new TranslationException(recordInfo, e);
-    if (!usedTranslationExceptions.contains(translationException)) {
+    if (!wasExceptionAlreadyThrown(translationException)) {
       usedTranslationExceptions.add(translationException);
       errorHandler.handle(translationException);
     }
   }
+
+  private boolean wasExceptionAlreadyThrown(TranslationException transExc1) {
+    return usedTranslationExceptions.stream()
+      .filter(transExc2 -> exceptionsEqual(transExc1, transExc2))
+      .findFirst().isPresent();
+  }
+
+  private boolean exceptionsEqual(TranslationException transExc1, TranslationException transExc2) {
+    return transExc1.getErrorCode() == transExc2.getErrorCode()
+      && transExc1.getRecordInfo().getId().equals(transExc2.getRecordInfo().getId())
+      && transExc1.getRecordInfo().getFieldValue().equals(transExc2.getRecordInfo().getFieldValue())
+      && transExc1.getRecordInfo().getFieldName().equals(transExc2.getRecordInfo().getFieldName())
+      && transExc1.getRecordInfo().getType() == transExc2.getRecordInfo().getType();
+  }
 }
+

@@ -27,17 +27,4 @@ public class TranslationException extends RuntimeException {
   public RecordInfo getRecordInfo() {
     return recordInfo;
   }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TranslationException that = (TranslationException) o;
-    return errorCode == that.errorCode && Objects.equals(recordInfo, that.recordInfo);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(errorCode, recordInfo);
-  }
 }
