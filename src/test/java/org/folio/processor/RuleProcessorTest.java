@@ -16,6 +16,8 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.error.ErrorCode;
@@ -373,6 +375,23 @@ class RuleProcessorTest {
     assertEquals(2, dataField.getSubfields().size());
     assertEquals("$zfcd64ce1-6995-48f0-840e-89ffa2288371", dataField.getSubfields().get(0).toString());
     assertEquals("$3ho00000000001", dataField.getSubfields().get(1).toString());
+  }
+
+  @Test
+  void shouldNotDuplicateErrors_whenIdentifierIsWrong() {
+    // given
+    RuleProcessor ruleProcessor = new RuleProcessor(TranslationsFunctionHolder.SET_RELATED_IDENTIFIER);
+    EntityReader reader = new JPathSyntaxEntityReader(readFileContentFromResources("processor/given_entity_with_wrong_identifier.json"));
+    RecordWriter writer = new MarcRecordWriter();
+
+    AtomicInteger times = new AtomicInteger();
+
+    // when & then
+    ErrorHandler errorHandler = (translationException) -> {
+      assertEquals(1, times.incrementAndGet());
+    };
+
+    ruleProcessor.process(reader, writer, referenceData, rules, errorHandler);
   }
 
 }
