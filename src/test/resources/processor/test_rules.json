@@ -190,6 +190,36 @@
     ]
   },
   {
+    "field": "021",
+    "description": "Identifier ISBN",
+    "dataSources": [
+      {
+        "from": "$.instance.identifiers[*].value",
+        "subfield": "a",
+        "translation": {
+          "function": "set_related_identifier",
+          "parameters": {
+            "type": "ISBN"
+          }
+        }
+      },
+      {
+        "from": "$.instance.identifiers[*].value",
+        "subfield": "z",
+        "translation": {
+          "function": "set_related_identifier",
+          "parameters": {
+            "relatedIdentifierTypes": "ISBN",
+            "type": "Invalid ISBN"
+          }
+        }
+      }
+    ],
+    "metadata": {
+      "identifierType": "$.instance.identifiers[*]"
+    }
+  },
+  {
     "field": "00x",
     "description": "Nonexistent field just for the testing purposes",
     "dataSources": [

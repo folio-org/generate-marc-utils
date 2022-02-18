@@ -1,6 +1,8 @@
 package org.folio.processor;
 
 import java.util.List;
+import java.util.ArrayList;
+
 import org.folio.processor.error.ErrorHandler;
 import org.folio.processor.error.RecordInfo;
 import org.folio.processor.error.TranslationException;
@@ -46,6 +48,8 @@ public final class RuleProcessor {
 
   private TranslationHolder translationHolder;
 
+  private final List<TranslationException> usedTranslationExceptions = new ArrayList<>();
+
   public RuleProcessor() {
     this.translationHolder = TranslationsFunctionHolder.SET_VALUE;
   }
@@ -68,6 +72,7 @@ public final class RuleProcessor {
         processRule(reader, writer, referenceData, rule, errorHandler);
       }
     });
+    usedTranslationExceptions.clear();
     return writer.getResult();
   }
 
@@ -152,7 +157,7 @@ public final class RuleProcessor {
           stringValue.setValue(translatedValue);
         } catch (Exception e) {
           populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
-          errorHandler.handle(new TranslationException(recordInfo, e));
+          handleError(recordInfo, e, errorHandler);
         }
       }
     }
@@ -172,7 +177,7 @@ public final class RuleProcessor {
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
         populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
-        errorHandler.handle(new TranslationException(recordInfo, e));
+        handleError(recordInfo, e, errorHandler);
       }
     }
   }
@@ -196,4 +201,27 @@ public final class RuleProcessor {
     }
     return EMPTY;
   }
+
+  private void handleError(RecordInfo recordInfo, Exception e, ErrorHandler errorHandler) {
+    TranslationException translationException = new TranslationException(recordInfo, e);
+    if (!wasExceptionAlreadyThrown(translationException)) {
+      usedTranslationExceptions.add(translationException);
+      errorHandler.handle(translationException);
+    }
+  }
+
+  private boolean wasExceptionAlreadyThrown(TranslationException transExc1) {
+    return usedTranslationExceptions.stream()
+      .filter(transExc2 -> exceptionsEqual(transExc1, transExc2))
+      .findFirst().isPresent();
+  }
+
+  private boolean exceptionsEqual(TranslationException transExc1, TranslationException transExc2) {
+    return transExc1.getErrorCode() == transExc2.getErrorCode()
+      && transExc1.getRecordInfo().getId().equals(transExc2.getRecordInfo().getId())
+      && transExc1.getRecordInfo().getFieldValue().equals(transExc2.getRecordInfo().getFieldValue())
+      && transExc1.getRecordInfo().getFieldName().equals(transExc2.getRecordInfo().getFieldName())
+      && transExc1.getRecordInfo().getType() == transExc2.getRecordInfo().getType();
+  }
 }
+
