@@ -1,4 +1,20 @@
-## 1.4.0 - Unreleased
+## 1.5.0 - Unreleased
+
+## 1.4.0 - Released
+The primary focus of this release was to fix bugs and add alternative titles logic
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.3.0...v1.4.0)
+
+### Technical tasks
+* [GMU-10](https://issues.folio.org/browse/GMU-10) -  Log4j vulnerability verification and correction
+
+### Stories
+* [GMU-25](https://issues.folio.org/browse/GMU-25) - Add alternative titles type usage
+
+### Bug fixes
+* [GMU-28](https://issues.folio.org/browse/GMU-28) - Error log provides duplicate entries for the same error
+* [GMU-24](https://issues.folio.org/browse/GMU-24) - Missing data in one subfield excludes whole field from export with the custom mapping profile
+* [MDEXP-480](https://issues.folio.org/browse/MDEXP-480) - Only one mapping is executed during the export
 
 ## 1.3.0 - Released
 This release includes modifying logic of processing for composite Rules.
