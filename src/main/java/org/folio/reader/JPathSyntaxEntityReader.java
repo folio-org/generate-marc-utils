@@ -2,6 +2,7 @@ package org.folio.reader;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.ordinalIndexOf;
 
 import com.jayway.jsonpath.Configuration;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -174,7 +177,8 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           entry.add(StringValue.ofNullable(dataSource));
         } else {
           if (valueWrappers.size() > widthIndex) {
-            ValueWrapper valueWrapper = valueWrappers.get(widthIndex);
+            ValueWrapper valueWrapper = tryToGetValueWrapperForHoldingsStatements(valueWrappers, entry)
+              .orElse(valueWrappers.get(widthIndex));
             Object object = valueWrapper.getValue();
             if (object instanceof String) {
               StringValue stringValue = SimpleValue.of((String) object, dataSource, valueWrapper.getRecordInfo());
@@ -191,8 +195,9 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
               entry.add(SimpleValue.of((String) object, dataSource, valueWrapper.getRecordInfo()));
             }
           } else {
-            entry.add(SimpleValue
-              .of((String) valueWrappers.get(0).getValue(), dataSource, valueWrappers.get(0).getRecordInfo()));
+            entry.add(SimpleValue.of((String) tryToGetValueWrapperForHoldingsStatements(valueWrappers, entry)
+              .orElse(valueWrappers.get(0)).getValue(), dataSource, tryToGetValueWrapperForHoldingsStatements(valueWrappers, entry)
+              .orElse(valueWrappers.get(0)).getRecordInfo()));
           }
         }
       }
@@ -279,5 +284,22 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       identifiedPath = from.substring(0, index + 1) + replacement + from.substring(index + 2);
     }
     return identifiedPath;
+  }
+
+  private Optional<ValueWrapper> tryToGetValueWrapperForHoldingsStatements(List<ValueWrapper> valueWrappers, List<StringValue> entry) {
+    if (entry.isEmpty()) {
+      return Optional.empty();
+    }
+    var res = valueWrappers.stream().filter(valueWrapper -> isHoldingsStatement(valueWrapper, entry)).collect(Collectors.toList());
+    if (res.size() != 1) {
+      return Optional.empty();
+    }
+    return Optional.of(res.get(0));
+  }
+
+  private boolean isHoldingsStatement(ValueWrapper valueWrapper, List<StringValue> entry) {
+    return entry.get(0).getDataSource().getFrom().equals("$.holdings[*].holdingsStatements[*].statement") &&
+      nonNull(entry.get(0).getRecordInfo()) &&
+      valueWrapper.getRecordInfo().getId().equals(entry.get(0).getRecordInfo().getId());
   }
 }
