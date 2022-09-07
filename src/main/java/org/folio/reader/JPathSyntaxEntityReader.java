@@ -116,7 +116,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    * if found, otherwise true.
    */
   private boolean isMatrixEmpty(List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix) {
-    return !matrix.stream().anyMatch(entry -> !entry.getValue().isEmpty());
+    return matrix.stream().allMatch(entry -> entry.getValue().isEmpty());
   }
 
   /**
