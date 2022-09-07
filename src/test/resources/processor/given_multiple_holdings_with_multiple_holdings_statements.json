@@ -1,0 +1,174 @@
+{
+    "holdings": [
+        {
+            "id": "34d282fe-2844-48fb-9945-2f44ac6d04ae",
+            "hrid": "ho00000000002",
+            "holdingsTypeId": "0c422f92-0f4d-4d32-8cbe-390ebc33a3e5",
+            "formerIds": [],
+            "instanceId": "5bf370e0-8cca-4d9c-82e4-5170ab2a0a39",
+            "permanentLocationId": "d9cd0bed-1b49-4b5e-a7bd-064b8d177231",
+            "temporaryLocationId": "97ee6cd9-17ef-47f8-acbb-ec16fb2cb98d",
+            "electronicAccess": [
+                {
+                    "uri": "http://test-related-resource.com",
+                    "linkText": "linking text",
+                    "materialsSpecification": "materials mapping",
+                    "publicNote": "public note",
+                    "relationshipId": "5bfe1b7b-f151-4501-8cfa-23b321d5cd1e"
+                },
+                {
+                    "uri": "http://testingDefault",
+                    "linkText": "default link text",
+                    "materialsSpecification": "default materials specified",
+                    "publicNote": "default public note"
+                }
+            ],
+            "callNumberTypeId": "054d460d-d6b9-4469-9e37-7a78a2266655",
+            "callNumberPrefix": "CallNum-prefix123",
+            "callNumber": "CallNum-value123",
+            "callNumberSuffix": "CallNum-suffix123",
+            "notes": [
+                {
+                    "note": "action Note",
+                    "staffOnly": false,
+                    "holdingsNoteTypeId": "c4407cc7-d79f-4609-95bd-1cefb2e2b5c5"
+                },
+                {
+                    "note": "Binding Note- staff Only",
+                    "staffOnly": true,
+                    "holdingsNoteTypeId": "88914775-f677-4759-b57b-1a33b90b24e0"
+                }
+            ],
+            "holdingsStatements": [
+              {
+                "statement": "Line 1b",
+                "note": "Statement public note",
+                "staffNote": "Statement staff note"
+              },
+              {
+                "statement": "Line 2b",
+                "note": "Statement public note2",
+                "staffNote": "Statement staff note2"
+              }
+            ],
+            "holdingsStatementsForIndexes": [
+              {
+                "statement": "Line 1c",
+                "note": "Statement indexes public note",
+                "staffNote": "Statement indexes staff note"
+              },
+              {
+                "statement": "Line 2c",
+                "note": "Statement indexes public note2",
+                "staffNote": "Statement indexes staff note2"
+              }
+            ],
+            "holdingsStatementsForSupplements": [
+              {
+                "statement": "Line 1a",
+                "note": "Statement supplements public note",
+                "staffNote": "Statement supplements staff note"
+              },
+              {
+                "statement": "Line 2a",
+                "note": "Statement supplements public note2",
+                "staffNote": "Statement supplements staff note2"
+              }
+            ],
+            "statisticalCodeIds": [],
+            "holdingsItems": [],
+            "bareHoldingsItems": [],
+            "metadata": {
+                "createdDate": "2020-09-04T15:56:12.242+0000",
+                "createdByUserId": "6c040dcb-a1aa-5880-b98b-e8c6a6112663",
+                "updatedDate": "2020-09-04T15:56:12.242+0000",
+                "updatedByUserId": "6c040dcb-a1aa-5880-b98b-e8c6a6112663"
+            }
+        },
+      {
+        "id": "44d282fe-2844-48fb-9945-2f44ac6d04ae",
+        "hrid": "ho00000000003",
+        "holdingsTypeId": "0c422f92-0f4d-4d32-8cbe-390ebc33a3e5",
+        "formerIds": [],
+        "instanceId": "5bf370e0-8cca-4d9c-82e4-5170ab2a0a39",
+        "permanentLocationId": "97ee6cd9-17ef-47f8-acbb-ec16fb2cb98d",
+        "temporaryLocationId": "97ee6cd9-17ef-47f8-acbb-ec16fb2cb98d",
+        "electronicAccess": [
+          {
+            "uri": "http://test-related-resource.com",
+            "linkText": "linking text",
+            "materialsSpecification": "materials mapping",
+            "publicNote": "public note",
+            "relationshipId": "5bfe1b7b-f151-4501-8cfa-23b321d5cd1e"
+          },
+          {
+            "uri": "http://testingDefault",
+            "linkText": "default link text",
+            "materialsSpecification": "default materials specified",
+            "publicNote": "default public note"
+          }
+        ],
+        "callNumberTypeId": "054d460d-d6b9-4469-9e37-7a78a2266655",
+        "callNumberPrefix": "CallNum-prefix123",
+        "callNumber": "CallNum-value123",
+        "callNumberSuffix": "CallNum-suffix123",
+        "notes": [
+          {
+            "note": "action Note",
+            "staffOnly": false,
+            "holdingsNoteTypeId": "c4407cc7-d79f-4609-95bd-1cefb2e2b5c5"
+          },
+          {
+            "note": "Binding Note- staff Only",
+            "staffOnly": true,
+            "holdingsNoteTypeId": "88914775-f677-4759-b57b-1a33b90b24e0"
+          }
+        ],
+        "holdingsStatements": [
+          {
+            "statement": "Line 3b",
+            "note": "Statement public note3",
+            "staffNote": "Statement staff note3"
+          },
+          {
+            "statement": "Line 4b",
+            "note": "Statement public note4",
+            "staffNote": "Statement staff note4"
+          }
+        ],
+        "holdingsStatementsForIndexes": [
+          {
+            "statement": "Line 1c",
+            "note": "Statement indexes public note",
+            "staffNote": "Statement indexes staff note"
+          },
+          {
+            "statement": "Line 2c",
+            "note": "Statement indexes public note2",
+            "staffNote": "Statement indexes staff note2"
+          }
+        ],
+        "holdingsStatementsForSupplements": [
+          {
+            "statement": "Line 1a",
+            "note": "Statement supplements public note",
+            "staffNote": "Statement supplements staff note"
+          },
+          {
+            "statement": "Line 2a",
+            "note": "Statement supplements public note2",
+            "staffNote": "Statement supplements staff note2"
+          }
+        ],
+        "statisticalCodeIds": [],
+        "holdingsItems": [],
+        "bareHoldingsItems": [],
+        "metadata": {
+          "createdDate": "2020-09-04T15:56:12.242+0000",
+          "createdByUserId": "6c040dcb-a1aa-5880-b98b-e8c6a6112663",
+          "updatedDate": "2020-09-04T15:56:12.242+0000",
+          "updatedByUserId": "6c040dcb-a1aa-5880-b98b-e8c6a6112663"
+        }
+      }
+    ]
+}

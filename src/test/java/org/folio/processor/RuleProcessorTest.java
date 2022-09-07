@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.google.common.collect.ImmutableMap;
 import net.minidev.json.JSONObject;
@@ -60,6 +62,7 @@ class RuleProcessorTest {
   private static final ObjectMapper MAPPER = new ObjectMapper();
   private static List<Rule> rules;
   private String entity;
+  private String holdingsEntity;
 
   @Mock(lenient = true)
   private ReferenceDataWrapper referenceData;
@@ -80,6 +83,7 @@ class RuleProcessorTest {
   @BeforeEach
   public void beforeEach() throws ParseException {
     entity = readFileContentFromResources("processor/given_entity.json");
+    holdingsEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_statements.json");
 
     doReturn(createdDateTranslationFunction).when(translationHolder).lookup("set_fixed_length_data_elements");
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");
@@ -360,6 +364,41 @@ class RuleProcessorTest {
 
     // then
     assertNotEquals(StringUtils.EMPTY, marcRecord);
+  }
+
+  @Test
+  void shouldMapMultipleHoldingsWithMultipleHoldingsStatementsProperly() {
+    when(translationHolder.lookup("set_value"))
+      .thenReturn((value, currentIndex, translation1, referenceData, metadata) ->
+        value.equals("d9cd0bed-1b49-4b5e-a7bd-064b8d177231") ? "location 1" : "location 2");
+    // given
+    Rule givenRule = new Rule();
+    givenRule.setField("899");
+    DataSource dataSourceHoldingsStatements = new DataSource();
+    dataSourceHoldingsStatements.setSubfield("a");
+    dataSourceHoldingsStatements.setFrom("$.holdings[*].holdingsStatements[*].statement");
+    DataSource dataSourcePermanentLocation = new DataSource();
+    dataSourcePermanentLocation.setSubfield("b");
+    dataSourcePermanentLocation.setFrom("$.holdings[*].permanentLocationId");
+    DataSource dataSourceHRID = new DataSource();
+    dataSourceHRID.setSubfield("c");
+    dataSourceHRID.setFrom("$.holdings[*].hrid");
+    dataSourcePermanentLocation.setTranslation(new Translation());
+    dataSourcePermanentLocation.getTranslation().setFunction("set_value");
+    Map<String, String> params = new HashMap<>();
+    params.put("field", "code");
+    dataSourcePermanentLocation.getTranslation().setParameters(params);
+    givenRule.setDataSources(List.of(dataSourceHoldingsStatements, dataSourcePermanentLocation, dataSourceHRID));
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(holdingsEntity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when
+    String marcRecordActual = ruleProcessor.process(reader, writer, referenceData, singletonList(givenRule), exc -> {});
+    String marcRecordExpected = readFileContentFromResources("processor/mapped_json_holdings_statements_record.json");
+
+    // then
+    assertEquals(marcRecordExpected, marcRecordActual);
   }
 
   @Test

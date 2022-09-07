@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.ordinalIndexOf;
+import static org.folio.reader.values.SimpleValue.ofNullable;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
@@ -70,8 +71,8 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   /**
    * Builds a SimpleValue, could be StringValue or ListValue
    */
-  private SimpleValue buildSimpleValue(DataSource dataSource, List<ValueWrapper> valueWrappers, Object nonNullValue) {
-    SimpleValue simpleValue = null;
+  private SimpleValue<?> buildSimpleValue(DataSource dataSource, List<ValueWrapper> valueWrappers, Object nonNullValue) {
+    SimpleValue<?> simpleValue;
     if (nonNullValue instanceof String && valueWrappers.size() == 1) {
       /* Building StringValue */
       ValueWrapper valueWrapper = valueWrappers.get(0);
@@ -86,7 +87,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           ((JSONArray) valueWrapper.getValue()).forEach(arrayItem -> stringValues
             .add(SimpleValue.of(arrayItem.toString(), dataSource, valueWrapper.getRecordInfo())));
         } else if (valueWrapper.getValue() == null) {
-          stringValues.add(StringValue.ofNullable(dataSource));
+          stringValues.add(ofNullable(dataSource));
         } else {
           throw new IllegalArgumentException(
             format("Reading a complex values into a SimpleValue is not supported, data source: %s", dataSource));
@@ -115,7 +116,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
    * if found, otherwise true.
    */
   private boolean isMatrixEmpty(List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix) {
-    return !matrix.stream().filter(entry -> !entry.getValue().isEmpty()).findFirst().isPresent();
+    return !matrix.stream().anyMatch(entry -> !entry.getValue().isEmpty());
   }
 
   /**
@@ -174,7 +175,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         List<ValueWrapper> valueWrappers = field.getValue();
         DataSource dataSource = field.getKey();
         if (valueWrappers.isEmpty()) {
-          entry.add(StringValue.ofNullable(dataSource));
+          entry.add(ofNullable(dataSource));
         } else {
           if (valueWrappers.size() > widthIndex) {
             ValueWrapper valueWrapper = tryToGetValueWrapperForHoldingsStatements(valueWrappers, entry)
@@ -192,7 +193,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
                 entry.add(stringValue);
               });
             } else {
-              entry.add(SimpleValue.of((String) object, dataSource, valueWrapper.getRecordInfo()));
+              entry.add(SimpleValue.of(nonNull(object) ? (String)object : null, dataSource, valueWrapper.getRecordInfo()));
             }
           } else {
             entry.add(SimpleValue.of((String) tryToGetValueWrapperForHoldingsStatements(valueWrappers, entry)
