@@ -202,6 +202,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           }
         }
       }
+      removeHoldingNotesFromEntryIfNotBelongToHolding(entry);
       compositeValue.addEntry(entry);
     }
     return compositeValue;
@@ -302,5 +303,13 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     return entry.get(0).getDataSource().getFrom().equals("$.holdings[*].holdingsStatements[*].statement") &&
       nonNull(entry.get(0).getRecordInfo()) &&
       valueWrapper.getRecordInfo().getId().equals(entry.get(0).getRecordInfo().getId());
+  }
+
+  private void removeHoldingNotesFromEntryIfNotBelongToHolding(List<StringValue> entry) {
+    if (!entry.isEmpty()) {
+      entry.removeIf(val -> nonNull(entry.get(0).getRecordInfo()) && nonNull(val.getRecordInfo()) &&
+        val.getDataSource().getFrom().startsWith("$.holdings[*].notes") &&
+        !val.getRecordInfo().getId().equals(entry.get(0).getRecordInfo().getId()));
+    }
   }
 }
