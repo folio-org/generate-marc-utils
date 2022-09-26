@@ -62,7 +62,8 @@ class RuleProcessorTest {
   private static final ObjectMapper MAPPER = new ObjectMapper();
   private static List<Rule> rules;
   private String entity;
-  private String holdingsEntity;
+  private String holdingsStatementsEntity;
+  private String holdingsNotesEntity;
 
   @Mock(lenient = true)
   private ReferenceDataWrapper referenceData;
@@ -83,7 +84,8 @@ class RuleProcessorTest {
   @BeforeEach
   public void beforeEach() throws ParseException {
     entity = readFileContentFromResources("processor/given_entity.json");
-    holdingsEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_statements.json");
+    holdingsStatementsEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_statements.json");
+    holdingsNotesEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_notes.json");
 
     doReturn(createdDateTranslationFunction).when(translationHolder).lookup("set_fixed_length_data_elements");
     doReturn(natureOfContentTranslationFunction).when(translationHolder).lookup("set_nature_of_content_term");
@@ -390,7 +392,7 @@ class RuleProcessorTest {
     dataSourcePermanentLocation.getTranslation().setParameters(params);
     givenRule.setDataSources(List.of(dataSourceHoldingsStatements, dataSourcePermanentLocation, dataSourceHRID));
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
-    EntityReader reader = new JPathSyntaxEntityReader(holdingsEntity);
+    EntityReader reader = new JPathSyntaxEntityReader(holdingsStatementsEntity);
     RecordWriter writer = new JsonRecordWriter();
 
     // when
@@ -398,7 +400,50 @@ class RuleProcessorTest {
     String marcRecordExpected = readFileContentFromResources("processor/mapped_json_holdings_statements_record.json");
 
     // then
-    assertEquals(marcRecordExpected, marcRecordActual);
+    assertEquals(marcRecordExpected.trim(), marcRecordActual.trim());
+  }
+
+  @Test
+  void shouldMapHoldingsNotesOnlyToSpecificHoldingsIfMultipleHoldings() {
+    Rule givenRule = new Rule();
+    givenRule.setField("900");
+
+    DataSource dataSourceHRID = new DataSource();
+    dataSourceHRID.setSubfield("a");
+    dataSourceHRID.setFrom("$.holdings[*].hrid");
+
+    DataSource dataSourceHoldingsNotes = new DataSource();
+    dataSourceHoldingsNotes.setSubfield("b");
+    dataSourceHoldingsNotes.setFrom("$.holdings[*].notes[?(@.holdingsNoteTypeId=='c4407cc7-d79f-4609-95bd-1cefb2e2b5c8' && (!(@.staffOnly) || @.staffOnly == false))].note");
+
+    DataSource dataSourceHoldingsNotes2 = new DataSource();
+    dataSourceHoldingsNotes2.setSubfield("c");
+    dataSourceHoldingsNotes2.setFrom("$.holdings[*].notes[?(@.holdingsNoteTypeId=='c4407cc7-d79f-4609-95bd-1cefb2e2b5c9' && ((@.staffOnly) || @.staffOnly == true))].note");
+
+    DataSource dataSourceHoldingsNotes3 = new DataSource();
+    dataSourceHoldingsNotes3.setSubfield("d");
+    dataSourceHoldingsNotes3.setFrom("$.holdings[*].notes[?(@.holdingsNoteTypeId=='c4407cc7-d79f-4609-95bd-1cefb2e2b5c5' && (!(@.staffOnly) || @.staffOnly == false))].note");
+
+    DataSource dataSourceHoldingsNotes4 = new DataSource();
+    dataSourceHoldingsNotes4.setSubfield("e");
+    dataSourceHoldingsNotes4.setFrom("$.holdings[*].notes[?(@.holdingsNoteTypeId=='c4407cc7-d79f-4609-95bd-1cefb2e2b5c6' && ((@.staffOnly) || @.staffOnly == true))].note");
+
+    DataSource dataSourceHoldingsNotes5 = new DataSource();
+    dataSourceHoldingsNotes5.setSubfield("f");
+    dataSourceHoldingsNotes5.setFrom("$.holdings[*].notes[?(@.holdingsNoteTypeId=='c4407cc7-d79f-4609-95bd-1cefb2e2b5c7' && ((@.staffOnly) || @.staffOnly == true))].note");
+
+    givenRule.setDataSources(List.of(dataSourceHRID, dataSourceHoldingsNotes, dataSourceHoldingsNotes2, dataSourceHoldingsNotes3,
+      dataSourceHoldingsNotes4, dataSourceHoldingsNotes5));
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(holdingsNotesEntity);
+    RecordWriter writer = new JsonRecordWriter();
+
+    // when
+    String marcRecordActual = ruleProcessor.process(reader, writer, referenceData, singletonList(givenRule), exc -> {});
+    String marcRecordExpected = readFileContentFromResources("processor/mapped_json_holdings_notes_record.json");
+
+    // then
+    assertEquals(marcRecordExpected.trim(), marcRecordActual.trim());
   }
 
   @Test
