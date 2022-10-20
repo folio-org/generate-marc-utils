@@ -1,4 +1,13 @@
-## 1.5.0 - Unreleased
+## 1.6.0 - Unreleased
+
+## 1.5.0 - Released
+This release was primarily focused on bug fixes
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.4.0...v1.5.0)
+
+### Bug fixes
+* [GMU-34](https://issues.folio.org/browse/GMU-34) - Holdings notes not being exported properly in MARC Bibs when there are multiple holdings
+* [GMU-33](https://issues.folio.org/browse/GMU-33) - Holdings statement mapped incorrectly in custom mapping profile
 
 ## 1.4.0 - Released
 The primary focus of this release was to fix bugs and add alternative titles logic
