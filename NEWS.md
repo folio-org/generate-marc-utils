@@ -1,4 +1,15 @@
-## 1.6.0 - Unreleased
+## 1.7.0 - Unreleased
+
+## 1.6.0 - Released
+This release includes logging improvements configuration and dependency updates
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.5.0...v1.6.0)
+
+### Bug fixes
+* [GMU-36](https://issues.folio.org/browse/GMU-36) - Jackson 2.14.0, log4j 2.19.0, commons-io 2.11.0, json-path 2.7.0
+
+### Technical tasks
+* [GMU-35](https://issues.folio.org/browse/GMU-35) - Logging improvement - Configuration
 
 ## 1.5.0 - Released
 This release was primarily focused on bug fixes
