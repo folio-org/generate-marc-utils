@@ -804,7 +804,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, null, null, metadata);
     // then
-    Assert.assertEquals(StringUtils.SPACE, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -816,7 +816,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, null, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.SPACE, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
@@ -832,7 +832,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.SPACE, result);
+    Assert.assertEquals(EMPTY, result);
   }
 
   @Test
