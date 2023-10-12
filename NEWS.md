@@ -3,10 +3,10 @@
 ## 1.7.0 - Released
 This release contains only changing version of json-path.
 
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.6.0...v1.7.0)
+
 ### Bug fixes
 * [GMU-38](https://issues.folio.org/browse/GMU-38) - json-path 2.8.0
-
-[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.6.0...v1.7.0)
 
 ## 1.6.0 - Released
 This release includes logging improvements configuration and dependency updates
