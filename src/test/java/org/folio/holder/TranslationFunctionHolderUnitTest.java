@@ -164,6 +164,46 @@ class TranslationFunctionHolderUnitTest {
   }
 
   @Test
+  void AppendIdentifier_shouldReturnInvalidIsbnValue() throws ParseException {
+    // given
+    String value = "isbn value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.APPEND_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of("type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+          ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals("invalid isbn value", result);
+  }
+
+  @Test
+  void AppendIdentifier_shouldReturnEmptyValue_whenCurrentIndexIsGreaterThanZero() throws ParseException {
+    // given
+    String value = "isbn value";
+    TranslationFunction translationFunction = TranslationsFunctionHolder.APPEND_IDENTIFIER;
+
+    Translation translation = new Translation();
+    translation.setParameters(ImmutableMap.of("type", "Invalid ISBN"));
+
+    Metadata metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(ImmutableMap.of("value", "isbn value", "identifierTypeId", "8261054f-be78-422d-bd51-4ed9f33c3422"),
+          ImmutableMap.of("value", "invalid isbn value", "identifierTypeId", "47c7bf8e-d2a3-4b3f-84b8-79944031a55a"))));
+    // when
+    String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
+    // then
+    Assert.assertEquals(EMPTY, result);
+  }
+
+  @Test
   void SetRelatedIdentifier_shouldReturnEmptyValue_whenRelatedIdentifierDoesNotMatchCurrentIdentifierValue() throws ParseException {
     // given
     String value = "value";
