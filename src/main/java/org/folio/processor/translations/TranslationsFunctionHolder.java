@@ -70,6 +70,29 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       return StringUtils.EMPTY;
     }
   },
+  APPEND_IDENTIFIER() {
+    @Override
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      Object metadataIdentifierTypeIds = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
+      if (metadataIdentifierTypeIds != null) {
+        List<Map<String, String>> identifierTypes = (List<Map<String, String>>) metadataIdentifierTypeIds;
+        if (identifierTypes.size() > currentIndex && currentIndex == 0) {
+          String actualIdentifierTypeName = translation.getParameter(TYPE_PARAM);
+          for (JsonObjectWrapper wrapper : referenceData.get(IDENTIFIER_TYPES).values()) {
+            JSONObject referenceDataEntry = new JSONObject(wrapper == null ? Collections.emptyMap() : wrapper.getMap());
+            if (referenceDataEntry.getAsString(NAME).equalsIgnoreCase(actualIdentifierTypeName)) {
+              for (Map<String, String> identifierType : identifierTypes) {
+                if (identifierType.get(IDENTIFIER_TYPE_ID_PARAM).equalsIgnoreCase(referenceDataEntry.getAsString(ID_PARAM))) {
+                  return identifierType.get(VALUE_PARAM);
+                }
+              }
+            }
+          }
+        }
+      }
+      return StringUtils.EMPTY;
+    }
+  },
   SET_RELATED_IDENTIFIER() {
     @Override
     public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
