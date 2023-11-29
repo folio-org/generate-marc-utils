@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.folio.processor.referencedata.JsonObjectWrapper;
@@ -23,7 +26,9 @@ import com.google.common.base.Splitter;
 import net.minidev.json.JSONObject;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.folio.processor.referencedata.ReferenceDataConstants.*;
@@ -116,6 +121,22 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         }
       }
       return StringUtils.EMPTY;
+    }
+  },
+  SET_OR_APPEND_IDENTIFIER() {
+    @Override
+    public String apply(String identifierValue, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
+      var currentIdentifierId = fetchIdentifiersReference(referenceData).getOrDefault(translation.getParameter(TYPE_PARAM), EMPTY);
+      int occurrenceNumber = 0;
+      for (Map<String, String> typeData : fetchTypeData(metadata)) {
+        if (currentIdentifierId.equalsIgnoreCase(typeData.get(IDENTIFIER_TYPE_ID_PARAM))) {
+          if (occurrenceNumber == currentIndex) {
+            return typeData.get(VALUE_PARAM);
+          }
+          occurrenceNumber += 1;
+        }
+      }
+      return EMPTY;
     }
   },
   SET_CONTRIBUTOR() {
@@ -430,4 +451,17 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     return date.toInstant().atZone(ZoneId.of("Z"));
   }
 
+  private static List<Map<String, String>> fetchTypeData(Metadata metadata) {
+    var listObj = metadata.getData().get(IDENTIFIER_TYPE_METADATA).getData();
+    return nonNull(listObj) ? (List<Map<String, String>>) listObj : Collections.emptyList();
+  }
+
+  private static Map<String, String> fetchIdentifiersReference(ReferenceDataWrapper referenceDataWrapper) {
+    return referenceDataWrapper.get(IDENTIFIER_TYPES).values().stream()
+      .filter(Objects::nonNull)
+      .map(JsonObjectWrapper::getMap)
+      .map(JSONObject::new)
+      .collect(Collectors.toMap(jsonObject -> jsonObject.getAsString(NAME), jsonObject -> jsonObject.getAsString(ID_PARAM),
+        (existing, replacement) -> existing));
+  }
 }

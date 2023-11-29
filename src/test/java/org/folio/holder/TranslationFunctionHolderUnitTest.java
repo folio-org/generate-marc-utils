@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -266,6 +267,44 @@ class TranslationFunctionHolderUnitTest {
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
     Assert.assertEquals("invalid isbn value", result);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "ISSN,0,issn value 0",
+    "Linking ISSN,0,linking issn value 0",
+    "Invalid ISSN,0,invalid issn value 0",
+    "ISSN,1,''",
+    "Linking ISSN,1,linking issn value 1",
+    "Invalid ISSN,1,invalid issn value 1",
+    "ISSN,2,''",
+    "Linking ISSN,2,''",
+    "Invalid ISSN,2,''",
+  })
+  void SetOrAppendIdentifier_ShouldReturnValueBasedOnOccurrenceNumber(String type, int currentIndex, String expectedValue) throws ParseException {
+    // given
+    var value = "any value";
+
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_OR_APPEND_IDENTIFIER;
+
+    var translation = new Translation();
+    translation.setParameters(Collections.singletonMap("type", type));
+
+    var metadata = new Metadata();
+    metadata.addData("identifierType",
+      new Metadata.Entry("$.identifiers[*]",
+        asList(
+          ImmutableMap.of("value", "issn value 0", "identifierTypeId", "913300b2-03ed-469a-8179-c1092c991227"),
+          ImmutableMap.of("value", "linking issn value 0", "identifierTypeId", "5860f255-a27f-4916-a830-262aa900a6b9"),
+          ImmutableMap.of("value", "invalid issn value 0", "identifierTypeId", "846e7bb9-f06c-4ec9-8523-2527314fec9e"),
+          ImmutableMap.of("value", "invalid issn value 1", "identifierTypeId", "846e7bb9-f06c-4ec9-8523-2527314fec9e"),
+          ImmutableMap.of("value", "linking issn value 1", "identifierTypeId", "5860f255-a27f-4916-a830-262aa900a6b9"))));
+
+    // when
+    String result = translationFunction.apply(value, currentIndex, translation, referenceData, metadata);
+
+    // then
+    Assert.assertEquals(expectedValue, result);
   }
 
   @Test
