@@ -1,4 +1,14 @@
-## 1.8.0 - Unreleased
+## 1.9.0 - Unreleased
+
+## 1.8.0 - Released
+This release contains Java upgrade 11 -> 17 and bug fixes
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.7.0...v1.8.0)
+
+### Bug fixes
+* [GMU-42](https://folio-org.atlassian.net/browse/GMU-42) - Switch Java and JDK from 11 to 17
+* [GMU-41](https://folio-org.atlassian.net/browse/GMU-41) - json-path 2.9.0, guava 33.0.0-jre fixing vulns
+* [MDEXP-652](https://folio-org.atlassian.net/browse/MDEXP-652) - "Linking ISSN" (022$l) and "Invalid ISBN" (020$z) missed for  MARC bib records generated on the fly
 
 ## 1.7.0 - Released
 This release contains only changing version of json-path.
