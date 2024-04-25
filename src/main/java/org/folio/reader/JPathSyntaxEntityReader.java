@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -38,6 +38,7 @@ import org.folio.reader.values.ValueWrapper;
 /**
  * The implementation of {@link EntityReader} reads from JSON entity using JSONPath queries
  */
+@Log4j2
 public class JPathSyntaxEntityReader extends AbstractEntityReader {
 
   private final DocumentContext documentContext;
@@ -53,6 +54,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
 
   @Override
   protected RuleValue readSimpleValue(Rule rule, DataSource dataSource) {
+    log.info("readSimpleValue:: parameters rule: {}, dataSource: {}", rule, dataSource);
     populateMetadata(rule);
     List<ValueWrapper> valueWrappers = readMatrix(rule).get(0).getValue();
     if (valueWrappers.isEmpty()) {
@@ -89,17 +91,21 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
         } else if (valueWrapper.getValue() == null) {
           stringValues.add(ofNullable(dataSource));
         } else {
+          log.error("Reading a complex values into a SimpleValue is not supported, data source: {}", dataSource);
           throw new IllegalArgumentException(
             format("Reading a complex values into a SimpleValue is not supported, data source: %s", dataSource));
         }
       }
       simpleValue = SimpleValue.of(stringValues, dataSource);
     }
+    log.debug("buildSimpleValue:: result: {}", simpleValue);
+
     return simpleValue;
   }
 
   @Override
   protected RuleValue readCompositeValue(Rule rule) {
+    log.info("readCompositeValue:: parameters rule: {}", rule);
     populateMetadata(rule);
     List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix = readMatrix(rule);
     if (isMatrixEmpty(matrix)) {
@@ -292,7 +298,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
     if (entry.isEmpty()) {
       return Optional.empty();
     }
-    var res = valueWrappers.stream().filter(valueWrapper -> isHoldingsStatement(valueWrapper, entry)).collect(Collectors.toList());
+    var res = valueWrappers.stream().filter(valueWrapper -> isHoldingsStatement(valueWrapper, entry)).toList();
     if (res.size() != 1) {
       return Optional.empty();
     }

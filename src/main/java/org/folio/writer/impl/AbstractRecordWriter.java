@@ -1,6 +1,7 @@
 package org.folio.writer.impl;
 
 import com.google.common.base.Strings;
+import lombok.extern.log4j.Log4j2;
 import org.folio.processor.rule.DataSource;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.ListValue;
@@ -16,12 +17,15 @@ import java.util.List;
 import static org.folio.reader.values.SimpleValue.SubType.LIST_OF_STRING;
 import static org.folio.reader.values.SimpleValue.SubType.STRING;
 
+@Log4j2
 public abstract class AbstractRecordWriter implements RecordWriter {
   private static final String INDICATOR_1 = "1";
   private static final String INDICATOR_2 = "2";
 
   @Override
   public void writeField(String field, SimpleValue simpleValue) {
+    log.info("writeField:: parameters field: {}, simpleValue: {}", field, simpleValue);
+
     DataSource dataSource = simpleValue.getDataSource();
     if (STRING.equals(simpleValue.getSubType())) {
       StringValue stringValue = (StringValue) simpleValue;
@@ -48,6 +52,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
 
   @Override
   public void writeField(String field, CompositeValue compositeValue) {
+    log.info("writeField:: parameters field: {}, compositeValue: {}", field, compositeValue);
     for (List<StringValue> entry : compositeValue.getValue()) {
       RecordDataField recordDataField = buildDataFieldForStringValues(field, entry);
       if (!recordDataField.getSubFields().isEmpty()) {
@@ -61,6 +66,8 @@ public abstract class AbstractRecordWriter implements RecordWriter {
   protected abstract void writeDataField(RecordDataField recordDataField);
 
   private RecordDataField buildDataFieldForListOfStrings(String field, ListValue listValue) {
+    log.debug("buildDataFieldForListOfStrings:: parameters field: {}, listValue: {}", field, listValue);
+
     DataSource dataSource = listValue.getDataSource();
     RecordDataField recordDataField = new RecordDataField(field);
     for (StringValue stringValue : listValue.getValue()) {
@@ -79,10 +86,13 @@ public abstract class AbstractRecordWriter implements RecordWriter {
         }
       }
     }
+    log.debug("buildDataFieldForListOfStrings:: result= {}", recordDataField);
     return recordDataField;
   }
 
   private RecordDataField buildDataFieldForStringValues(String field, List<StringValue> entry) {
+    log.debug("buildDataFieldForListOfStrings:: parameters field: {}, entry: {}", field, entry);
+
     RecordDataField recordDataField = new RecordDataField(field);
     for (StringValue stringValue : entry) {
       DataSource dataSource = stringValue.getDataSource();
@@ -101,6 +111,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
         }
       }
     }
+    log.debug("buildDataFieldForListOfStrings:: result= {}", recordDataField);
     return recordDataField;
   }
 

@@ -1,12 +1,14 @@
 package org.folio.reader.values;
 
 
+import lombok.ToString;
 import org.folio.processor.error.RecordInfo;
 import org.folio.processor.rule.DataSource;
 
 /**
  * The implementation of {@link RuleValue} contains only one simple string value assigned to one {@link DataSource}
  */
+@ToString
 public class StringValue extends SimpleValue<String> {
   private String value;
 

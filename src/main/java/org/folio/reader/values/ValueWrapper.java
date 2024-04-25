@@ -1,21 +1,14 @@
 package org.folio.reader.values;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
 import org.folio.processor.error.RecordInfo;
 
+@Getter
+@ToString
+@AllArgsConstructor
 public class ValueWrapper {
   private RecordInfo recordInfo;
   private Object value;
-
-  public ValueWrapper(RecordInfo recordInfo, Object value) {
-    this.recordInfo = recordInfo;
-    this.value = value;
-  }
-
-  public RecordInfo getRecordInfo() {
-    return recordInfo;
-  }
-
-  public Object getValue() {
-    return value;
-  }
 }

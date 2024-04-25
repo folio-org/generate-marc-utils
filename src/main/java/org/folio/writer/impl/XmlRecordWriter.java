@@ -1,5 +1,6 @@
 package org.folio.writer.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.writer.RecordWriter;
@@ -12,9 +13,11 @@ import java.io.OutputStream;
 /**
  * The implementation of {@link RecordWriter} writes content of marc record in XML format
  */
+@Log4j2
 public class XmlRecordWriter extends MarcRecordWriter {
   @Override
   public String getResult() {
+    log.info("getResult:: ");
     OutputStream outputStream = new ByteArrayOutputStream();
     MarcWriter writer = new MarcXmlWriter(outputStream, encoding);
     if (CollectionUtils.isNotEmpty(getFields())) {
