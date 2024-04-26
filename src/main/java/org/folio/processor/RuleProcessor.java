@@ -161,7 +161,7 @@ public final class RuleProcessor {
           String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
           stringValue.setValue(translatedValue);
         } catch (Exception e) {
-          log.warn("Error while applying translation: function= {}; stringValue= {}; error msg= {}.", translation.getFunction(), stringValue, e.getMessage());
+          log.error("Error while applying translation: function= {}; stringValue= {}; error msg= {}.", translation.getFunction(), stringValue, e.getMessage());
           RecordInfo recordInfo = stringValue.getRecordInfo();
           populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
           handleError(recordInfo, e, errorHandler);
@@ -182,7 +182,7 @@ public final class RuleProcessor {
         String translatedValue = translationFunction.apply(readValue, index, translation, referenceData, metadata);
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
-        log.warn("Error while applying translation: function= {}; stringValue= {}; error msg= {}.", translation.getFunction(), stringValue, e.getMessage());
+        log.error("Error while applying translation: function= {}; stringValue= {}; error msg= {}.", translation.getFunction(), stringValue, e.getMessage());
         RecordInfo recordInfo = stringValue.getRecordInfo();
         populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
         handleError(recordInfo, e, errorHandler);

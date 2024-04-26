@@ -45,7 +45,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(id, referenceData, NATURE_OF_CONTENT_TERMS);
       if (entry.isEmpty()) {
-        log.warn("Nature of content term is not found by the given id: {}", id);
+        log.error("Nature of content term is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -177,7 +177,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(id, referenceData, LOAN_TYPES);
       if (entry.isEmpty()) {
-        log.warn("Loan Type is not found by the given id: {}", id);
+        log.error("Loan Type is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -189,7 +189,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String materialTypeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(materialTypeId, referenceData, MATERIAL_TYPES);
       if (entry.isEmpty()) {
-        log.warn("Material type is not found by the given id: {}", materialTypeId);
+        log.error("Material type is not found by the given id: {}", materialTypeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -247,7 +247,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         try {
           createdDateParam = targetCreatedDateFormatter.format(TranslationsFunctionHolder.getParsedDate(originCreatedDate));
         } catch (ParseException e) {
-          log.warn("Failed to parse createdDate field, the current time value will be used");
+          log.error("Failed to parse createdDate field, the current time value will be used");
           createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.now());
         }
       } else {
@@ -292,7 +292,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String instanceTypeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(instanceTypeId, referenceData, INSTANCE_TYPES);
       if (entry.isEmpty()) {
-        log.warn("Instance type id is not found by the given id: {}", instanceTypeId);
+        log.error("Instance type id is not found by the given id: {}", instanceTypeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -307,7 +307,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String instanceFormatId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(instanceFormatId, referenceData, INSTANCE_FORMATS);
       if (entry.isEmpty()) {
-        log.warn("Instance format is not found by the given id: {}", instanceFormatId);
+        log.error("Instance format is not found by the given id: {}", instanceFormatId);
         return StringUtils.EMPTY;
       } else {
         String instanceFormatIdValue = entry.getAsString(NAME);
@@ -348,7 +348,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String modeOfIssuanceId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(modeOfIssuanceId, referenceData, MODE_OF_ISSUANCES);
       if (entry.isEmpty()) {
-        log.warn("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
+        log.error("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -361,7 +361,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String typeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(typeId, referenceData, CALL_NUMBER_TYPES);
       if (entry.isEmpty()) {
-        log.warn("Call number type is not found by the given id: {}", typeId);
+        log.error("Call number type is not found by the given id: {}", typeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -374,7 +374,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String locationId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
       if (entry.isEmpty()) {
-        log.warn("Location is not found by the given id: {}", locationId);
+        log.error("Location is not found by the given id: {}", locationId);
         return StringUtils.EMPTY;
       } else {
         String relatedReferenceData = translation.getParameter("referenceData");
@@ -384,7 +384,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
           String referenceDataIdValue = entry.getAsString(referenceDataIdField);
           JSONObject relatedEntry = convertToJson(referenceDataIdValue, referenceData, relatedReferenceData);
           if (relatedEntry.isEmpty()) {
-            log.warn("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
+            log.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
             return StringUtils.EMPTY;
           } else {
             return relatedEntry.getAsString(field);
@@ -406,7 +406,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       } else {
         JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
         if (entry.isEmpty()) {
-          log.warn("Location is not found by the given id: {}", locationId);
+          log.error("Location is not found by the given id: {}", locationId);
           return StringUtils.EMPTY;
         } else {
           return entry.getAsString(NAME);
