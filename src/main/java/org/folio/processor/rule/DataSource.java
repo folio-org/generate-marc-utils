@@ -1,12 +1,17 @@
 package org.folio.processor.rule;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.folio.processor.translations.Translation;
 
 /**
  * Data defines how to read and translate a field value, defines subfield and indicators for writing
  */
-@Data
+
+@Getter
+@Setter
+@ToString
 public class DataSource {
   private String from;
   private String subfield;

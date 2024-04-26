@@ -3,7 +3,6 @@ package org.folio.reader.values;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.error.RecordInfo;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
 public abstract class SimpleValue<T> implements RuleValue<T> {
   protected DataSource dataSource;
   protected RecordInfo recordInfo;

@@ -1,7 +1,9 @@
 package org.folio.processor.rule;
 
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +12,21 @@ import java.util.Map;
 /**
  * Rule defines how to read, translate and map a field value to marc record
  */
-@Data
+@Getter
+@ToString
 public class Rule {
+
+  @Setter
   private String field;
+  @Setter
   private String indicators;
+  @Setter
   private String description;
+  @Setter
   private List<DataSource> dataSources;
-  private Metadata metadata;
+  @Setter
   private String id;
+  private Metadata metadata;
   /* The flag means that this rule is generated from TransformationField with RecordType equals ITEM */
   private boolean isItemTypeRule;
 
