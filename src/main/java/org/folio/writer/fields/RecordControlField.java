@@ -1,24 +1,16 @@
 package org.folio.writer.fields;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * Representation of marc control field
  */
+@Getter
+@AllArgsConstructor
 public class RecordControlField {
   private String tag;
   private String data;
-
-  public RecordControlField(String tag, String data) {
-    this.tag = tag;
-    this.data = data;
-  }
-
-  public String getTag() {
-    return tag;
-  }
-
-  public String getData() {
-    return data;
-  }
 
   public void setData(String data) {
     this.data = data;

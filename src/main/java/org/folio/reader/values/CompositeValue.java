@@ -9,7 +9,7 @@ import java.util.List;
  * The implementation of {@link RuleValue} contains a list of complex values assigned to different {@link DataSource}
  */
 public class CompositeValue implements RuleValue<List<List<StringValue>>> {
-  private List<List<StringValue>> value = new ArrayList<>();
+  private final List<List<StringValue>> value = new ArrayList<>();
 
   @Override
   public List<List<StringValue>> getValue() {

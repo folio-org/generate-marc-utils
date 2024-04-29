@@ -1,6 +1,5 @@
 package org.folio.processor.translations;
 
-import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -14,13 +13,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.folio.processor.referencedata.JsonObjectWrapper;
 import org.folio.processor.referencedata.ReferenceDataWrapper;
 import org.folio.processor.rule.Metadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 import net.minidev.json.JSONObject;
@@ -33,6 +31,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.folio.processor.referencedata.ReferenceDataConstants.*;
 
+@Log4j2
 public enum TranslationsFunctionHolder implements TranslationFunction, TranslationHolder {
 
   SET_VALUE() {
@@ -46,7 +45,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(id, referenceData, NATURE_OF_CONTENT_TERMS);
       if (entry.isEmpty()) {
-        LOGGER.error("Nature of content term is not found by the given id: {}", id);
+        log.error("Nature of content term is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -178,7 +177,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String id, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(id, referenceData, LOAN_TYPES);
       if (entry.isEmpty()) {
-        LOGGER.error("Loan Type is not found by the given id: {}", id);
+        log.error("Loan Type is not found by the given id: {}", id);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -190,7 +189,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String materialTypeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(materialTypeId, referenceData, MATERIAL_TYPES);
       if (entry.isEmpty()) {
-        LOGGER.error("Material type is not found by the given id: {}", materialTypeId);
+        log.error("Material type is not found by the given id: {}", materialTypeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -206,7 +205,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
    * The time requires 8 numeric characters in the pattern hhmmss.f, expressed in terms of the 24-hour (00-23) clock.
    */
   SET_TRANSACTION_DATETIME() {
-    private transient DateTimeFormatter targetDateFormatter = new DateTimeFormatterBuilder()
+    private final transient DateTimeFormatter targetDateFormatter = new DateTimeFormatterBuilder()
       .appendPattern("yyyyMMddhhmmss")
       .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 1, true)
       .toFormatter();
@@ -236,7 +235,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
    * 38-39 - each field set to |
    */
   SET_FIXED_LENGTH_DATA_ELEMENTS() {
-    private transient DateTimeFormatter targetCreatedDateFormatter = DateTimeFormatter.ofPattern("yyMMdd");
+    private final transient DateTimeFormatter targetCreatedDateFormatter = DateTimeFormatter.ofPattern("yyMMdd");
     private static final String DATES_OF_PUBLICATION = "datesOfPublication";
     private static final String LANGUAGES = "languages";
     private static final String FIELD_PATTERN = "%s|%s%s||||||||       |||||%s||";
@@ -248,7 +247,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
         try {
           createdDateParam = targetCreatedDateFormatter.format(TranslationsFunctionHolder.getParsedDate(originCreatedDate));
         } catch (ParseException e) {
-          LOGGER.error("Failed to parse createdDate field, the current time value will be used");
+          log.error("Failed to parse createdDate field, the current time value will be used");
           createdDateParam = targetCreatedDateFormatter.format(ZonedDateTime.now());
         }
       } else {
@@ -293,7 +292,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String instanceTypeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(instanceTypeId, referenceData, INSTANCE_TYPES);
       if (entry.isEmpty()) {
-        LOGGER.error("Instance type id is not found by the given id: {}", instanceTypeId);
+        log.error("Instance type id is not found by the given id: {}", instanceTypeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -308,7 +307,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String instanceFormatId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(instanceFormatId, referenceData, INSTANCE_FORMATS);
       if (entry.isEmpty()) {
-        LOGGER.error("Instance format is not found by the given id: {}", instanceFormatId);
+        log.error("Instance format is not found by the given id: {}", instanceFormatId);
         return StringUtils.EMPTY;
       } else {
         String instanceFormatIdValue = entry.getAsString(NAME);
@@ -349,7 +348,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String modeOfIssuanceId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(modeOfIssuanceId, referenceData, MODE_OF_ISSUANCES);
       if (entry.isEmpty()) {
-        LOGGER.error("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
+        log.error("Mode of issuance is not found by the given id: {}", modeOfIssuanceId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -362,7 +361,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String typeId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(typeId, referenceData, CALL_NUMBER_TYPES);
       if (entry.isEmpty()) {
-        LOGGER.error("Call number type is not found by the given id: {}", typeId);
+        log.error("Call number type is not found by the given id: {}", typeId);
         return StringUtils.EMPTY;
       } else {
         return entry.getAsString(NAME);
@@ -375,7 +374,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     public String apply(String locationId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) {
       JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
       if (entry.isEmpty()) {
-        LOGGER.error("Location is not found by the given id: {}", locationId);
+        log.error("Location is not found by the given id: {}", locationId);
         return StringUtils.EMPTY;
       } else {
         String relatedReferenceData = translation.getParameter("referenceData");
@@ -385,7 +384,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
           String referenceDataIdValue = entry.getAsString(referenceDataIdField);
           JSONObject relatedEntry = convertToJson(referenceDataIdValue, referenceData, relatedReferenceData);
           if (relatedEntry.isEmpty()) {
-            LOGGER.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
+            log.error("Data related for location is not found {} by the given id: {}", relatedReferenceData, referenceDataIdValue);
             return StringUtils.EMPTY;
           } else {
             return relatedEntry.getAsString(field);
@@ -407,7 +406,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
       } else {
         JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
         if (entry.isEmpty()) {
-          LOGGER.error("Location is not found by the given id: {}", locationId);
+          log.error("Location is not found by the given id: {}", locationId);
           return StringUtils.EMPTY;
         } else {
           return entry.getAsString(NAME);
@@ -417,7 +416,7 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   },
 
   SET_METADATA_DATE_TIME() {
-    private transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
+    private final transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
     @Override
     public String apply(String date, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) throws ParseException {
       ZonedDateTime originDateTime = getParsedDate(date);
@@ -436,7 +435,6 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
   private static final String RELATED_IDENTIFIER_TYPES_PARAM = "relatedIdentifierTypes";
   private static final String IDENTIFIER_TYPE_ID_PARAM = "identifierTypeId";
   private static final String IDENTIFIER_TYPE_METADATA = "identifierType";
-  private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String NAME = "name";
   private static final String VALUE = VALUE_PARAM;
 

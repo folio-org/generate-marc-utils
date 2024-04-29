@@ -26,7 +26,7 @@ import java.util.Map;
  */
 public class MarcRecordWriter extends AbstractRecordWriter {
   protected String encoding = StandardCharsets.UTF_8.name();
-  private MarcFactory factory = new SortedMarcFactoryImpl();
+  private final MarcFactory factory = new SortedMarcFactoryImpl();
   protected Record record = factory.newRecord();
 
   @Override

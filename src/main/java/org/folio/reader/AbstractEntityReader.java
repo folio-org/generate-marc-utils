@@ -1,15 +1,19 @@
 package org.folio.reader;
 
+import lombok.extern.log4j.Log4j2;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.rule.Rule;
 import org.folio.reader.values.MissingValue;
 import org.folio.reader.values.RuleValue;
 
 @SuppressWarnings("java:S3740")
+@Log4j2
 public abstract class AbstractEntityReader implements EntityReader {
 
   @Override
   public RuleValue read(Rule rule) {
+    log.debug("read:: parameters rule field: {}", rule.getField());
+
     if (isSimpleRule(rule)) {
       return readSimpleValue(rule, rule.getDataSources().get(0));
     } else if (isCompositeRule(rule)) {

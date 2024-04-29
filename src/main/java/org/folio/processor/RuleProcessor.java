@@ -3,6 +3,7 @@ package org.folio.processor;
 import java.util.List;
 import java.util.ArrayList;
 
+import lombok.extern.log4j.Log4j2;
 import org.folio.processor.error.ErrorHandler;
 import org.folio.processor.error.RecordInfo;
 import org.folio.processor.error.TranslationException;
@@ -39,6 +40,7 @@ import static org.folio.reader.values.SimpleValue.SubType.STRING;
  * @see RecordWriter
  * @see Rule
  */
+@Log4j2
 public final class RuleProcessor {
   private static final String LEADER_FIELD = "leader";
   private static final String EXCEPT_VALUES_IN_BRACKETS_REGEX = "\\[.*?]";
@@ -46,7 +48,7 @@ public final class RuleProcessor {
   private static final String HOLDING_REGEX = "\\$.holdings.";
   private static final String ITEM_REGEX = "\\$.holdings.items.";
 
-  private TranslationHolder translationHolder;
+  private final TranslationHolder translationHolder;
 
   private final List<TranslationException> usedTranslationExceptions = new ArrayList<>();
 
@@ -65,7 +67,9 @@ public final class RuleProcessor {
    * @return content of the generated marc record
    */
   public String process(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, List<Rule> rules, ErrorHandler errorHandler) {
+    log.debug("process:: the rules processing started.");
     rules.forEach(rule -> {
+      log.debug("process:: the exact rule with field: {}", rule.getField());
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
@@ -73,6 +77,7 @@ public final class RuleProcessor {
       }
     });
     usedTranslationExceptions.clear();
+    log.debug("processFields:: method result: {}", writer.getResult());
     return writer.getResult();
   }
 
@@ -83,13 +88,16 @@ public final class RuleProcessor {
    * @return the list of the generated VariableField of marc record
    */
   public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, List<Rule> rules, ErrorHandler errorHandler) {
+    log.debug("processFields:: the fields processing started.");
     rules.forEach(rule -> {
+      log.debug("processFields:: the exact rule with field: {}", rule.getField());
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
         processRule(reader, writer, referenceData, rule, errorHandler);
       }
     });
+    log.debug("processFields:: method result. fields: {}", writer.getFields());
     return writer.getFields();
   }
 
@@ -150,12 +158,13 @@ public final class RuleProcessor {
       for (int currentIndex = 0; currentIndex < listValue.getValue().size(); currentIndex++) {
       StringValue stringValue = listValue.getValue().get(currentIndex);
       String readValue = stringValue.getValue();
-      RecordInfo recordInfo = stringValue.getRecordInfo();
         try {
           TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
           String translatedValue = translationFunction.apply(readValue, currentIndex, translation, referenceData, metadata);
           stringValue.setValue(translatedValue);
         } catch (Exception e) {
+          log.error("Error while applying translation: function= {}; stringValue= {}; error msg= {}.", translation.getFunction(), stringValue, e.getMessage());
+          RecordInfo recordInfo = stringValue.getRecordInfo();
           populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
           handleError(recordInfo, e, errorHandler);
         }
@@ -170,12 +179,13 @@ public final class RuleProcessor {
     Translation translation = stringValue.getDataSource().getTranslation();
     if (translation != null) {
       String readValue = stringValue.getValue();
-      RecordInfo recordInfo = stringValue.getRecordInfo();
       try {
         TranslationFunction translationFunction = translationHolder.lookup(translation.getFunction());
         String translatedValue = translationFunction.apply(readValue, index, translation, referenceData, metadata);
         stringValue.setValue(translatedValue);
       } catch (Exception e) {
+        log.error("Error while applying translation: function= {}; stringValue= {}; error msg= {}.", translation.getFunction(), stringValue, e.getMessage());
+        RecordInfo recordInfo = stringValue.getRecordInfo();
         populateFieldNameAndValue(recordInfo, getProperFieldName(stringValue.getDataSource().getFrom(), recordInfo), readValue);
         handleError(recordInfo, e, errorHandler);
       }

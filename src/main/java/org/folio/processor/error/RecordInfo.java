@@ -1,8 +1,13 @@
 package org.folio.processor.error;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Shorten information about record that helps to identify the exact record in an instance object
  */
+@Getter
+@Setter
 public class RecordInfo {
   private String id;
   private RecordType type;
@@ -13,21 +18,5 @@ public class RecordInfo {
     this.id = id;
     this.type = type;
   }
-
-  public String getId() {
-    return id;
-  }
-
-  public RecordType getType() {
-    return type;
-  }
-
-  public void setFieldName(String fieldName) { this.fieldName = fieldName; }
-
-  public void setFieldValue(String fieldValue) { this.fieldValue = fieldValue; }
-
-  public String getFieldName() { return fieldName; }
-
-  public String getFieldValue() { return fieldValue; }
 
 }

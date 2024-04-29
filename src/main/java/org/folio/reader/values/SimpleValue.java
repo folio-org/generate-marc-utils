@@ -1,11 +1,15 @@
 package org.folio.reader.values;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.folio.processor.rule.DataSource;
 import org.folio.processor.error.RecordInfo;
 
 import java.util.List;
 
+@Getter
+@Setter
 public abstract class SimpleValue<T> implements RuleValue<T> {
   protected DataSource dataSource;
   protected RecordInfo recordInfo;
@@ -24,18 +28,6 @@ public abstract class SimpleValue<T> implements RuleValue<T> {
 
   public static ListValue of(List<StringValue> stringValues, DataSource dataSource) {
     return new ListValue(stringValues, dataSource, null);
-  }
-
-  public DataSource getDataSource() {
-    return this.dataSource;
-  }
-
-  public void setRecordInfo(RecordInfo recordInfo) {
-    this.recordInfo = recordInfo;
-  }
-
-  public RecordInfo getRecordInfo() {
-    return this.recordInfo;
   }
 
   @Override

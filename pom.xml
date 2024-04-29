@@ -33,6 +33,7 @@
     <marc4j.version>2.9.1</marc4j.version>
     <junit.version>5.4.2</junit.version>
     <sonar.exclusions>**/Error.java</sonar.exclusions>
+    <lombok.version>1.18.30</lombok.version>
   </properties>
 
   <dependencyManagement>
@@ -114,6 +115,11 @@
       <groupId>net.minidev</groupId>
       <artifactId>json-smart</artifactId>
       <version>2.4.10</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
     </dependency>
 
     <dependency>
