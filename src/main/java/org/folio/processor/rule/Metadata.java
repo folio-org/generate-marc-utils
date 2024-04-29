@@ -1,14 +1,11 @@
 package org.folio.processor.rule;
 
-import lombok.ToString;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Additional data used for translation a field value
  */
-@ToString
 public class Metadata {
   private Map<String, Entry> data = new HashMap<>();
 
@@ -29,7 +26,6 @@ public class Metadata {
     return data;
   }
 
-  @ToString
   public static class Entry {
     private String from;
     private Object data;

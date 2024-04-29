@@ -67,8 +67,9 @@ public final class RuleProcessor {
    * @return content of the generated marc record
    */
   public String process(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, List<Rule> rules, ErrorHandler errorHandler) {
-    log.info("process:: the rules param: {}",rules);
+    log.debug("process:: the rules processing started.");
     rules.forEach(rule -> {
+      log.debug("process:: the exact rule with field: {}", rule.getField());
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
@@ -76,6 +77,7 @@ public final class RuleProcessor {
       }
     });
     usedTranslationExceptions.clear();
+    log.debug("processFields:: method result: {}", writer.getResult());
     return writer.getResult();
   }
 
@@ -86,14 +88,16 @@ public final class RuleProcessor {
    * @return the list of the generated VariableField of marc record
    */
   public List<VariableField> processFields(EntityReader reader, RecordWriter writer, ReferenceDataWrapper referenceData, List<Rule> rules, ErrorHandler errorHandler) {
-    log.info("processFields:: the rules param: {}",rules);
+    log.debug("processFields:: the fields processing started.");
     rules.forEach(rule -> {
+      log.debug("processFields:: the exact rule with field: {}", rule.getField());
       if (LEADER_FIELD.equals(rule.getField())) {
         rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
       } else {
         processRule(reader, writer, referenceData, rule, errorHandler);
       }
     });
+    log.debug("processFields:: method result. fields: {}", writer.getFields());
     return writer.getFields();
   }
 

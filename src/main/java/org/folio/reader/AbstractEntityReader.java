@@ -12,7 +12,7 @@ public abstract class AbstractEntityReader implements EntityReader {
 
   @Override
   public RuleValue read(Rule rule) {
-    log.debug("read:: parameters rule: {}", rule);
+    log.debug("read:: parameters rule field: {}", rule.getField());
 
     if (isSimpleRule(rule)) {
       return readSimpleValue(rule, rule.getDataSources().get(0));

@@ -1,7 +1,6 @@
 package org.folio.writer.fields;
 
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.Map;
  * Representation of marc data field
  */
 @Getter
-@ToString
 public class RecordDataField {
   private final String tag;
   private char indicator1 = ' ';

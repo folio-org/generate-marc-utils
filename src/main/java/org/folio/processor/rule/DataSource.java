@@ -2,7 +2,6 @@ package org.folio.processor.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.folio.processor.translations.Translation;
 
 /**
@@ -11,7 +10,6 @@ import org.folio.processor.translations.Translation;
 
 @Getter
 @Setter
-@ToString
 public class DataSource {
   private String from;
   private String subfield;

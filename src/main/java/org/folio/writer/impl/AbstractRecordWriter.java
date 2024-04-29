@@ -24,7 +24,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
 
   @Override
   public void writeField(String field, SimpleValue simpleValue) {
-    log.debug("writeField:: parameters field: {}, simpleValue: {}", field, simpleValue);
+    log.debug("writeField:: parameter field: {}", field);
 
     DataSource dataSource = simpleValue.getDataSource();
     if (STRING.equals(simpleValue.getSubType())) {
@@ -52,7 +52,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
 
   @Override
   public void writeField(String field, CompositeValue compositeValue) {
-    log.debug("writeField:: parameters field: {}, compositeValue: {}", field, compositeValue);
+    log.debug("writeField:: parameter field: {}", field);
     for (List<StringValue> entry : compositeValue.getValue()) {
       RecordDataField recordDataField = buildDataFieldForStringValues(field, entry);
       if (!recordDataField.getSubFields().isEmpty()) {
@@ -66,7 +66,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
   protected abstract void writeDataField(RecordDataField recordDataField);
 
   private RecordDataField buildDataFieldForListOfStrings(String field, ListValue listValue) {
-    log.debug("buildDataFieldForListOfStrings:: parameters field: {}, listValue: {}", field, listValue);
+    log.debug("buildDataFieldForListOfStrings:: parameter field: {}", field);
 
     DataSource dataSource = listValue.getDataSource();
     RecordDataField recordDataField = new RecordDataField(field);
@@ -86,12 +86,11 @@ public abstract class AbstractRecordWriter implements RecordWriter {
         }
       }
     }
-    log.debug("buildDataFieldForListOfStrings:: result= {}", recordDataField);
     return recordDataField;
   }
 
   private RecordDataField buildDataFieldForStringValues(String field, List<StringValue> entry) {
-    log.debug("buildDataFieldForListOfStrings:: parameters field: {}, entry: {}", field, entry);
+    log.debug("buildDataFieldForListOfStrings:: parameter field: {}", field);
 
     RecordDataField recordDataField = new RecordDataField(field);
     for (StringValue stringValue : entry) {
@@ -111,7 +110,6 @@ public abstract class AbstractRecordWriter implements RecordWriter {
         }
       }
     }
-    log.debug("buildDataFieldForListOfStrings:: result= {}", recordDataField);
     return recordDataField;
   }
 

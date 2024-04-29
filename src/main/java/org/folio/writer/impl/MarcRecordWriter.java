@@ -1,6 +1,5 @@
 package org.folio.writer.impl;
 
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.translations.Translation;
@@ -25,7 +24,6 @@ import java.util.Map;
 /**
  * The implementation of {@link RecordWriter} writes content of marc record in MARC format
  */
-@Log4j2
 public class MarcRecordWriter extends AbstractRecordWriter {
   protected String encoding = StandardCharsets.UTF_8.name();
   private final MarcFactory factory = new SortedMarcFactoryImpl();
@@ -33,8 +31,6 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public void writeLeader(Translation translation) {
-    log.debug("writeLeader:: parameters translation: {}", translation);
-
     if (translation.getFunction().equals("set_17-19_positions")) {
       char[] implDefined2 = new char[3];
       implDefined2[0] = translation.getParameter("position17").charAt(0);
@@ -46,16 +42,12 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public void writeControlField(RecordControlField recordControlField) {
-    log.debug("writeControlField:: parameters recordControlField: {}", recordControlField);
-
     ControlField marcControlField = factory.newControlField(recordControlField.getTag(), recordControlField.getData());
     record.addVariableField(marcControlField);
   }
 
   @Override
   public void writeDataField(RecordDataField recordDataField) {
-    log.debug("writeDataField:: parameters recordDataField: {}", recordDataField);
-
     DataField marcDataField = factory.newDataField(recordDataField.getTag(), recordDataField.getIndicator1(), recordDataField.getIndicator2());
     for (Map.Entry<Character, String> subField : recordDataField.getSubFields()) {
       Character subFieldCode = subField.getKey();

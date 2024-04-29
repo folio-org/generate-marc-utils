@@ -3,7 +3,6 @@ package org.folio.processor.rule;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.Map;
  * Rule defines how to read, translate and map a field value to marc record
  */
 @Getter
-@ToString
 public class Rule {
 
   @Setter

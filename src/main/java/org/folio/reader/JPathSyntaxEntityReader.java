@@ -54,7 +54,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
 
   @Override
   protected RuleValue readSimpleValue(Rule rule, DataSource dataSource) {
-    log.debug("readSimpleValue:: parameters rule: {}", rule);
+    log.debug("readSimpleValue:: parameters rule field: {}", rule.getField());
     populateMetadata(rule);
     List<ValueWrapper> valueWrappers = readMatrix(rule).get(0).getValue();
     if (valueWrappers.isEmpty()) {
