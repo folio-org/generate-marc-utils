@@ -17,7 +17,6 @@ import java.io.OutputStream;
 public class JsonRecordWriter extends MarcRecordWriter {
   @Override
   public String getResult() {
-    log.info("getResult:: ");
     OutputStream outputStream = new ByteArrayOutputStream();
     MarcWriter writer = new MarcJsonWriter(outputStream);
     if (CollectionUtils.isNotEmpty(getFields())) {

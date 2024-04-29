@@ -24,7 +24,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
 
   @Override
   public void writeField(String field, SimpleValue simpleValue) {
-    log.info("writeField:: parameters field: {}, simpleValue: {}", field, simpleValue);
+    log.debug("writeField:: parameters field: {}, simpleValue: {}", field, simpleValue);
 
     DataSource dataSource = simpleValue.getDataSource();
     if (STRING.equals(simpleValue.getSubType())) {
@@ -52,7 +52,7 @@ public abstract class AbstractRecordWriter implements RecordWriter {
 
   @Override
   public void writeField(String field, CompositeValue compositeValue) {
-    log.info("writeField:: parameters field: {}, compositeValue: {}", field, compositeValue);
+    log.debug("writeField:: parameters field: {}, compositeValue: {}", field, compositeValue);
     for (List<StringValue> entry : compositeValue.getValue()) {
       RecordDataField recordDataField = buildDataFieldForStringValues(field, entry);
       if (!recordDataField.getSubFields().isEmpty()) {

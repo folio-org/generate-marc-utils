@@ -105,13 +105,11 @@ public final class RuleProcessor {
     switch (ruleValue.getType()) {
       case SIMPLE:
         SimpleValue<?> simpleValue = (SimpleValue) ruleValue;
-        log.debug("SIMPLE rule value {} translation case", simpleValue);
         translate(simpleValue, referenceData, rule.getMetadata(), errorHandler);
         writer.writeField(rule.getField(), simpleValue);
         break;
       case COMPOSITE:
         CompositeValue compositeValue = (CompositeValue) ruleValue;
-        log.debug("COMPOSITE rule value {} translation case", compositeValue);
         translate(compositeValue, referenceData, rule.getMetadata(), errorHandler);
         writer.writeField(rule.getField(), compositeValue);
         break;

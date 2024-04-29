@@ -33,7 +33,7 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public void writeLeader(Translation translation) {
-    log.info("writeLeader:: parameters translation: {}", translation);
+    log.debug("writeLeader:: parameters translation: {}", translation);
 
     if (translation.getFunction().equals("set_17-19_positions")) {
       char[] implDefined2 = new char[3];
@@ -46,7 +46,7 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public void writeControlField(RecordControlField recordControlField) {
-    log.info("writeControlField:: parameters recordControlField: {}", recordControlField);
+    log.debug("writeControlField:: parameters recordControlField: {}", recordControlField);
 
     ControlField marcControlField = factory.newControlField(recordControlField.getTag(), recordControlField.getData());
     record.addVariableField(marcControlField);
@@ -54,7 +54,7 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public void writeDataField(RecordDataField recordDataField) {
-    log.info("writeDataField:: parameters recordDataField: {}", recordDataField);
+    log.debug("writeDataField:: parameters recordDataField: {}", recordDataField);
 
     DataField marcDataField = factory.newDataField(recordDataField.getTag(), recordDataField.getIndicator1(), recordDataField.getIndicator2());
     for (Map.Entry<Character, String> subField : recordDataField.getSubFields()) {
@@ -67,7 +67,6 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public String getResult() {
-    log.info("getResult:: ");
     OutputStream outputStream = new ByteArrayOutputStream();
     MarcWriter writer = new MarcStreamWriter(outputStream, encoding);
     if (CollectionUtils.isNotEmpty(getFields())) {
@@ -82,7 +81,6 @@ public class MarcRecordWriter extends AbstractRecordWriter {
 
   @Override
   public List<VariableField> getFields() {
-    log.info("getFields:: ");
     return record.getVariableFields();
   }
 }

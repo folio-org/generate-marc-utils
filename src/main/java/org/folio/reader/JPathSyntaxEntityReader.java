@@ -54,7 +54,7 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
 
   @Override
   protected RuleValue readSimpleValue(Rule rule, DataSource dataSource) {
-    log.info("readSimpleValue:: parameters rule: {}, dataSource: {}", rule, dataSource);
+    log.debug("readSimpleValue:: parameters rule: {}", rule);
     populateMetadata(rule);
     List<ValueWrapper> valueWrappers = readMatrix(rule).get(0).getValue();
     if (valueWrappers.isEmpty()) {
@@ -99,13 +99,12 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
       simpleValue = SimpleValue.of(stringValues, dataSource);
     }
     log.debug("buildSimpleValue:: result: {}", simpleValue);
-
     return simpleValue;
   }
 
   @Override
   protected RuleValue readCompositeValue(Rule rule) {
-    log.info("readCompositeValue:: parameters rule: {}", rule);
+    log.debug("readCompositeValue:: parameters rule: {}", rule);
     populateMetadata(rule);
     List<SimpleEntry<DataSource, List<ValueWrapper>>> matrix = readMatrix(rule);
     if (isMatrixEmpty(matrix)) {

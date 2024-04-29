@@ -17,7 +17,6 @@ import java.io.OutputStream;
 public class XmlRecordWriter extends MarcRecordWriter {
   @Override
   public String getResult() {
-    log.info("getResult:: ");
     OutputStream outputStream = new ByteArrayOutputStream();
     MarcWriter writer = new MarcXmlWriter(outputStream, encoding);
     if (CollectionUtils.isNotEmpty(getFields())) {
