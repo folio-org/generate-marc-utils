@@ -20,4 +20,11 @@ public interface EntityReader {
    * @return rule value
    */
   <T> RuleValue<T> read(Rule rule);
+
+ /**
+  * Populates metadata values from an underling entity
+  *
+  * @param rule mapping rule
+  */
+ void populateMetadata(Rule rule);
 }

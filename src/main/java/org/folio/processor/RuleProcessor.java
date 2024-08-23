@@ -71,7 +71,8 @@ public final class RuleProcessor {
     rules.forEach(rule -> {
       log.debug("process:: the exact rule with field: {}", rule.getField());
       if (LEADER_FIELD.equals(rule.getField())) {
-        rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
+        reader.populateMetadata(rule);
+        rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation(), rule.getMetadata()));
       } else {
         processRule(reader, writer, referenceData, rule, errorHandler);
       }
@@ -92,7 +93,8 @@ public final class RuleProcessor {
     rules.forEach(rule -> {
       log.debug("processFields:: the exact rule with field: {}", rule.getField());
       if (LEADER_FIELD.equals(rule.getField())) {
-        rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation()));
+        reader.populateMetadata(rule);
+        rule.getDataSources().forEach(dataSource -> writer.writeLeader(dataSource.getTranslation(), rule.getMetadata()));
       } else {
         processRule(reader, writer, referenceData, rule, errorHandler);
       }

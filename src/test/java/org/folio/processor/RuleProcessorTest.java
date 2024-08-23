@@ -41,7 +41,6 @@ import org.folio.writer.RecordWriter;
 import org.folio.writer.impl.JsonRecordWriter;
 import org.folio.writer.impl.MarcRecordWriter;
 import org.folio.writer.impl.XmlRecordWriter;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,13 +75,9 @@ class RuleProcessorTest {
   @Mock(lenient = true)
   private TranslationFunction setValueTranslationFunction;
 
-  @BeforeAll
-  static void beforeAll() throws JsonProcessingException {
-      rules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
-  }
-
   @BeforeEach
-  public void beforeEach() throws ParseException {
+  public void beforeEach() throws ParseException, JsonProcessingException {
+    rules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
     entity = readFileContentFromResources("processor/given_entity.json");
     holdingsStatementsEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_statements.json");
     holdingsNotesEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_notes.json");
@@ -105,6 +100,20 @@ class RuleProcessorTest {
     String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
     // then
     String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record.mrc");
+    assertEquals(expectedMarcRecord, actualMarcRecord);
+  }
+
+  @Test
+  void shouldMapEntityTo_MarcRecord_Deleted() {
+    // given
+    var entityMarkedForDeletion = readFileContentFromResources("processor/given_entity_marked_for_deletion.json");
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entityMarkedForDeletion);
+    RecordWriter writer = new MarcRecordWriter();
+    // when
+    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_deleted.mrc");
     assertEquals(expectedMarcRecord, actualMarcRecord);
   }
 

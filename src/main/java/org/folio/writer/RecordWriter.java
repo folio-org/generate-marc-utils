@@ -1,5 +1,6 @@
 package org.folio.writer;
 
+import org.folio.processor.rule.Metadata;
 import org.folio.processor.translations.Translation;
 import org.folio.reader.values.CompositeValue;
 import org.folio.reader.values.RuleValue;
@@ -19,11 +20,11 @@ import java.util.List;
 public interface RecordWriter {
 
   /**
-   * Updates leader using information from the given translation
+   * Updates leader using information from the given translation and metadata
    *
    * @param translation translation of the mapping rule to update leader
    */
-  void writeLeader(Translation translation);
+  void writeLeader(Translation translation, Metadata metadata);
 
   /**
    * Writes simple value to record whether control field or data field.
