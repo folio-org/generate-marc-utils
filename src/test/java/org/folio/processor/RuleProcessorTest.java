@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -302,7 +301,7 @@ class RuleProcessorTest {
     dataSource.setFrom("$.holdings[*].items[*].barcode");
     rule.setDataSources(singletonList(dataSource));
     entity = readFileContentFromResources("processor/given_entity_one_holding_one_item.json");
-    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceDataWrapper, metadata) -> {
       throw new RuntimeException("test exception");
     });
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
