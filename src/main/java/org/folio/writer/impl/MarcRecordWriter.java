@@ -1,7 +1,10 @@
 package org.folio.writer.impl;
 
+import static java.lang.Boolean.TRUE;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.folio.processor.rule.Metadata;
 import org.folio.processor.translations.Translation;
 import org.folio.writer.RecordWriter;
 import org.folio.writer.fields.RecordControlField;
@@ -25,12 +28,14 @@ import java.util.Map;
  * The implementation of {@link RecordWriter} writes content of marc record in MARC format
  */
 public class MarcRecordWriter extends AbstractRecordWriter {
+  private static final int NUMBER_OF_MARK_FOR_DELETION_FIELDS = 2;
+
   protected String encoding = StandardCharsets.UTF_8.name();
   private final MarcFactory factory = new SortedMarcFactoryImpl();
   protected Record record = factory.newRecord();
 
   @Override
-  public void writeLeader(Translation translation) {
+  public void writeLeader(Translation translation, Metadata metadata) {
     if (translation.getFunction().equals("set_17-19_positions")) {
       char[] implDefined2 = new char[3];
       implDefined2[0] = translation.getParameter("position17").charAt(0);
@@ -38,6 +43,17 @@ public class MarcRecordWriter extends AbstractRecordWriter {
       implDefined2[2] = translation.getParameter("position19").charAt(0);
       record.getLeader().setImplDefined2(implDefined2);
     }
+    if (translation.getFunction().equals("set_status_deleted") && isMarkForDeletion(metadata)) {
+      record.getLeader().setRecordStatus('d');
+    }
+  }
+
+  private boolean isMarkForDeletion(Metadata metadata) {
+    return metadata.getData().size() == NUMBER_OF_MARK_FOR_DELETION_FIELDS &&
+      metadata.getData().containsKey("discoverySuppress") &&
+      metadata.getData().containsKey("staffSuppress") &&
+      metadata.getData().entrySet().stream()
+        .allMatch(entry -> TRUE.equals(entry.getValue().getData()));
   }
 
   @Override

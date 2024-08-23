@@ -248,7 +248,8 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
   /**
    * Reads up ans sets metadata to the given rule
    */
-  private void populateMetadata(Rule rule) {
+  @Override
+  public void populateMetadata(Rule rule) {
     Metadata metadata = rule.getMetadata();
     if (metadata != null) {
       for (Map.Entry<String, Metadata.Entry> entry : metadata.getData().entrySet()) {
@@ -257,6 +258,8 @@ public class JPathSyntaxEntityReader extends AbstractEntityReader {
           JSONArray jsonArray = (JSONArray) data;
           List<?> list = Arrays.asList(jsonArray.toArray());
           entry.getValue().setData(list);
+        } else if (data instanceof Boolean bool) {
+          entry.getValue().setData(bool);
         }
       }
     }

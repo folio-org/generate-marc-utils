@@ -17,11 +17,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
 
-import com.google.common.collect.ImmutableMap;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.error.ErrorCode;
@@ -41,7 +39,6 @@ import org.folio.writer.RecordWriter;
 import org.folio.writer.impl.JsonRecordWriter;
 import org.folio.writer.impl.MarcRecordWriter;
 import org.folio.writer.impl.XmlRecordWriter;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,13 +73,9 @@ class RuleProcessorTest {
   @Mock(lenient = true)
   private TranslationFunction setValueTranslationFunction;
 
-  @BeforeAll
-  static void beforeAll() throws JsonProcessingException {
-      rules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
-  }
-
   @BeforeEach
-  public void beforeEach() throws ParseException {
+  public void beforeEach() throws ParseException, JsonProcessingException {
+    rules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"), Rule[].class));
     entity = readFileContentFromResources("processor/given_entity.json");
     holdingsStatementsEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_statements.json");
     holdingsNotesEntity = readFileContentFromResources("processor/given_multiple_holdings_with_multiple_holdings_notes.json");
@@ -105,6 +98,20 @@ class RuleProcessorTest {
     String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
     // then
     String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record.mrc");
+    assertEquals(expectedMarcRecord, actualMarcRecord);
+  }
+
+  @Test
+  void shouldMapEntityTo_MarcRecord_Deleted() {
+    // given
+    var entityMarkedForDeletion = readFileContentFromResources("processor/given_entity_marked_for_deletion.json");
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entityMarkedForDeletion);
+    RecordWriter writer = new MarcRecordWriter();
+    // when
+    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_deleted.mrc");
     assertEquals(expectedMarcRecord, actualMarcRecord);
   }
 
@@ -204,7 +211,7 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = (translationException) -> {
+    ErrorHandler errorHandler = translationException -> {
       assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", translationException.getRecordInfo().getId());
       assertEquals(RecordType.INSTANCE, translationException.getRecordInfo().getType());
       assertEquals(ParseException.class, translationException.getCause().getClass());
@@ -232,7 +239,7 @@ class RuleProcessorTest {
     dataSource.setFrom("$.instance.title");
     rule.setDataSources(singletonList(dataSource));
     entity = readFileContentFromResources("processor/given_entity.json");
-    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceDataWrapper, metadata) -> {
       throw new RuntimeException("test exception");
     });
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
@@ -240,7 +247,7 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = (translationException) -> {
+    ErrorHandler errorHandler = translationException -> {
       assertEquals("4bbec474-ba4d-4404-990f-afe2fc86dd3d", translationException.getRecordInfo().getId());
       assertEquals(RecordType.INSTANCE, translationException.getRecordInfo().getType());
       assertEquals("title", translationException.getRecordInfo().getFieldName());
@@ -263,7 +270,7 @@ class RuleProcessorTest {
     dataSource.setFrom("$.holdings[*].callNumber");
     rule.setDataSources(singletonList(dataSource));
     entity = readFileContentFromResources("processor/given_entity_one_holding_one_item.json");
-    when(translationHolder.lookup("set_call_number_type_id")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+    when(translationHolder.lookup("set_call_number_type_id")).thenReturn((value, currentIndex, translation1, referenceDataWrapper, metadata) -> {
       throw new RuntimeException("test exception");
     });
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
@@ -271,7 +278,7 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = (translationException) -> {
+    ErrorHandler errorHandler = translationException -> {
       assertEquals("holding1 Id", translationException.getRecordInfo().getId());
       assertEquals(RecordType.HOLDING, translationException.getRecordInfo().getType());
       assertEquals("callNumber", translationException.getRecordInfo().getFieldName());
@@ -294,7 +301,7 @@ class RuleProcessorTest {
     dataSource.setFrom("$.holdings[*].items[*].barcode");
     rule.setDataSources(singletonList(dataSource));
     entity = readFileContentFromResources("processor/given_entity_one_holding_one_item.json");
-    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceData, metadata) -> {
+    when(translationHolder.lookup("set_value")).thenReturn((value, currentIndex, translation1, referenceDataWrapper, metadata) -> {
       throw new RuntimeException("test exception");
     });
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
@@ -302,7 +309,7 @@ class RuleProcessorTest {
     RecordWriter writer = new JsonRecordWriter();
 
     // when & then
-    ErrorHandler errorHandler = (translationException) -> {
+    ErrorHandler errorHandler = translationException -> {
       assertEquals("item12 Id", translationException.getRecordInfo().getId());
       assertEquals(RecordType.ITEM, translationException.getRecordInfo().getType());
       assertEquals("barcode", translationException.getRecordInfo().getFieldName());
@@ -371,7 +378,7 @@ class RuleProcessorTest {
   @Test
   void shouldMapMultipleHoldingsWithMultipleHoldingsStatementsProperly() {
     when(translationHolder.lookup("set_value"))
-      .thenReturn((value, currentIndex, translation1, referenceData, metadata) ->
+      .thenReturn((value, currentIndex, translation1, referenceDataWrapper, metadata) ->
         value.equals("d9cd0bed-1b49-4b5e-a7bd-064b8d177231") ? "location 1" : "location 2");
     // given
     Rule givenRule = new Rule();
@@ -473,7 +480,7 @@ class RuleProcessorTest {
     AtomicInteger times = new AtomicInteger();
 
     // when & then
-    ErrorHandler errorHandler = (translationException) -> {
+    ErrorHandler errorHandler = translationException -> {
       assertEquals(1, times.incrementAndGet());
     };
 
@@ -490,19 +497,19 @@ class RuleProcessorTest {
     AtomicInteger times = new AtomicInteger();
 
     Translation translation = new Translation();
-    translation.setParameters(ImmutableMap.of(
+    translation.setParameters(Map.of(
       "relatedIdentifierTypes", "ISBN",
       "type", "Invalid ISBN"));
     translation.setFunction("set_related_identifier");
 
     List<Rule> compositeRules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules.json"),
-      Rule[].class)).stream().filter(rule -> rule.getField().equals("003")).collect(Collectors.toList());
+      Rule[].class)).stream().filter(rule -> rule.getField().equals("003")).toList();
 
     // Enrich with translation for composite rule values.
     compositeRules.forEach(r -> r.getDataSources().forEach(ds -> ds.setTranslation(translation)));
 
     // when & then
-    ErrorHandler errorHandler = (translationException) -> {
+    ErrorHandler errorHandler = translationException -> {
       assertEquals(1, times.incrementAndGet());
     };
 

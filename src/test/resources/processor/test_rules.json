@@ -1,5 +1,20 @@
 [
   {
+    "field": "leader",
+    "description": "Test leader field, set status deleted",
+    "dataSources": [
+      {
+        "translation": {
+          "function": "set_status_deleted"
+        }
+      }
+    ],
+    "metadata": {
+      "discoverySuppress": "$.instance.discoverySuppress",
+      "staffSuppress": "$.instance.staffSuppress"
+    }
+  },
+  {
     "field": "001",
     "description": "Test field 001, reading simple string value, writing control field",
     "dataSources": [
