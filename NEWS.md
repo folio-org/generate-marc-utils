@@ -1,4 +1,13 @@
-## 1.9.0 - Unreleased
+## 1.10.0 - Unreleased
+
+## 1.9.0 - Released
+This release includes logging improvement, implementation function to set LDR05 to "d"
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.8.0...v1.9.0)
+
+### Stories
+* [GMU-45](https://folio-org.atlassian.net/browse/GMU-45) - Implement function to set LDR05 to "d" for records set for deletion
+* [GMU-27](https://folio-org.atlassian.net/browse/GMU-27) - Logging improvement
 
 ## 1.8.0 - Released
 This release contains Java upgrade 11 -> 17 and bug fixes
