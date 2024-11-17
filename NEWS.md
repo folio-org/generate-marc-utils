@@ -1,5 +1,13 @@
 ## 1.10.0 - Unreleased
 
+## 1.9.1 - Released
+This release upgrades dependencies.
+
+### Bug fixes
+* [GMU-48](https://folio-org.atlassian.net/browse/GMU-48) Upgrade dependencies; fix commons-io and jackson DoS
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.9.0...v1.9.1)
+
 ## 1.9.0 - Released
 This release includes logging improvement, implementation function to set LDR05 to "d"
 
