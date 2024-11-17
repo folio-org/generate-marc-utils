@@ -22,7 +22,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.google.common.collect.ImmutableMap;
@@ -49,7 +48,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 @ExtendWith(MockitoExtension.class)
-@RunWith(MockitoJUnitRunner.class)
 class TranslationFunctionHolderUnitTest {
 
   private static ReferenceDataWrapper referenceData = Mockito.mock(ReferenceDataWrapper.class);
