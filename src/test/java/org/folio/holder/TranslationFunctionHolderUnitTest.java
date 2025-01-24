@@ -13,7 +13,6 @@ import org.folio.processor.translations.Translation;
 import org.folio.processor.translations.TranslationFunction;
 import org.folio.processor.translations.TranslationsFunctionHolder;
 import org.folio.util.ReferenceDataResponseUtil;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +40,8 @@ import static org.folio.processor.referencedata.ReferenceDataConstants.LOCATIONS
 import static org.folio.processor.referencedata.ReferenceDataConstants.MATERIAL_TYPES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.MODE_OF_ISSUANCES;
 import static org.folio.processor.referencedata.ReferenceDataConstants.NATURE_OF_CONTENT_TERMS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static java.util.Arrays.asList;
@@ -80,7 +81,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, null, null);
     // then
-    Assert.assertEquals(value, result);
+    assertEquals(value, result);
   }
 
   @Test
@@ -91,7 +92,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals("textbook", result);
+    assertEquals("textbook", result);
   }
 
   @Test
@@ -102,7 +103,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -122,7 +123,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(value, result);
+    assertEquals(value, result);
   }
 
   @Test
@@ -141,7 +142,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(value, result);
+    assertEquals(value, result);
   }
 
   @Test
@@ -158,7 +159,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -178,7 +179,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals("invalid isbn value", result);
+    assertEquals("invalid isbn value", result);
   }
 
   @Test
@@ -198,7 +199,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 1, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -219,7 +220,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -241,7 +242,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals("invalid isbn value", result);
+    assertEquals("invalid isbn value", result);
   }
 
   @Test
@@ -263,7 +264,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals("invalid isbn value", result);
+    assertEquals("invalid isbn value", result);
   }
 
   @ParameterizedTest
@@ -301,7 +302,7 @@ class TranslationFunctionHolderUnitTest {
     String result = translationFunction.apply(value, currentIndex, translation, referenceData, metadata);
 
     // then
-    Assert.assertEquals(expectedValue, result);
+    assertEquals(expectedValue, result);
   }
 
   @Test
@@ -312,7 +313,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals("book", result);
+    assertEquals("book", result);
   }
 
   @Test
@@ -323,7 +324,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -337,7 +338,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -352,7 +353,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("Miller General Stacks", result);
+    assertEquals("Miller General Stacks", result);
   }
 
   @Test
@@ -367,7 +368,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("KU/CC/DI/M", result);
+    assertEquals("KU/CC/DI/M", result);
   }
 
   @Test
@@ -384,7 +385,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("Main Library", result);
+    assertEquals("Main Library", result);
   }
 
   @Test
@@ -401,7 +402,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -418,7 +419,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("ML", result);
+    assertEquals("ML", result);
   }
 
   @Test
@@ -435,7 +436,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("Riverside Campus", result);
+    assertEquals("Riverside Campus", result);
   }
 
   @Test
@@ -452,7 +453,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("Riverside Campus", result);
+    assertEquals("Riverside Campus", result);
   }
 
   @Test
@@ -469,7 +470,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("Main Library", result);
+    assertEquals("Main Library", result);
   }
 
   @Test
@@ -486,7 +487,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("ML", result);
+    assertEquals("ML", result);
   }
 
   @Test
@@ -497,7 +498,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -508,7 +509,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals("text", result);
+    assertEquals("text", result);
   }
 
   @Test
@@ -519,7 +520,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -532,7 +533,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("audio", result);
+    assertEquals("audio", result);
   }
 
   @Test
@@ -545,7 +546,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals("microform", result);
+    assertEquals("microform", result);
   }
 
   @Test
@@ -558,7 +559,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -569,7 +570,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -580,8 +581,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(updatedDate, 0, null, null, null);
     // then
-    Assert.assertNotNull(result);
-    Assert.assertEquals("20200522014642.9", result);
+    assertNotNull(result);
+    assertEquals("20200522014642.9", result);
   }
 
   @Test
@@ -611,7 +612,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(value, result);
+    assertEquals(value, result);
   }
 
   @Test
@@ -628,7 +629,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -647,7 +648,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(value, result);
+    assertEquals(value, result);
   }
 
   @Test
@@ -664,7 +665,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -676,8 +677,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -690,8 +691,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||lat||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||lat||", result);
   }
 
   @ParameterizedTest
@@ -704,8 +705,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||mul||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||mul||", result);
   }
 
   @ParameterizedTest
@@ -718,8 +719,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|2015||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|2015||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -732,8 +733,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|20152016||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|20152016||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -747,8 +748,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|20152016||||||||       |||||mul||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|20152016||||||||       |||||mul||", result);
   }
 
   @ParameterizedTest
@@ -761,8 +762,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -775,8 +776,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -790,8 +791,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -805,8 +806,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -819,8 +820,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||2016||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||2016||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -833,8 +834,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, metadata);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|2016||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|2016||||||||||||       |||||und||", result);
   }
 
   @ParameterizedTest
@@ -845,8 +846,8 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
     // then
-    Assert.assertEquals(40, result.length());
-    Assert.assertEquals("190807|||||||||||||||||       |||||und||", result);
+    assertEquals(40, result.length());
+    assertEquals("190807|||||||||||||||||       |||||und||", result);
   }
 
   @Test
@@ -857,7 +858,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
     // then
-    Assert.assertEquals(40, result.length());
+    assertEquals(40, result.length());
   }
 
   @Test
@@ -868,7 +869,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(createdDate, 0, null, null, null);
     // then
-    Assert.assertEquals(40, result.length());
+    assertEquals(40, result.length());
   }
 
   @Test
@@ -880,7 +881,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, null, null, metadata);
     // then
-    Assert.assertEquals(StringUtils.SPACE, result);
+    assertEquals(StringUtils.SPACE, result);
   }
 
   @Test
@@ -892,7 +893,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, null, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.SPACE, result);
+    assertEquals(StringUtils.SPACE, result);
   }
 
   @Test
@@ -908,7 +909,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(StringUtils.SPACE, result);
+    assertEquals(StringUtils.SPACE, result);
   }
 
   @Test
@@ -924,7 +925,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(null, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals("0", result);
+    assertEquals("0", result);
   }
 
   @Test
@@ -935,7 +936,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals("multipart monograph", result);
+    assertEquals("multipart monograph", result);
   }
 
   @Test
@@ -946,7 +947,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -957,7 +958,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals("National Library of Medicine classification", result);
+    assertEquals("National Library of Medicine classification", result);
   }
 
   @Test
@@ -968,7 +969,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -979,7 +980,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals("Reading room", result);
+    assertEquals("Reading room", result);
   }
 
   @Test
@@ -990,7 +991,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @ParameterizedTest
@@ -1002,7 +1003,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(date, 0, null, referenceData, null);
     // then
-    Assert.assertEquals(expectedResult, result);
+    assertEquals(expectedResult, result);
   }
 
   @Test
@@ -1016,7 +1017,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals("Miller General Stacks", result);
+    assertEquals("Miller General Stacks", result);
   }
 
   @Test
@@ -1030,7 +1031,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
   @Test
@@ -1044,7 +1045,7 @@ class TranslationFunctionHolderUnitTest {
     // when
     String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
     // then
-    Assert.assertEquals(EMPTY, result);
+    assertEquals(EMPTY, result);
   }
 
 
