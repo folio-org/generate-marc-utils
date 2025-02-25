@@ -1,4 +1,4 @@
 buildMvn {
   mvnDeploy = 'yes'
-  buildNode = 'jenkins-agent-java17'
+  buildNode = 'jenkins-agent-java21'
 }
