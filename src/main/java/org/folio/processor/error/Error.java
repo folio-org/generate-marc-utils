@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import javax.validation.constraints.NotNull;
 
+
 @JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({"message", "type", "code", "parameters"})
 public class Error {
