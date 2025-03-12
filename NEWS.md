@@ -1,4 +1,12 @@
-## 1.10.0 - Unreleased
+## 1.11.0 - Unreleased
+
+## 1.10.0 - Released
+This release contains upgrade to Java 21 and dependencies upgrading
+
+### Bug fixes
+* [GMU-51](https://folio-org.atlassian.net/browse/GMU-51) Update to generate-marc-utils Java 21
+
+[Full Changelog](https://github.com/folio-org/generate-marc-utils/compare/v1.9.1...v1.10.0)
 
 ## 1.9.1 - Released
 This release upgrades dependencies.
