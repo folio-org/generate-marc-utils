@@ -10,8 +10,7 @@
       }
     ],
     "metadata": {
-      "discoverySuppress": "$.instance.discoverySuppress",
-      "staffSuppress": "$.instance.staffSuppress"
+      "deleted": "$.instance.deleted"
     }
   },
   {

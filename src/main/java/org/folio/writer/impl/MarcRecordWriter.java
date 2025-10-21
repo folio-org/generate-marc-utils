@@ -49,11 +49,9 @@ public class MarcRecordWriter extends AbstractRecordWriter {
   }
 
   private boolean isMarkForDeletion(Metadata metadata) {
-    return metadata.getData().size() == NUMBER_OF_MARK_FOR_DELETION_FIELDS &&
-      metadata.getData().containsKey("discoverySuppress") &&
-      metadata.getData().containsKey("staffSuppress") &&
-      metadata.getData().entrySet().stream()
-        .allMatch(entry -> TRUE.equals(entry.getValue().getData()));
+    return metadata.getData().containsKey("deleted") &&
+            metadata.getData().entrySet().stream()
+                    .allMatch(entry -> TRUE.equals(entry.getValue().getData()));
   }
 
   @Override
