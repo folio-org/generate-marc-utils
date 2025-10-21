@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Map;
 import java.util.HashMap;
 
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.error.ErrorCode;
@@ -135,6 +136,22 @@ class RuleProcessorTest {
     RecordWriter writer = new MarcRecordWriter();
     // when
     String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_not_deleted.mrc");
+    assertEquals(expectedMarcRecord, actualMarcRecord);
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldNotMapEntityTo_MarcRecord_Deleted_IfDeletedNotPresentInRules() {
+    // given
+    var entityMarkedForDeletion = readFileContentFromResources("processor/given_entity_marked_for_deletion.json");
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entityMarkedForDeletion);
+    RecordWriter writer = new MarcRecordWriter();
+    // when
+    var rulesWithoutDeleted = rules = Arrays.asList(MAPPER.readValue(readFileContentFromResources("processor/test_rules_no_deleted.json"), Rule[].class));
+    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rulesWithoutDeleted, null);
     // then
     String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_not_deleted.mrc");
     assertEquals(expectedMarcRecord, actualMarcRecord);
