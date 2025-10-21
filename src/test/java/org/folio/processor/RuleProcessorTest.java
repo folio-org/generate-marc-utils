@@ -113,6 +113,20 @@ class RuleProcessorTest {
   }
 
   @Test
+  void shouldNotMapEntityTo_MarcRecord_Deleted_IfDeletedFalse() {
+    // given
+    var entityMarkedForDeletion = readFileContentFromResources("processor/given_entity_marked_as_not_set_for_deletion.json");
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entityMarkedForDeletion);
+    RecordWriter writer = new MarcRecordWriter();
+    // when
+    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_not_deleted.mrc");
+    assertEquals(expectedMarcRecord, actualMarcRecord);
+  }
+
+  @Test
   void shouldMapEntityTo_JsonRecord() {
     // given
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
