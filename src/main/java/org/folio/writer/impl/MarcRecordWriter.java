@@ -28,7 +28,6 @@ import java.util.Map;
  * The implementation of {@link RecordWriter} writes content of marc record in MARC format
  */
 public class MarcRecordWriter extends AbstractRecordWriter {
-  private static final int NUMBER_OF_MARK_FOR_DELETION_FIELDS = 2;
 
   protected String encoding = StandardCharsets.UTF_8.name();
   private final MarcFactory factory = new SortedMarcFactoryImpl();
@@ -49,11 +48,9 @@ public class MarcRecordWriter extends AbstractRecordWriter {
   }
 
   private boolean isMarkForDeletion(Metadata metadata) {
-    return metadata.getData().size() == NUMBER_OF_MARK_FOR_DELETION_FIELDS &&
-      metadata.getData().containsKey("discoverySuppress") &&
-      metadata.getData().containsKey("staffSuppress") &&
-      metadata.getData().entrySet().stream()
-        .allMatch(entry -> TRUE.equals(entry.getValue().getData()));
+    return metadata.getData().containsKey("deleted") &&
+            metadata.getData().entrySet().stream()
+                    .allMatch(entry -> TRUE.equals(entry.getValue().getData()));
   }
 
   @Override

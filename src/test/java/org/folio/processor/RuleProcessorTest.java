@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Map;
 import java.util.HashMap;
 
+import lombok.SneakyThrows;
 import net.minidev.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.processor.error.ErrorCode;
@@ -43,6 +44,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.marc4j.marc.ControlField;
 import org.marc4j.marc.DataField;
@@ -98,17 +100,37 @@ class RuleProcessorTest {
     assertEquals(expectedMarcRecord, actualMarcRecord);
   }
 
-  @Test
-  void shouldMapEntityTo_MarcRecord_Deleted() {
+  @ParameterizedTest
+  @CsvSource(value = {
+          "processor/given_entity_marked_for_deletion.json,processor/mapped_marc_record_deleted.mrc",
+          "processor/given_entity_marked_as_not_set_for_deletion.json,processor/mapped_marc_record_not_deleted.mrc",
+          "processor/given_entity_no_deleted_flag.json,processor/mapped_marc_record_not_deleted.mrc"})
+  void shouldMapMarcToDeletedOnlyIfDeletedFlagIsPresentAndIsTrue(String pathToGivenEntity, String pathToExpectedMrc) {
     // given
-    var entityMarkedForDeletion = readFileContentFromResources("processor/given_entity_marked_for_deletion.json");
+    var entityMarkedForDeletion = readFileContentFromResources(pathToGivenEntity);
     RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
     EntityReader reader = new JPathSyntaxEntityReader(entityMarkedForDeletion);
     RecordWriter writer = new MarcRecordWriter();
     // when
     String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
     // then
-    String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_deleted.mrc");
+    String expectedMarcRecord = readFileContentFromResources(pathToExpectedMrc);
+    assertEquals(expectedMarcRecord, actualMarcRecord);
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldNotMapEntityTo_MarcRecord_Deleted_IfDeletedNotPresentInRules() {
+    // given
+    var entityMarkedForDeletion = readFileContentFromResources("processor/given_entity_marked_for_deletion.json");
+    RuleProcessor ruleProcessor = new RuleProcessor(translationHolder);
+    EntityReader reader = new JPathSyntaxEntityReader(entityMarkedForDeletion);
+    RecordWriter writer = new MarcRecordWriter();
+    // when
+    rules.getFirst().setMetadata(Map.of("no_deleted", "true"));
+    String actualMarcRecord = ruleProcessor.process(reader, writer, referenceData, rules, null);
+    // then
+    String expectedMarcRecord = readFileContentFromResources("processor/mapped_marc_record_not_deleted.mrc");
     assertEquals(expectedMarcRecord, actualMarcRecord);
   }
 

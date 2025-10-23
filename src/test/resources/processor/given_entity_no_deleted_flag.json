@@ -9,7 +9,6 @@
     ],
     "discoverySuppress": true,
     "staffSuppress": true,
-    "deleted": true,
     "fonts": [
       "Times New Roman",
       "Wingdings",
