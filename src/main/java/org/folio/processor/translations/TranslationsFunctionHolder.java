@@ -415,6 +415,19 @@ public enum TranslationsFunctionHolder implements TranslationFunction, Translati
     }
   },
 
+  SET_HOLDINGS_TEMPORARY_LOCATION() {
+    @Override
+    public String apply(String locationId, int currentIndex, Translation translation, ReferenceDataWrapper referenceData, Metadata metadata) throws ParseException {
+      JSONObject entry = convertToJson(locationId, referenceData, LOCATIONS);
+      if (entry.isEmpty()) {
+        log.error("Location is not found by the given id: {}", locationId);
+        return StringUtils.EMPTY;
+      } else {
+        return entry.getAsString(NAME);
+      }
+    }
+  },
+
   SET_METADATA_DATE_TIME() {
     private final transient DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:hh-mm-ss");
     @Override
