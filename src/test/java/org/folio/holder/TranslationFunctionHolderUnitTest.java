@@ -1048,5 +1048,31 @@ class TranslationFunctionHolderUnitTest {
     assertEquals(EMPTY, result);
   }
 
+  @Test
+  void SetHoldingTemporaryLocation_shouldReturnLocationName() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_TEMPORARY_LOCATION;
+    Translation translation = new Translation();
+    String value = "d9cd0bed-1b49-4b5e-a7bd-064b8d177231";
+    Metadata metadata = new Metadata();
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    assertEquals("Miller General Stacks", result);
+  }
+
+  @Test
+  void SetHoldingTemporaryLocation_shouldReturnEmpty_whenLocationIdNotPresentInReferenceData() throws ParseException {
+    // given
+    TranslationFunction translationFunction = TranslationsFunctionHolder.SET_HOLDINGS_TEMPORARY_LOCATION;
+    Translation translation = new Translation();
+    String value = "bb0bc416-4112-11eb-b378-0242ac130002";
+    Metadata metadata = new Metadata();
+    // when
+    String result = translationFunction.apply(value, 0, translation, referenceData, metadata);
+    // then
+    assertEquals(EMPTY, result);
+  }
+
 
 }
