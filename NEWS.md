@@ -1,4 +1,16 @@
-## 1.11.0 - Unreleased
+## 1.12.0 - Unreleased
+
+## 1.11.0 - Released
+This release contains minor improvements and bug fixes
+
+### Stories
+[MDEXP-870](https://folio-org.atlassian.net/browse/MDEXP-870) Adjust how record is identified as deleted
+
+### Bug fixes
+[MDEXP-816](https://folio-org.atlassian.net/browse/MDEXP-816) Holdings Permanent and Temporary location not being exported when Temporary location is set in holdings record
+
+### Technical tasks
+[GMU-53](https://folio-org.atlassian.net/browse/GMU-53) generate-marc-utils: Use GitHub Workflows for Maven
 
 ## 1.10.0 - Released
 This release contains upgrade to Java 21 and dependencies upgrading
